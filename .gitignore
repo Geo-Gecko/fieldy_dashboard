@@ -26,3 +26,5 @@ yarn-error.log*
 .idea/
 yarn.lock
 package-lock.json
+
+.env
