@@ -13,7 +13,7 @@ const PrivateRoute = ({ children, ...props }) => {
     // but we can confirm that once we check for it in the backend.
     if (!localStorage.getItem('x-token')) {
         return <Route exact path="/" render={() => {
-            window.location = process.env.REACT_APP_AUTH_SERVICE_URL || "http://localhost:3000"
+            window.location.href = process.env.REACT_APP_AUTH_SERVICE_URL
             return null
         }} />
     }
