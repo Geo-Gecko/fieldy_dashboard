@@ -3,6 +3,7 @@ import { Map, TileLayer, Circle, FeatureGroup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet-editable'
 import ReactLeafletEditable from 'react-leaflet-editable';
+import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
 
 import 'leaflet-draw/dist/leaflet.draw';
 import 'leaflet-toolbar/dist/leaflet.toolbar-src';
@@ -12,6 +13,7 @@ import 'leaflet-wfst/dist/leaflet-wfst.src';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-toolbar/dist/leaflet.toolbar.css';
 import 'font-awesome/css/font-awesome.css';
+import './leaflet-sidebar.min.css'
 
 // import data from '../assets/data';
 // import Markers from './VenueMarkers';
@@ -98,27 +100,27 @@ class MapView extends Component {
         this.state = {
             currentLocation: { lat: 1.46, lng: 32.40 },
             zoom: 7,
+            collapsed: true,
+            selected: 'map'
         }
     }
 
-    render() {
-        const { currentLocation, zoom } = this.state;
-
-        return (
-            <ReactLeafletEditable ref={this.mapRef}>
-                <Map center={currentLocation} zoom={zoom} ref={this.mapRef} editable={true} >
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                    />
-                    <FeatureGroup ref={(reactFGref) => { this._onFeatureGroupReady(reactFGref); }}>
-                    </FeatureGroup>
-                </Map>
-            </ReactLeafletEditable>
-        );
+    onClose() {
+      this.setState({
+        ...this.state,
+        collapsed: true 
+      });
     }
-    _onFeatureGroupReady = (reactFGref) => {
-        let map = reactFGref.leafletElement._map
+    onOpen(id) {
+      this.setState({
+        ...this.state,
+        collapsed: false,
+        selected: id
+      });
+    }
+
+    _onFeatureGroupReady () {
+        let map = this.mapRef.current.state.map
         let leafletWFST = new L.WFST({
             url: 'http://geogecko.gis-cdn.net/geoserver/ows',
             typeNS: 'shp_test',
@@ -139,7 +141,7 @@ class MapView extends Component {
             });
 
         new L.Toolbar2.Control({
-            position: 'topleft',
+            position: 'topright',
             actions: [
                 L.Toolbar2.Action.extend({
                     options: {
@@ -181,6 +183,44 @@ class MapView extends Component {
         });
     }
 
+    // render method is defined as the last method
+    // in most use cases
+    render() {
+      const { currentLocation, zoom } = this.state;
+
+      return (
+          <ReactLeafletEditable ref={this.mapRef}>
+              <Sidebar
+                id="sidebar"
+                collapsed={this.state.collapsed}
+                selected={this.state.selected}
+                onOpen={(id) => this.onOpen(id)}
+                onClose={() => this.onClose()}
+              >
+                <Tab id="map" header="Map" icon="fa fa-map">
+                  <p>Map Display</p>
+                </Tab>
+                <Tab id="settings" header="Settings" icon="fa fa-cog" anchor="bottom">
+                  <p>Settings dialogue.</p>
+                </Tab>
+              </Sidebar>
+              <Map
+              zoomControl={false}
+              center={currentLocation} 
+              zoom={zoom} 
+              ref={this.mapRef} 
+              editable={true}
+              >
+                  <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+                  />
+                  <FeatureGroup ref={() => this._onFeatureGroupReady()}>
+                  </FeatureGroup>
+              </Map>
+          </ReactLeafletEditable>
+      );
+  }
 }
 
 export default MapView;
