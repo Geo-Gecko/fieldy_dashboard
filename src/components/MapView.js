@@ -5,6 +5,9 @@ import 'leaflet-editable'
 import ReactLeafletEditable from 'react-leaflet-editable';
 import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
 
+import ndviLineGraph from './ndvi';
+import ndwiLineGraph from './ndwi';
+
 import 'leaflet-draw/dist/leaflet.draw';
 import 'leaflet-toolbar/dist/leaflet.toolbar-src';
 
@@ -15,13 +18,6 @@ import 'leaflet-toolbar/dist/leaflet.toolbar.css';
 import 'font-awesome/css/font-awesome.css';
 import './leaflet-sidebar.min.css'
 
-// import data from '../assets/data';
-// import Markers from './VenueMarkers';
-// import fields from '../assets/tobacco_fields'
-
-/**
- * Created by PRadostev on 10.03.2015.
- */
 
 L.DeletePopup = L.Toolbar2.Action.extend({
     options: {
@@ -100,8 +96,8 @@ class MapView extends Component {
         this.state = {
             currentLocation: { lat: 1.46, lng: 32.40 },
             zoom: 7,
-            collapsed: true,
-            selected: 'map'
+            collapsed: false,
+            selected: 'ndvi'
         }
     }
 
@@ -197,8 +193,13 @@ class MapView extends Component {
                 onOpen={(id) => this.onOpen(id)}
                 onClose={() => this.onClose()}
               >
-                <Tab id="map" header="Map" icon="fa fa-map">
-                  <p>Map Display</p>
+                <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
+                  <p>NDVI GRAPH</p>
+                  {ndviLineGraph()}
+                </Tab>
+                <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
+                  <p>NDWI GRAPH</p>
+                   {ndwiLineGraph()}
                 </Tab>
                 <Tab id="settings" header="Settings" icon="fa fa-cog" anchor="bottom">
                   <p>Settings dialogue.</p>
