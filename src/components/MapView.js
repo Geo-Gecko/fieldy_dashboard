@@ -118,7 +118,7 @@ class MapView extends Component {
     _onFeatureGroupReady () {
         let map = this.mapRef.current.state.map
         let leafletWFST = new L.WFST({
-            url: 'http://geogecko.gis-cdn.net/geoserver/ows',
+            url: 'https://geogecko.gis-cdn.net/geoserver/ows',
             typeNS: 'shp_test',
             typeName: 'fields_shp_test',
             crs: L.CRS.EPSG4326,
