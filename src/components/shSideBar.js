@@ -5,6 +5,8 @@ import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
 import 'font-awesome/css/font-awesome.css';
 import './leaflet-sidebar.min.css'
 
+import NdviLineGraph from './ndviLineGraph';
+import NdwiLineGraph from './ndwiLineGraph';
 
 export default class ShSideBar extends Component {
     constructor(props) {
@@ -42,13 +44,13 @@ export default class ShSideBar extends Component {
             >
               <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
                 <p>NDVI GRAPH</p>
-                {/* {ndviLineGraph()} */}
+                <NdviLineGraph />
               </Tab>
               <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
                 <p>NDWI GRAPH</p>
-                 {/* {ndwiLineGraph()} */}
+                <NdwiLineGraph />
               </Tab>
-              <Tab id="settings" header="Settings" icon="fa fa-cog" anchor="bottom">
+              <Tab id="settings" header="Settings" icon="fa fa-power-off" anchor="bottom">
                 <p>Settings dialogue.</p>
               </Tab>
             </Sidebar>
