@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Map, TileLayer, Circle, FeatureGroup } from 'react-leaflet';
 import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw"
@@ -11,6 +12,12 @@ import Markers from './VenueMarkers';
 
 // our components
 import ShSideBar from './shSideBar';
+import {
+  postPointLayer, postPolygonLayer
+} from '../actions/layerActions';
+import {
+  CREATE_LAYERS_SUCCESS,
+} from '../actions/types';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -51,7 +58,13 @@ class MapView extends Component {
     else {
       console.log("_onCreated: something else created:", type, e);
     }
-    console.log(e.layer.toGeoJSON())
+    let geo_layer = e.layer.toGeoJSON()
+    if (geo_layer.geometry.type === "Polygon") {
+      this.props.postPolygonLayer(geo_layer)
+    } else if (geo_layer.geometry.type === "Point") {
+      // this isn't accounting for circles
+      this.props.postPolygonLayer(geo_layer)
+    }
     // Do whatever else you need to. (save to db; etc)
 
     this._onChange();
@@ -190,4 +203,10 @@ function getGeoJson() {
   }
 }
 
-export default MapView;
+const mapStateToProps = state => ({
+  createLayersPayload: state.layers.createLayersPayload
+});
+
+export default connect(
+  mapStateToProps, { postPointLayer, postPolygonLayer }
+)(MapView);
