@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Map, TileLayer, Circle, FeatureGroup } from 'react-leaflet';
+import { Map, TileLayer, FeatureGroup } from 'react-leaflet';
 import L from 'leaflet';
-import { EditControl } from "react-leaflet-draw"
+import { EditControl } from "react-leaflet-draw";
+import Popup from 'react-leaflet-editable-popup'
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -152,6 +153,10 @@ class MapView extends Component {
                   rectangle: false
                 }}
               />
+              <Popup removable editable
+              saveContentCallback={ (content, index) => console.log(content, index) } >
+                Your stylable content here.
+              </Popup>
           </FeatureGroup>
         </Map>
       </React.Fragment>
