@@ -63,7 +63,7 @@ class MapView extends Component {
       this.props.postPolygonLayer(geo_layer)
     } else if (geo_layer.geometry.type === "Point") {
       // this isn't accounting for circles
-      this.props.postPolygonLayer(geo_layer)
+      this.props.postPointLayer(geo_layer)
     }
     // Do whatever else you need to. (save to db; etc)
 
