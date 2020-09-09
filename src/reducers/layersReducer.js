@@ -1,9 +1,11 @@
 import {
     CREATE_LAYERS_SUCCESS,
+    GET_LAYERS_SUCCESS
 } from '../actions/types';
 
 const initialState = {
     createLayersPayload: {},
+    LayersPayload: {}
 };
 
 export const layersReducer = (state = initialState, action) => {
@@ -13,6 +15,11 @@ export const layersReducer = (state = initialState, action) => {
                 ...state,
                 createLayersPayload: action.payload
             };
+            case GET_LAYERS_SUCCESS:
+                return {
+                    ...state,
+                    LayersPayload: action.payload
+                };
         default:
             return state;
     }
