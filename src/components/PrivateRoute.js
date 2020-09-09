@@ -19,6 +19,8 @@ const PrivateRoute = ({ children, ...props }) => {
     }
     // there is going to be a vulnerability here because we don't confirm if it's the actual token
     // but we can confirm that once we check for it in the backend.
+
+    // 09_09-2020 -> vulnerability has been catered for in the backend
     if (!localStorage.getItem('x-token')) {
         return <Route exact path="/" render={() => {
             // window.location works on GAE but not on local

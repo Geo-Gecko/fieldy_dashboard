@@ -7,17 +7,12 @@ import { EditControl } from "react-leaflet-draw"
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 
-import data from '../assets/data';
-import Markers from './VenueMarkers';
 
 // our components
 import ShSideBar from './shSideBar';
 import {
-  postPointLayer, postPolygonLayer
+  postPointLayer, postPolygonLayer, getPolygonLayers
 } from '../actions/layerActions';
-import {
-  CREATE_LAYERS_SUCCESS,
-} from '../actions/types';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -25,14 +20,14 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-shadow.png',
 });
-let polyline;
 
 class MapView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentLocation: { lat: 1.46, lng: 32.40 },
-      zoom: 7,
+      currentLocation: { lat: 8.8, lng: 11.5 },
+      zoom: 13,
+      labels_: {}
     }
   }
 
@@ -103,11 +98,13 @@ class MapView extends Component {
 
   _editableFG = null
 
-  _onFeatureGroupReady = (reactFGref) => {
+  _onFeatureGroupReady = async (reactFGref) => {
 
     // populate the leaflet FeatureGroup with the geoJson layers
 
-    let leafletGeoJSON = new L.GeoJSON(getGeoJson());
+    let leafletGeoJSON = await this.props.getPolygonLayers()
+
+    leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
     let leafletFG = reactFGref.leafletElement;
 
     leafletGeoJSON.eachLayer( (layer) => {
@@ -149,7 +146,6 @@ class MapView extends Component {
             attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
           />
 
-          <Markers venues={data.venues}/>
           <FeatureGroup ref={ (reactFGref) => {this._onFeatureGroupReady(reactFGref);} }>
               <EditControl
                 position='topright'
@@ -172,41 +168,17 @@ class MapView extends Component {
   }
 }
 
-function getGeoJson() {
-  return {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "type": "Point",
-          "coordinates": [33.947754, 2.251955]
-        }
-      },
-      {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [32.036133, 3.360098],
-              [33.288574, 3.447824],
-              [32.080078, 2.515368],
-              [32.036133, 3.360098]
-            ]
-          ]
-        }
-      }
-    ]
-  }
-}
 
 const mapStateToProps = state => ({
-  createLayersPayload: state.layers.createLayersPayload
+  createLayersPayload: state.layers.createLayersPayload,
+  LayersPayload: state.layers.LayersPayload
+});
+
+const matchDispatchToProps = dispatch => ({
+  postPointLayer, postPolygonLayer, getPolygonLayers,
+  dispatch
 });
 
 export default connect(
-  mapStateToProps, { postPointLayer, postPolygonLayer }
+  mapStateToProps, matchDispatchToProps
 )(MapView);

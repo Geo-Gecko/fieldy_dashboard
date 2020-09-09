@@ -3,7 +3,7 @@ import axiosInstance from './axiosInstance';
 
 export const postPointLayer = postData => dispatch => {
     return axiosInstance
-      .post('/layers/createpointlayer/', postData)
+      .post('/layers/listcreatepointlayer/', postData)
       .then(response => {
           console.log("Layer saved", response)
       })
@@ -14,7 +14,7 @@ export const postPointLayer = postData => dispatch => {
 
 export const postPolygonLayer = postData => dispatch => {
 return axiosInstance
-    .post('/layers/createpolygonlayer/', postData)
+    .post('/layers/listcreatepolygonlayer/', postData)
     .then(response => {
         console.log("Layer saved", response)
     })
@@ -22,3 +22,14 @@ return axiosInstance
     console.log(error)
     });
 };
+
+export const getPolygonLayers = () => {
+  return axiosInstance
+      .get('/layers/listcreatepolygonlayer/')
+      .then(response => {
+          return response.data
+      })
+      .catch(error => {
+      console.log(error)
+      });
+  };
