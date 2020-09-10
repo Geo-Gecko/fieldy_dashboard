@@ -11,7 +11,8 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 // our components
 import ShSideBar from './shSideBar';
 import {
-  postPointLayer, postPolygonLayer, getPolygonLayers
+  postPointLayer, postPolygonLayer, getPolygonLayers,
+  deletePolygonLayer, updatePolygonLayer
 } from '../actions/layerActions';
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -26,8 +27,7 @@ class MapView extends Component {
     super(props);
     this.state = {
       currentLocation: { lat: 8.8, lng: 11.5 },
-      zoom: 13,
-      labels_: {}
+      zoom: 13
     }
   }
 
@@ -36,6 +36,8 @@ class MapView extends Component {
 
     let numEdited = 0;
     e.layers.eachLayer( (layer) => {
+      layer = layer.toGeoJSON()
+      this.props.updatePolygonLayer(layer)
       numEdited += 1;
     });
     console.log(`_onEdited: edited ${numEdited} layers`, e);
@@ -69,6 +71,8 @@ class MapView extends Component {
 
     let numDeleted = 0;
     e.layers.eachLayer( (layer) => {
+      layer = layer.toGeoJSON()
+      this.props.deletePolygonLayer(layer.properties.field_id)
       numDeleted += 1;
     });
     console.log(`onDeleted: removed ${numDeleted} layers`, e);
@@ -176,6 +180,7 @@ const mapStateToProps = state => ({
 
 const matchDispatchToProps = dispatch => ({
   postPointLayer, postPolygonLayer, getPolygonLayers,
+  deletePolygonLayer, updatePolygonLayer,
   dispatch
 });
 
