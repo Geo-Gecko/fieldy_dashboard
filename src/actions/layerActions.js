@@ -22,3 +22,15 @@ return axiosInstance
     console.log(error)
     });
 };
+
+export const getPolygonLayer = () => dispatch => {
+  return axiosInstance
+      .get('/layers/getpolygonlayer/')
+      .then(response => {
+          console.log("Layer received", response)
+          return response.data;
+      })
+      .catch(error => {
+      console.log(error)
+      });
+  };

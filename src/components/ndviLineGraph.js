@@ -2,7 +2,7 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 
 
-let NdwiLineGraph = () => {
+let NdviLineGraph = () => {
 
     return (
         <Line
@@ -30,4 +30,4 @@ let NdwiLineGraph = () => {
 
 }
 
-export default NdwiLineGraph;
+export default NdviLineGraph;

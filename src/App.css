@@ -5,3 +5,12 @@
 .sr-only {
   display: none;
 }
+
+.info {
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: #d0d0d0;
+  border-color: black;
+  border-radius: 5px;
+  width: 150px;
+}

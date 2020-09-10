@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import L from 'leaflet';
 import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
 
 import 'font-awesome/css/font-awesome.css';
@@ -7,12 +6,13 @@ import './leaflet-sidebar.min.css'
 
 import NdviLineGraph from './ndviLineGraph';
 import NdwiLineGraph from './ndwiLineGraph';
+import AttributeTable from './attributesTable';
 
 export default class ShSideBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            collapsed: false,
+            collapsed: true,
             selected: 'ndvi'
         }
     }
@@ -49,6 +49,10 @@ export default class ShSideBar extends Component {
               <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
                 <p>NDWI GRAPH</p>
                 <NdwiLineGraph />
+              </Tab>
+              <Tab id="attributes" header="Attributes" icon="fa fa-table">
+                <p>Attributes</p>
+                <AttributeTable />
               </Tab>
               <Tab id="settings" header="Settings" icon="fa fa-power-off" anchor="bottom">
                 <p>Settings dialogue.</p>
