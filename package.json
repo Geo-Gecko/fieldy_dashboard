@@ -13,12 +13,14 @@
     "react-dom": "^16.11.0",
     "react-leaflet": "^2.5.0",
     "react-leaflet-draw": "^0.19.0",
+    "react-leaflet-editable-popup": "^1.1.4",
     "react-leaflet-sidebarv2": "^0.6.0",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
     "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "uuid": "^8.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
