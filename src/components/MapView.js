@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+
+import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
-import { Map, TileLayer, Circle, FeatureGroup } from 'react-leaflet';
+import { Map, TileLayer, FeatureGroup } from 'react-leaflet';
 import L from 'leaflet';
-import { EditControl } from "react-leaflet-draw"
+import { EditControl } from "react-leaflet-draw";
+import Popup from 'react-leaflet-editable-popup';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -47,7 +50,6 @@ class MapView extends Component {
 
   _onCreated = (e) => {
     let type = e.layerType;
-    let layer = e.layer;
     if (type === 'marker') {
       // Do marker specific actions
       console.log("_onCreated: marker created", e);
@@ -106,12 +108,20 @@ class MapView extends Component {
 
     // populate the leaflet FeatureGroup with the geoJson layers
 
-    let leafletGeoJSON = await this.props.getPolygonLayers()
+    let leafletGeoJSON = await this.props.getPolygonLayers();
 
     leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
     let leafletFG = reactFGref.leafletElement;
 
-    leafletGeoJSON.eachLayer( (layer) => {
+    leafletGeoJSON.eachLayer( (layer, index) => {
+      let feature_ = layer.feature;
+      let attr_list = ""
+      Object.keys(feature_.properties.field_attributes).forEach(attr => {
+        attr_list += `${attr}: ${feature_.properties.field_attributes[attr]}<br/>`
+      })
+
+      layer.bindPopup(attr_list)
+
       leafletFG.addLayer(layer);
     });
 
@@ -162,7 +172,11 @@ class MapView extends Component {
                 onDeleteStart={this._onDeleteStart}
                 onDeleteStop={this._onDeleteStop}
                 draw={{
-                  rectangle: false
+                  rectangle: false,
+                  circle: false,
+                  marker: false,
+                  circlemarker: false,
+                  polyline: false,
                 }}
               />
           </FeatureGroup>
