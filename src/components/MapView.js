@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import { Map, TileLayer, FeatureGroup } from 'react-leaflet';
 import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
-import Popup from 'react-leaflet-editable-popup';
+// import Popup from 'react-leaflet-editable-popup';
+import Control from 'react-leaflet-control';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -17,6 +18,7 @@ import {
   postPointLayer, postPolygonLayer, getPolygonLayers,
   deletePolygonLayer, updatePolygonLayer
 } from '../actions/layerActions';
+import { getcreateputUserDetail } from '../actions/userActions';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -29,8 +31,8 @@ class MapView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentLocation: { lat: 8.8, lng: 11.5 },
-      zoom: 13
+      currentLocation: { lat: 1.46, lng: 32.40 },
+      zoom: 7
     }
   }
 
@@ -58,13 +60,7 @@ class MapView extends Component {
       console.log("_onCreated: something else created:", type, e);
     }
     let geo_layer = e.layer.toGeoJSON()
-    if (geo_layer.geometry.type === "Polygon") {
-      this.props.postPolygonLayer(geo_layer)
-    } else if (geo_layer.geometry.type === "Point") {
-      // this isn't accounting for circles
-      this.props.postPointLayer(geo_layer)
-    }
-    // Do whatever else you need to. (save to db; etc)
+    this.props.postPolygonLayer(geo_layer)
 
     this._onChange();
   }
@@ -107,11 +103,21 @@ class MapView extends Component {
   _onFeatureGroupReady = async (reactFGref) => {
 
     // populate the leaflet FeatureGroup with the geoJson layers
+    let leafletFG = reactFGref.leafletElement;
+
+  
+    let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
+    if (current_center) {
+      let [lat, lng] = current_center.geometry.coordinates
+      leafletFG._map.flyTo(
+        [lat, lng],
+        current_center.properties.zoom_level
+      )
+    }
 
     let leafletGeoJSON = await this.props.getPolygonLayers();
 
     leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
-    let leafletFG = reactFGref.leafletElement;
 
     leafletGeoJSON.eachLayer( (layer, index) => {
       let feature_ = layer.feature;
@@ -144,6 +150,18 @@ class MapView extends Component {
     onChange(geojsonData);
   }
 
+  _saveCurrentView = () => {
+    let centre_ = this._editableFG.leafletElement._map.getCenter()
+    let zoom_ = this._editableFG.leafletElement._map.getZoom()
+    let current_centre = {
+      type: "Feature",
+      properties: {zoom_level: zoom_},
+      geometry: {type: "Point", coordinates: [centre_.lat, centre_.lng]}
+    }
+
+    this.props.getcreateputUserDetail(current_centre, 'PUT')
+  }
+
   render() {
     const { currentLocation, zoom } = this.state;
 
@@ -159,7 +177,14 @@ class MapView extends Component {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
           />
-
+ 
+         <Control position="topright" >
+            <button
+              onClick={this._saveCurrentView}
+            >
+              Save current view
+            </button>
+          </Control>
           <FeatureGroup ref={ (reactFGref) => {this._onFeatureGroupReady(reactFGref);} }>
               <EditControl
                 position='topright'
@@ -194,7 +219,7 @@ const mapStateToProps = state => ({
 
 const matchDispatchToProps = dispatch => ({
   postPointLayer, postPolygonLayer, getPolygonLayers,
-  deletePolygonLayer, updatePolygonLayer,
+  deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail,
   dispatch
 });
 
