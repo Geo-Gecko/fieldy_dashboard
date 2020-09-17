@@ -5,6 +5,8 @@ import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
 import 'font-awesome/css/font-awesome.css';
 import './leaflet-sidebar.min.css'
 
+import {Button, Modal} from 'react-bootstrap';
+
 import NdviLineGraph from './ndviLineGraph';
 import NdwiLineGraph from './ndwiLineGraph';
 
@@ -13,8 +15,14 @@ export default class ShSideBar extends Component {
         super(props);
         this.state = {
             collapsed: true,
-            selected: 'ndvi'
+            selected: 'ndvi',
+            showLogout: false,
         }
+    }
+
+    handleshowLogout() {
+      localStorage.removeItem('x-token')
+      window.location.reload()
     }
 
     onClose() {
@@ -25,11 +33,18 @@ export default class ShSideBar extends Component {
       }
 
     onOpen(id) {
-    this.setState({
-        ...this.state,
-        collapsed: false,
-        selected: id
-    });
+      if (id !== "logout") {
+        this.setState({
+            ...this.state,
+            collapsed: false,
+            selected: id
+        });
+      } else {
+        this.setState({
+          ...this.state,
+          showLogout: true
+        })
+      }
     }
 
     render () {
@@ -50,8 +65,31 @@ export default class ShSideBar extends Component {
                 <p>NDWI GRAPH</p>
                 <NdwiLineGraph />
               </Tab>
-              <Tab id="settings" header="Settings" icon="fa fa-power-off" anchor="bottom">
-                <p>Settings dialogue.</p>
+              <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
+               >
+                <Modal
+                 show={this.state.showLogout}
+                 onHide={() => this.setState({...this.state, showLogout: false})}
+                 aria-labelledby="contained-modal-title-vcenter"
+                 size="sm"
+                 centered
+                >
+                  <Modal.Body className="text-center">
+                  Would you Like to logout?
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <style type="text/css">
+                      {`
+                      .btn-logout {
+                        background-color: #e15b26;
+                      }
+                      `}
+                    </style>
+                    <Button variant="logout" onClick={this.handleshowLogout}>
+                      Yes
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
               </Tab>
             </Sidebar>
         )
