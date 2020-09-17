@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
+import jwt from 'jsonwebtoken';
 import { connect } from 'react-redux';
 import { Map, TileLayer, FeatureGroup } from 'react-leaflet';
 import L from 'leaflet';
@@ -60,7 +61,24 @@ class MapView extends Component {
       console.log("_onCreated: something else created:", type, e);
     }
     let geo_layer = e.layer.toGeoJSON()
+    geo_layer.properties.field_id = uuidv4()
+    geo_layer.properties.field_attributes = {}
+
+    const tokenValue = localStorage.getItem('x-token')
+    const secret_ = process.env.REACT_APP_SECRET || ""
+    const user = jwt.verify(tokenValue, secret_);
+    geo_layer.properties.user_id = user.uid
+
     this.props.postPolygonLayer(geo_layer)
+    this._editableFG.leafletElement.removeLayer(e.layer)
+    let geoLayerClln = {
+      type: "FeatureCollection",
+      features: [geo_layer]
+    }
+    let attributed_layer = new L.GeoJSON(geoLayerClln)
+    attributed_layer.eachLayer( (layer_, index_) => {
+      this._editableFG.leafletElement.addLayer(layer_)
+    })
 
     this._onChange();
   }
@@ -109,7 +127,7 @@ class MapView extends Component {
     let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
     if (current_center) {
       let [lat, lng] = current_center.geometry.coordinates
-      leafletFG._map.flyTo(
+      leafletFG._map.setView(
         [lat, lng],
         current_center.properties.zoom_level
       )
