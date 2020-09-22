@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import L from 'leaflet';
+import { connect } from 'react-redux';
 import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
 
 import 'font-awesome/css/font-awesome.css';
@@ -8,16 +8,34 @@ import './leaflet-sidebar.min.css'
 import {Button, Modal} from 'react-bootstrap';
 
 import NdviLineGraph from './ndviLineGraph';
-import NdwiLineGraph from './ndwiLineGraph';
+// import NdwiLineGraph from './ndwiLineGraph';
+import getcreateputGraphData from '../actions/graphActions';
 
-export default class ShSideBar extends Component {
+class ShSideBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
             collapsed: true,
             selected: 'ndvi',
             showLogout: false,
+            field_data: []
         }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+      let prevFieldData = prevProps.field_data.reduce(
+        (a,b) => a + b, 0
+      )
+      let currentFieldData = this.props.field_data.reduce(
+        (a,b) => a + b, 0
+      )
+      if (prevState.collapsed !== false) {
+        this.setState({
+          ...this.state,
+          collapsed: false,
+          field_data: this.props.field_data
+        });
+      }
     }
 
     handleshowLogout() {
@@ -32,13 +50,17 @@ export default class ShSideBar extends Component {
         });
       }
 
-    onOpen(id) {
+    async onOpen(id) {
       if (id !== "logout") {
+        await this.props.dispatch(getcreateputGraphData(
+          {}, 'GET', ""
+        ))
         this.setState({
-            ...this.state,
-            collapsed: false,
-            selected: id
-        });
+          ...this.state,
+          field_data: this.props.field_data,
+          collapsed: false,
+          selected: id
+        })
       } else {
         this.setState({
           ...this.state,
@@ -59,12 +81,12 @@ export default class ShSideBar extends Component {
             >
               <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
                 <p>NDVI GRAPH</p>
-                <NdviLineGraph />
+                <NdviLineGraph graphData={this.state.field_data} />
               </Tab>
-              <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
+              {/* <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
                 <p>NDWI GRAPH</p>
                 <NdwiLineGraph />
-              </Tab>
+              </Tab> */}
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal
@@ -95,3 +117,17 @@ export default class ShSideBar extends Component {
         )
     }
 }
+
+
+const mapStateToProps = state => ({
+  field_data: state.graphs.field_data,
+  SidePanelCollapsed: state.graphs.SidePanelCollapsed
+});
+
+const matchDispatchToProps = dispatch => ({
+  dispatch
+});
+
+export default connect(
+  mapStateToProps, matchDispatchToProps
+)(ShSideBar);

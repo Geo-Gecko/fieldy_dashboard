@@ -20,6 +20,7 @@ import {
   deletePolygonLayer, updatePolygonLayer
 } from '../actions/layerActions';
 import { getcreateputUserDetail } from '../actions/userActions';
+import getcreateputGraphData from '../actions/graphActions';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -180,6 +181,12 @@ class MapView extends Component {
     this.props.getcreateputUserDetail(current_centre, 'PUT')
   }
 
+  handleRightClick = e => {
+    this.props.dispatch(getcreateputGraphData(
+      {}, 'GET', e.layer.feature.properties.field_id
+    ))
+  }
+
   render() {
     const { currentLocation, zoom } = this.state;
 
@@ -203,7 +210,10 @@ class MapView extends Component {
               Save current view
             </button>
           </Control>
-          <FeatureGroup ref={ (reactFGref) => {this._onFeatureGroupReady(reactFGref);} }>
+          <FeatureGroup
+           ref={ (reactFGref) => {this._onFeatureGroupReady(reactFGref);} }
+           onContextmenu={this.handleRightClick} 
+          >
               <EditControl
                 position='topright'
                 onEdited={this._onEdited}
