@@ -9,9 +9,6 @@ export const months_ = [
 const getcreateputGraphData = (
     postData, method_, field_id
 ) => dispatch => {
-    console.log(
-        "gettttting", postData, method_, field_id
-    )
     return axiosInstance({
         url: `/layers/fieldndvi/${
             method_ === "POST" || field_id === "" ? "" : field_id + "/"
@@ -35,7 +32,6 @@ const getcreateputGraphData = (
                     })
                     data_[index] = data_[index] / response.data.length
                     data_[index] = parseFloat(data_[index].toFixed(2))
-                    console.log(data_[index])
                 })
             }
 

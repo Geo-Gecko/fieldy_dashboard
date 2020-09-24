@@ -12,7 +12,7 @@ let NdwiLineGraph = graphData => {
                 { "labels": months_,
                 "datasets": [
                     {
-                        "label": "Static Dataset",
+                        "label": "Ndvi Dataset",
                         "data": graphData.graphData,
                         "fill": false,
                         "borderColor": "rgb(75, 192, 192)",

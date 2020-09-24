@@ -23,13 +23,11 @@ class ShSideBar extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-      let prevFieldData = prevProps.field_data.reduce(
-        (a,b) => a + b, 0
-      )
-      let currentFieldData = this.props.field_data.reduce(
-        (a,b) => a + b, 0
-      )
-      if (prevState.collapsed !== false) {
+      if (
+        prevState.collapsed === true &&
+        this.state.selected === "ndvi" &&
+        prevState.showLogout === false
+      ) {
         this.setState({
           ...this.state,
           collapsed: false,
@@ -64,6 +62,7 @@ class ShSideBar extends Component {
       } else {
         this.setState({
           ...this.state,
+          selected: id,
           showLogout: true
         })
       }
@@ -80,7 +79,7 @@ class ShSideBar extends Component {
               onClose={() => this.onClose()}
             >
               <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
-                <p>NDVI GRAPH</p>
+                <br/><br/>
                 <NdviLineGraph graphData={this.state.field_data} />
               </Tab>
               {/* <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
@@ -91,11 +90,20 @@ class ShSideBar extends Component {
                >
                 <Modal
                  show={this.state.showLogout}
-                 onHide={() => this.setState({...this.state, showLogout: false})}
+                 onHide={() => this.setState(
+                  {...this.state, showLogout: false, collapsed: true, selected: "ndvi"}
+                 )}
                  aria-labelledby="contained-modal-title-vcenter"
                  size="sm"
                  centered
                 >
+                <style type="text/css">
+                  {`
+                  .modal {
+                    z-index: 19999;
+                  }
+                  `}
+                </style>
                   <Modal.Body className="text-center">
                   Would you Like to logout?
                   </Modal.Body>
