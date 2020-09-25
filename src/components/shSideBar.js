@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
+import { ToastContainer, toast } from 'react-toastify';
 
 import 'font-awesome/css/font-awesome.css';
 import './leaflet-sidebar.min.css'
@@ -10,6 +11,7 @@ import {Button, Modal} from 'react-bootstrap';
 import NdviLineGraph from './ndviLineGraph';
 // import NdwiLineGraph from './ndwiLineGraph';
 import getcreateputGraphData from '../actions/graphActions';
+import { GET_FIELD_DATA_FAIL } from '../actions/types';
 
 class ShSideBar extends Component {
     constructor(props) {
@@ -26,13 +28,21 @@ class ShSideBar extends Component {
       if (
         prevState.collapsed === true &&
         this.state.selected === "ndvi" &&
-        prevState.showLogout === false
+        prevState.showLogout === false &&
+        this.props.noFieldData === false
       ) {
         this.setState({
           ...this.state,
           collapsed: false,
           field_data: this.props.field_data
         });
+      } else if (this.props.noFieldData === true) {
+        toast("This field has no NDVI data attached yet.", {
+          position: "top-center",
+          autoClose: 3500,
+          closeOnClick: true,
+          pauseOnHover: true,
+          })
       }
     }
 
@@ -80,7 +90,10 @@ class ShSideBar extends Component {
             >
               <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
                 <br/><br/>
+                {
+                this.props.noFieldData ? <ToastContainer /> : 
                 <NdviLineGraph graphData={this.state.field_data} />
+                }
               </Tab>
               {/* <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
                 <p>NDWI GRAPH</p>
@@ -129,7 +142,8 @@ class ShSideBar extends Component {
 
 const mapStateToProps = state => ({
   field_data: state.graphs.field_data,
-  SidePanelCollapsed: state.graphs.SidePanelCollapsed
+  SidePanelCollapsed: state.graphs.SidePanelCollapsed,
+  noFieldData: state.graphs.noFieldData
 });
 
 const matchDispatchToProps = dispatch => ({
