@@ -8,9 +8,12 @@ import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
 // import Popup from 'react-leaflet-editable-popup';
 import Control from 'react-leaflet-control';
+import { ToastContainer } from 'react-toastify';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import './popupMod'
+import './popupMod.css'
 
 
 // our components
@@ -78,6 +81,7 @@ class MapView extends Component {
     }
     let attributed_layer = new L.GeoJSON(geoLayerClln)
     attributed_layer.eachLayer( (layer_, index_) => {
+      layer_.bindPopup("<p></p>", {editable: true, removable: true})
       this._editableFG.leafletElement.addLayer(layer_)
     })
 
@@ -97,25 +101,6 @@ class MapView extends Component {
     this._onChange();
   }
 
-  _onMounted = (drawControl) => {
-    console.log('_onMounted', drawControl);
-  }
-
-  _onEditStart = (e) => {
-    console.log('_onEditStart', e);
-  }
-
-  _onEditStop = (e) => {
-    console.log('_onEditStop', e);
-  }
-
-  _onDeleteStart = (e) => {
-    console.log('_onDeleteStart', e);
-  }
-
-  _onDeleteStop = (e) => {
-    console.log('_onDeleteStop', e);
-  }
 
   _editableFG = null
 
@@ -145,7 +130,7 @@ class MapView extends Component {
         attr_list += `${attr}: ${feature_.properties.field_attributes[attr]}<br/>`
       })
 
-      layer.bindPopup(attr_list)
+      layer.bindPopup(attr_list, {editable: true, removable: true})
 
       leafletFG.addLayer(layer);
     });
@@ -193,6 +178,7 @@ class MapView extends Component {
     return (
       <React.Fragment>
         <ShSideBar />
+        <ToastContainer />
         <Map
           zoomControl={false}
           center={currentLocation}
@@ -219,11 +205,6 @@ class MapView extends Component {
                 onEdited={this._onEdited}
                 onCreated={this._onCreated}
                 onDeleted={this._onDeleted}
-                onMounted={this._onMounted}
-                onEditStart={this._onEditStart}
-                onEditStop={this._onEditStop}
-                onDeleteStart={this._onDeleteStart}
-                onDeleteStop={this._onDeleteStop}
                 draw={{
                   rectangle: false,
                   circle: false,
