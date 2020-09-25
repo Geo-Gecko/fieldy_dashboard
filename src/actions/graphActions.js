@@ -1,5 +1,7 @@
 import axiosInstance from './axiosInstance';
-import { GET_FIELD_DATA } from './types';
+import {
+    GET_FIELD_DATA, GET_FIELD_DATA_FAIL
+} from './types';
 
 export const months_ = [
     "january", "february", "march", "april", "may", "june",
@@ -42,7 +44,10 @@ const getcreateputGraphData = (
             return response.data
         })
         .catch(error => {
-            console.log(error)
+            dispatch({
+                type: GET_FIELD_DATA_FAIL,
+                payload: true
+            })
         });
 };
 
