@@ -11,7 +11,6 @@ import {Button, Modal} from 'react-bootstrap';
 import NdviLineGraph from './ndviLineGraph';
 // import NdwiLineGraph from './ndwiLineGraph';
 import getcreateputGraphData from '../actions/graphActions';
-import { GET_FIELD_DATA_FAIL } from '../actions/types';
 
 class ShSideBar extends Component {
     constructor(props) {
@@ -90,10 +89,7 @@ class ShSideBar extends Component {
             >
               <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
                 <br/><br/>
-                {
-                this.props.noFieldData ? <ToastContainer /> : 
                 <NdviLineGraph graphData={this.state.field_data} />
-                }
               </Tab>
               {/* <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
                 <p>NDWI GRAPH</p>

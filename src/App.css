@@ -5,3 +5,7 @@
 .sr-only {
   display: none;
 }
+
+.Toastify__toast-body {
+  white-space: pre-line;
+}
