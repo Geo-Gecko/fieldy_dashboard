@@ -9,8 +9,14 @@ import './leaflet-sidebar.min.css'
 import {Button, Modal} from 'react-bootstrap';
 
 import NdviLineGraph from './ndviLineGraph';
+import {OverViewBarGraph, OverViewBarGraph1} from './overview';
 // import NdwiLineGraph from './ndwiLineGraph';
 import getcreateputGraphData from '../actions/graphActions';
+
+import {
+  postPointLayer, postPolygonLayer, getPolygonLayers,
+  deletePolygonLayer, updatePolygonLayer
+} from '../actions/layerActions';
 
 class ShSideBar extends Component {
     constructor(props) {
@@ -19,7 +25,8 @@ class ShSideBar extends Component {
             collapsed: true,
             selected: 'ndvi',
             showLogout: false,
-            field_data: []
+            field_data: [],
+            layer_data: []
         }
     }
 
@@ -58,7 +65,25 @@ class ShSideBar extends Component {
       }
 
     async onOpen(id) {
-      if (id !== "logout") {
+      if (id !== "logout" && id === "overview") {
+        let leafletGeoJSON = await getPolygonLayers();
+        let layer_data_ = [[0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0]];
+        leafletGeoJSON.features.forEach((layer, index) => {
+          let feature_ = layer;
+          Object.keys(feature_.properties.field_attributes).forEach(attr => {
+            if (attr === "CropType") {
+              layer_data_[0][parseInt(feature_.properties.field_attributes[attr])] += 1;
+              layer_data_[1][parseInt(feature_.properties.field_attributes[attr])] += parseInt(feature_.properties.field_attributes["Area"]);
+            }
+          })
+        });
+        this.setState({
+          ...this.state,
+          layer_data: layer_data_,
+          collapsed: false,
+          selected: id
+        })
+      } else if (id !== "logout" && id !== "overview") {
         await this.props.dispatch(getcreateputGraphData(
           {}, 'GET', ""
         ))
@@ -91,10 +116,11 @@ class ShSideBar extends Component {
                 <br/><br/>
                 <NdviLineGraph graphData={this.state.field_data} />
               </Tab>
-              {/* <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
-                <p>NDWI GRAPH</p>
-                <NdwiLineGraph />
-              </Tab> */}
+              <Tab id="overview" header="OVERVIEW" icon="fa fa-table">
+                <p>SUMMARY of All Field Data</p>
+                <OverViewBarGraph graphData={this.state.layer_data} />
+                <OverViewBarGraph1 graphData={this.state.layer_data} />
+              </Tab>
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal
