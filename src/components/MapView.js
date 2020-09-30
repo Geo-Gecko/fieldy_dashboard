@@ -45,7 +45,7 @@ class MapView extends Component {
   _onEdited = (e) => {
 
     let numEdited = 0;
-    e.layers.eachLayer( (layer) => {
+    e.layers.eachLayer((layer) => {
       layer = layer.toGeoJSON()
       this.props.updatePolygonLayer(layer)
       numEdited += 1;
@@ -91,7 +91,7 @@ class MapView extends Component {
   _onDeleted = (e) => {
 
     let numDeleted = 0;
-    e.layers.eachLayer( (layer) => {
+    e.layers.eachLayer((layer) => {
       layer = layer.toGeoJSON()
       this.props.deletePolygonLayer(layer.properties.field_id)
       numDeleted += 1;
@@ -109,8 +109,8 @@ class MapView extends Component {
     // populate the leaflet FeatureGroup with the geoJson layers
     let leafletFG = reactFGref.leafletElement;
 
-  
-    let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
+
+    let current_center = await this.props.getcreateputUserDetail({}, 'GET')
     if (current_center) {
       let [lat, lng] = current_center.geometry.coordinates
       leafletFG._map.setView(
@@ -123,14 +123,30 @@ class MapView extends Component {
 
     leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
 
-    leafletGeoJSON.eachLayer( (layer, index) => {
+    leafletGeoJSON.eachLayer((layer, index) => {
       let feature_ = layer.feature;
       let attr_list = ""
       Object.keys(feature_.properties.field_attributes).forEach(attr => {
-        attr_list += `${attr}: ${feature_.properties.field_attributes[attr]}<br/>`
+        if (attr === "Area") {
+          feature_.properties.field_attributes[attr] = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
+          attr_list += `${attr}: ${feature_.properties.field_attributes[attr]}<br/>`
+        } else if (attr === "CropType") {
+          attr_list += `${attr}: <select name=${attr} id=${attr}>
+          <option value=${feature_.properties.field_attributes[attr]}>${feature_.properties.field_attributes[attr]}</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+        </select><br/>`
+        }
       })
+      attr_list += `Planting Time: <input type="date" id=planting_time name=planting_time><br/>`
+      attr_list += `Harvest Time: <input type="date" id=harvest_time name=harvest_time><br/>`
 
-      layer.bindPopup(attr_list, {editable: true, removable: true})
+      layer.bindPopup(attr_list, {editable: false, removable: true})
 
       leafletFG.addLayer(layer);
     });
@@ -159,8 +175,8 @@ class MapView extends Component {
     let zoom_ = this._editableFG.leafletElement._map.getZoom()
     let current_centre = {
       type: "Feature",
-      properties: {zoom_level: zoom_},
-      geometry: {type: "Point", coordinates: [centre_.lat, centre_.lng]}
+      properties: { zoom_level: zoom_ },
+      geometry: { type: "Point", coordinates: [centre_.lat, centre_.lng] }
     }
 
     this.props.getcreateputUserDetail(current_centre, 'PUT')
@@ -188,8 +204,8 @@ class MapView extends Component {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
           />
- 
-         <Control position="topright" >
+
+          <Control position="topright" >
             <button
               onClick={this._saveCurrentView}
             >
@@ -197,8 +213,8 @@ class MapView extends Component {
             </button>
           </Control>
           <FeatureGroup
-           ref={ (reactFGref) => {this._onFeatureGroupReady(reactFGref);} }
-           onContextmenu={this.handleRightClick} 
+            ref={(reactFGref) => { this._onFeatureGroupReady(reactFGref); }}
+            onContextmenu={this.handleRightClick}
           >
               <EditControl
                 position='topright'
