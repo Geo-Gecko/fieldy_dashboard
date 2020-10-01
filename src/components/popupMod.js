@@ -1,4 +1,3 @@
-import ReactDOM from 'react-dom';
 import L from 'leaflet';
 import axiosInstance from '../actions/axiosInstance';
 import { toast } from 'react-toastify';
@@ -66,7 +65,7 @@ L.Popup.include({
 
       if (this.options.removable && !this.options.editable){
          var userActionButtons = this._userActionButtons = L.DomUtil.create('div', prefix + '-useraction-buttons', wrapper);
-         var removeButton = this._removeButton = L.DomUtil.create('a', prefix + '-remove-button', userActionButtons);
+         let removeButton = this._removeButton = L.DomUtil.create('a', prefix + '-remove-button', userActionButtons);
          removeButton.href = '#close';
          removeButton.innerHTML = `Remove this ${nametag}`;
          this.options.minWidth = 110;
@@ -75,26 +74,26 @@ L.Popup.include({
       }
 
       if (this.options.editable && !this.options.removable){
-         var userActionButtons = this._userActionButtons = L.DomUtil.create('div', prefix + '-useraction-buttons', wrapper);
-         var editButton = this._editButton = L.DomUtil.create('a', prefix + '-edit-button', userActionButtons);
-         editButton.href = '#edit';
-         editButton.innerHTML = 'Edit';
+         let userActionButtons = this._userActionButtons = L.DomUtil.create('div', prefix + '-useraction-buttons', wrapper);
+         let editButton = this._editButton = L.DomUtil.create('a', prefix + '-edit-button', userActionButtons);
+         editButton.href = '#save';
+         editButton.innerHTML = 'Save';
 
-         L.DomEvent.on(editButton, 'click', this._onEditButtonClick, this);
+         L.DomEvent.on(editButton, 'click', this._saveButton, this);
       }
 
       if (this.options.editable && this.options.removable){
-         var userActionButtons = this._userActionButtons = L.DomUtil.create('div', prefix + '-useraction-buttons', wrapper);
-         var removeButton = this._removeButton = L.DomUtil.create('a', prefix + '-remove-button', userActionButtons);
+         let userActionButtons = this._userActionButtons = L.DomUtil.create('div', prefix + '-useraction-buttons', wrapper);
+         let removeButton = this._removeButton = L.DomUtil.create('a', prefix + '-remove-button', userActionButtons);
          removeButton.href = '#close';
          removeButton.innerHTML = `Remove this ${nametag}`;
-         var editButton = this._editButton = L.DomUtil.create('a', prefix + '-edit-button', userActionButtons);
-         editButton.href = '#edit';
-         editButton.innerHTML = 'Edit';
+         let editButton = this._editButton = L.DomUtil.create('a', prefix + '-edit-button', userActionButtons);
+         editButton.href = '#save';
+         editButton.innerHTML = 'Save';
          this.options.minWidth = 160;
 
          L.DomEvent.on(removeButton, 'click', this._onRemoveButtonClick, this);
-         L.DomEvent.on(editButton, 'click', this._onEditButtonClick, this);
+         L.DomEvent.on(editButton, 'click', this._onSaveButtonClick, this);
       }
    },
 
@@ -112,137 +111,65 @@ L.Popup.include({
       L.DomEvent.stop(e);
    },
 
-   _onEditButtonClick: function (e) {
-      //Needs to be defined first to capture width before changes are applied
-      var inputFieldWidth = this._inputFieldWidth = this._container.offsetWidth - 2*19;
-
-      this._contentNode.style.display = "none";
-      this._userActionButtons.style.display = "none";
-
-      var wrapper = this._wrapper;
-      var editScreen = this._editScreen = L.DomUtil.create('div', 'leaflet-popup-edit-screen', wrapper)
-      var inputField = this._inputField = L.DomUtil.create('div', 'leaflet-popup-input', editScreen);
-      inputField.setAttribute("contenteditable", "true");
-      inputField.innerHTML = this.getContent()
-
-
-      //  -----------  Making the input field grow till max width ------- //
-      inputField.style.width = inputFieldWidth + 'px';
-      var inputFieldDiv = L.DomUtil.get(this._inputField);
-
-      // create invisible div to measure the text width in pixels
-      var ruler = L.DomUtil.create('div', 'leaflet-popup-input-ruler', editScreen);
-
-      let thisStandIn = this;
-
-      // Padd event listener to the textinput to trigger a check
-      this._inputField.addEventListener("keydown", function(){
-      // Check to see if the popup is already at its maxWidth
-      // and that text doesnt take up whole field
-         if (thisStandIn._container.offsetWidth < thisStandIn.options.maxWidth + 38
-            && thisStandIn._inputFieldWidth + 5 < inputFieldDiv.clientWidth){
-            ruler.innerHTML = inputField.innerHTML;
-
-            if (ruler.offsetWidth + 20 > inputFieldDiv.clientWidth){
-               console.log('expand now');
-               inputField.style.width = thisStandIn._inputField.style.width = ruler.offsetWidth + 10 + 'px';
-               thisStandIn.update();
-            }
-         }
-      }, false)
-
-
-      var inputActions = this._inputActions = L.DomUtil.create('div', 'leaflet-popup-input-actions', editScreen);
-      var cancelButton = this._cancelButton = L.DomUtil.create('a', 'leaflet-popup-input-cancel', inputActions);
-      cancelButton.href = '#cancel';
-      cancelButton.innerHTML = 'Cancel';
-      var saveButton = this._saveButton = L.DomUtil.create('a', 'leaflet-popup-input-save', inputActions);
-      saveButton.href = "#save";
-      saveButton.innerHTML = 'Save';
-
-      L.DomEvent.on(cancelButton, 'click', this._onCancelButtonClick, this)
-      L.DomEvent.on(saveButton, 'click', this._onSaveButtonClick, this)
-
-      this.update();
-      L.DomEvent.stop(e);
-   },
-
-
-   _onCancelButtonClick: function (e) {
-      L.DomUtil.remove(this._editScreen);
-      this._contentNode.style.display = "block";
-      this._userActionButtons.style.display = "flex";
-
-      this.update();
-      L.DomEvent.stop(e);
-   },
-
    _onSaveButtonClick: function (e) {
-      let call_toast = () => toast(`
-         One of these fields is missing:\n
-         Planting month and year\n Harvest month and year\n Crop type\n Area.\n\n
-         Please separate each field from its value with a ":", and from each field with a new line.
-      `, {
+      let changed_layer = this._source.toGeoJSON()
+      let field_id = changed_layer.properties.field_id
+      let area = changed_layer.properties.field_attributes.Area
+      let call_toast = (message_, glanceTime) => toast(message_, {
         position: "bottom-center",
         draggable: false,
         closeOnClick: false,
-        autoClose: 10000,
+        autoClose: glanceTime,
         pauseOnHover: true,
         })
 
-      var inputField = this._inputField;
-      let content_ = inputField.innerText
-      content_ = content_.split("\n")
-      content_ = content_.filter(each_ => {
-         if (each_.length === 0) {
-            return false
+      let cropType = document.getElementById(`CropType_${field_id}`);
+      let cropTypeSelection = cropType.options[cropType.selectedIndex].text;
+      let plantingTime = document.getElementById(`plant_${field_id}`)
+      let harvestTime = document.getElementById(`harvest_${field_id}`)
+      if (!plantingTime) {
+         call_toast(
+            "Please ensure that at least\
+            Planting time is selected before saving.",
+            5000
+         )
+      } else if (plantingTime) {
+
+         plantingTime.setAttribute("value", plantingTime.value)
+         harvestTime.setAttribute("value", harvestTime.value)
+
+         for (let i = 0; i < cropType.options.length; i++) {
+            cropType.options[i].setAttribute("selected", false)
          }
-         return true
-      })
-      let content_obj = {}
-      content_.forEach(piece_ => {
-         piece_ = piece_.split(":")
-         try {
-            content_obj[piece_[0].trim()] = piece_[1].trim()
-         } catch (error) {
-            call_toast()
+         cropType.options[
+            cropType.selectedIndex
+         ].setAttribute("selected", true)
+
+         let newInnerHTML =
+         `CropType: ${cropType.outerHTML} <br/>
+         Area: ${area}<br/>
+         Planting Time: ${plantingTime.outerHTML} <br/>
+         Harvest Time: ${harvestTime.outerHTML} <br/>`
+         this.setContent(newInnerHTML)
+
+         let content_obj = {
+            Area: area, plantingTime: plantingTime.value,
+            harvestTime: harvestTime.value, CropType: cropTypeSelection
          }
-      })
-      // IMPORTANT!!! still need to check the values
-      function checkKeys(key_) {
-         let needed_keys = [
-            "Planting month and year", "Harvest month and year",
-            "Crop type", "Area"
-         ]
-         if (needed_keys.includes(key_)) {
-            return true
-         }
-         return false
-      }
-      let content_arr = Object.keys(content_obj).filter(each_key => {
-         return checkKeys(each_key)
-      })
-      if (content_arr.length === 4){
-         this.setContent(inputField.innerHTML)
-         let changed_layer = this._source.toGeoJSON()
          changed_layer.properties.field_attributes = content_obj
          axiosInstance
             .put(`/layers/getupdatedeletelayer/${changed_layer.properties.field_id}/`, changed_layer)
             .then(response => {
-               console.log("Layer attributes have been edited", response.data)
+               call_toast(
+                  "Changes to attributes saved",
+                  3000
+               )
             })
             .catch(error => {
             console.log(error)
             });
-      } else {
-         call_toast()
-      };
+      }
 
-      L.DomUtil.remove(this._editScreen);
-      this._contentNode.style.display = "block";
-      this._userActionButtons.style.display = "flex";
-
-      this.update();
       L.DomEvent.stop(e);
 
       //  ---------------------End my additions --------------------------------------- //
