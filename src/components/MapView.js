@@ -150,7 +150,8 @@ class MapView extends Component {
 
     // populate the leaflet FeatureGroup with the geoJson layers
     let leafletFG = reactFGref.leafletElement;
-    
+
+
     let current_center = await this.props.getcreateputUserDetail({}, 'GET')
     if (current_center) {
       let [lat, lng] = current_center.geometry.coordinates
