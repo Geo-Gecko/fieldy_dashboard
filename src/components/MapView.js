@@ -32,6 +32,11 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-shadow.png',
 });
 
+let cropTypes = [
+  "Maize", "Sorghum", "Banana", "Wheat",
+  "Coffee", "Cotton", "Mangoes"
+]
+
 class MapView extends Component {
   constructor(props) {
     super(props);
@@ -80,9 +85,46 @@ class MapView extends Component {
       features: [geo_layer]
     }
     let attributed_layer = new L.GeoJSON(geoLayerClln)
-    attributed_layer.eachLayer( (layer_, index_) => {
-      layer_.bindPopup("<p></p>", {editable: true, removable: true})
+    attributed_layer.eachLayer((layer_, index_) => {
+      let feature_ = layer_.feature
+
+      let attr_list = ""
+      let cropOptions = cropTypes.map(type_ => {
+        if (type_ !== feature_.properties.field_attributes.CropType) {
+          return `<option >${type_}</option>`
+        } else {
+          return `<option selected>${type_}</option>`
+        }
+      })
+      attr_list += `
+        CropType: <select
+                    name=CropType
+                    id=CropType_${feature_.properties.field_id}
+                  >
+                    ${cropOptions.join("")}
+                  </select><br/>`
+      feature_.properties.field_attributes.Area =
+        L.GeometryUtil.geodesicArea(layer_.getLatLngs()[0]).toFixed(2);
+      attr_list += `Area: ${feature_.properties.field_attributes.Area}<br/>`
+      attr_list += `
+        Planting Time:
+        <input
+          type="date" id=plant_${feature_.properties.field_id}
+          name=plantingTime
+          value=${feature_.properties.field_attributes.plantingTime}
+        ><br/>
+      `
+      attr_list += `
+        Harvest Time:
+        <input
+          type="date" id=harvest_${feature_.properties.field_id}
+          name=harvestTime
+          value=${feature_.properties.field_attributes.harvestTime}
+        ><br/>`
+
+      layer_.bindPopup(attr_list, { editable: true, removable: true })
       this._editableFG.leafletElement.addLayer(layer_)
+      layer_.openPopup();
     })
 
     this._onChange();
@@ -108,12 +150,7 @@ class MapView extends Component {
 
     // populate the leaflet FeatureGroup with the geoJson layers
     let leafletFG = reactFGref.leafletElement;
-    let cropTypes = [
-      "Maize", "Sorghum", "Banana", "Wheat",
-      "Coffee", "Cotton", "Mangoes"
-    ]
-
-
+    
     let current_center = await this.props.getcreateputUserDetail({}, 'GET')
     if (current_center) {
       let [lat, lng] = current_center.geometry.coordinates
@@ -130,7 +167,6 @@ class MapView extends Component {
     leafletGeoJSON.eachLayer((layer, index) => {
       let feature_ = layer.feature;
       let attr_list = ""
-<<<<<<< HEAD
       let cropOptions = cropTypes.map(type_ => {
         if (type_ !== feature_.properties.field_attributes.CropType) {
           return `<option >${type_}</option>`
@@ -145,7 +181,7 @@ class MapView extends Component {
                   >
                     ${cropOptions.join("")}
                   </select><br/>`
-      feature_.properties.field_attributes.Area = 
+      feature_.properties.field_attributes.Area =
         L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]).toFixed(2);
       attr_list += `Area: ${feature_.properties.field_attributes.Area}<br/>`
       attr_list += `
@@ -163,29 +199,8 @@ class MapView extends Component {
           name=harvestTime
           value=${feature_.properties.field_attributes.harvestTime}
         ><br/>`
-=======
-      Object.keys(feature_.properties.field_attributes).forEach(attr => {
-        if (attr === "Area") {
-          feature_.properties.field_attributes[attr] = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-          attr_list += `${attr}: ${feature_.properties.field_attributes[attr]}<br/>`
-        } else if (attr === "CropType") {
-          attr_list += `${attr}: <select name=${attr} id=${attr}>
-          <option value=${feature_.properties.field_attributes[attr]}>${feature_.properties.field_attributes[attr]}</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-        </select><br/>`
-        }
-      })
-      attr_list += `Planting Time: <input type="date" id=planting_time name=planting_time><br/>`
-      attr_list += `Harvest Time: <input type="date" id=harvest_time name=harvest_time><br/>`
->>>>>>> a5a007f... edit_function_activate
 
-      layer.bindPopup(attr_list, {editable: false, removable: true})
+      layer.bindPopup(attr_list, { editable: true, removable: true })
 
       leafletFG.addLayer(layer);
     });
@@ -255,19 +270,19 @@ class MapView extends Component {
             ref={(reactFGref) => { this._onFeatureGroupReady(reactFGref); }}
             onContextmenu={this.handleRightClick}
           >
-              <EditControl
-                position='topright'
-                onEdited={this._onEdited}
-                onCreated={this._onCreated}
-                onDeleted={this._onDeleted}
-                draw={{
-                  rectangle: false,
-                  circle: false,
-                  marker: false,
-                  circlemarker: false,
-                  polyline: false,
-                }}
-              />
+            <EditControl
+              position='topright'
+              onEdited={this._onEdited}
+              onCreated={this._onCreated}
+              onDeleted={this._onDeleted}
+              draw={{
+                rectangle: false,
+                circle: false,
+                marker: false,
+                circlemarker: false,
+                polyline: false,
+              }}
+            />
           </FeatureGroup>
         </Map>
       </React.Fragment>

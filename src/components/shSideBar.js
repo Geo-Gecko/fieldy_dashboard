@@ -6,10 +6,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'font-awesome/css/font-awesome.css';
 import './leaflet-sidebar.min.css'
 
-import {Button, Modal} from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 
 import NdviLineGraph from './ndviLineGraph';
-import {OverViewBarGraph, OverViewBarGraph1} from './overview';
+import { OverViewBarGraph, OverViewBarGraph1 } from './overview';
 // import NdwiLineGraph from './ndwiLineGraph';
 import getcreateputGraphData from '../actions/graphActions';
 
@@ -19,146 +19,155 @@ import {
 } from '../actions/layerActions';
 
 class ShSideBar extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            collapsed: true,
-            selected: 'ndvi',
-            showLogout: false,
-            field_data: [],
-            layer_data: []
-        }
+  constructor(props) {
+    super(props);
+    this.state = {
+      collapsed: true,
+      selected: 'ndvi',
+      showLogout: false,
+      field_data: [],
+      layer_data: []
     }
+  }
 
-    componentDidUpdate(prevProps, prevState) {
-      if (
-        prevState.collapsed === true &&
-        this.state.selected === "ndvi" &&
-        prevState.showLogout === false &&
-        this.props.noFieldData === false
-      ) {
-        this.setState({
-          ...this.state,
-          collapsed: false,
-          field_data: this.props.field_data
-        });
-      } else if (this.props.noFieldData === true) {
-        toast("This field has no NDVI data attached yet.", {
-          position: "top-center",
-          autoClose: 3500,
-          closeOnClick: true,
-          pauseOnHover: true,
-          })
-      }
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.collapsed === true &&
+      this.state.selected === "ndvi" &&
+      prevState.showLogout === false &&
+      this.props.noFieldData === false
+    ) {
+      this.setState({
+        ...this.state,
+        collapsed: false,
+        field_data: this.props.field_data
+      });
+    } else if (this.props.noFieldData === true) {
+      toast("This field has no NDVI data attached yet.", {
+        position: "top-center",
+        autoClose: 3500,
+        closeOnClick: true,
+        pauseOnHover: true,
+      })
     }
+  }
 
-    handleshowLogout() {
-      localStorage.removeItem('x-token')
-      window.location.reload()
-    }
+  handleshowLogout() {
+    localStorage.removeItem('x-token')
+    window.location.reload()
+  }
 
-    onClose() {
-        this.setState({
-          ...this.state,
-          collapsed: true 
-        });
-      }
+  onClose() {
+    this.setState({
+      ...this.state,
+      collapsed: true
+    });
+  }
 
-    async onOpen(id) {
-      if (id !== "logout" && id === "overview") {
-        let leafletGeoJSON = await getPolygonLayers();
-        let layer_data_ = [[0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0]];
-        leafletGeoJSON.features.forEach((layer, index) => {
-          let feature_ = layer;
-          Object.keys(feature_.properties.field_attributes).forEach(attr => {
-            if (attr === "CropType") {
-              layer_data_[0][parseInt(feature_.properties.field_attributes[attr])] += 1;
-              layer_data_[1][parseInt(feature_.properties.field_attributes[attr])] += parseInt(feature_.properties.field_attributes["Area"]);
+  async onOpen(id) {
+    if (id !== "logout" && id === "overview") {
+      let leafletGeoJSON = await getPolygonLayers();
+      let areas = {}, counts = {}, results = [], cropType;
+      leafletGeoJSON.features.forEach((layer, index) => {
+        let feature_ = layer;
+        Object.keys(feature_.properties.field_attributes).forEach(attr => {
+          if (attr === "CropType") {
+            cropType = feature_.properties.field_attributes[attr]
+            if (!(cropType in areas)) {
+              areas[cropType] = 0;
+              counts[cropType] = 0;
             }
-          })
-        });
-        this.setState({
-          ...this.state,
-          layer_data: layer_data_,
-          collapsed: false,
-          selected: id
+            areas[cropType] += parseFloat(feature_.properties.field_attributes.Area);
+            counts[cropType]++;
+          }
         })
-      } else if (id !== "logout" && id !== "overview") {
-        await this.props.dispatch(getcreateputGraphData(
-          {}, 'GET', ""
-        ))
-        this.setState({
-          ...this.state,
-          field_data: this.props.field_data,
-          collapsed: false,
-          selected: id
-        })
-      } else {
-        this.setState({
-          ...this.state,
-          selected: id,
-          showLogout: true
-        })
+      });
+      for (cropType in areas) {
+        results.push({ cropType: cropType, area: areas[cropType], count: counts[cropType]});
       }
+      console.log('results: ', results)
+      this.setState({
+        ...this.state,
+        layer_data: results,
+        collapsed: false,
+        selected: id
+      })
+    } else if (id !== "logout" && id !== "overview") {
+      await this.props.dispatch(getcreateputGraphData(
+        {}, 'GET', ""
+      ))
+      this.setState({
+        ...this.state,
+        field_data: this.props.field_data,
+        collapsed: false,
+        selected: id
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        selected: id,
+        showLogout: true
+      })
     }
+  }
 
-    render () {
-        return (
-            <Sidebar
-              id="sidebar"
-              closeIcon="fa fa-times"
-              collapsed={this.state.collapsed}
-              selected={this.state.selected}
-              onOpen={(id) => this.onOpen(id)}
-              onClose={() => this.onClose()}
-            >
-              <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
-                <br/><br/>
-                <NdviLineGraph graphData={this.state.field_data} />
-              </Tab>
-              <Tab id="overview" header="OVERVIEW" icon="fa fa-table">
-                <p>SUMMARY of All Field Data</p>
-                <OverViewBarGraph graphData={this.state.layer_data} />
-                <OverViewBarGraph1 graphData={this.state.layer_data} />
-              </Tab>
-              <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
-               >
-                <Modal
-                 show={this.state.showLogout}
-                 onHide={() => this.setState(
-                  {...this.state, showLogout: false, collapsed: true, selected: "ndvi"}
-                 )}
-                 aria-labelledby="contained-modal-title-vcenter"
-                 size="sm"
-                 centered
-                >
-                <style type="text/css">
-                  {`
+  render() {
+    return (
+      <Sidebar
+        id="sidebar"
+        closeIcon="fa fa-times"
+        collapsed={this.state.collapsed}
+        selected={this.state.selected}
+        onOpen={(id) => this.onOpen(id)}
+        onClose={() => this.onClose()}
+      >
+        <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
+          <br /><br />
+          <NdviLineGraph graphData={this.state.field_data} />
+        </Tab>
+        <Tab id="overview" header="OVERVIEW" icon="fa fa-table">
+          <p>SUMMARY of All Field Data</p>
+          <OverViewBarGraph graphData={this.state.layer_data} />
+          <OverViewBarGraph1 graphData={this.state.layer_data} />
+        </Tab>
+        <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
+        >
+          <Modal
+            show={this.state.showLogout}
+            onHide={() => this.setState(
+              { ...this.state, showLogout: false, collapsed: true, selected: "ndvi" }
+            )}
+            aria-labelledby="contained-modal-title-vcenter"
+            size="sm"
+            centered
+          >
+            <style type="text/css">
+              {`
                   .modal {
                     z-index: 19999;
                   }
                   `}
-                </style>
-                  <Modal.Body className="text-center">
-                  Would you Like to logout?
+            </style>
+            <Modal.Body className="text-center">
+              Would you Like to logout?
                   </Modal.Body>
-                  <Modal.Footer>
-                    <style type="text/css">
-                      {`
+            <Modal.Footer>
+              <style type="text/css">
+                {`
                       .btn-logout {
                         background-color: #e15b26;
                       }
                       `}
-                    </style>
-                    <Button variant="logout" onClick={this.handleshowLogout}>
-                      Yes
+              </style>
+              <Button variant="logout" onClick={this.handleshowLogout}>
+                Yes
                     </Button>
-                  </Modal.Footer>
-                </Modal>
-              </Tab>
-            </Sidebar>
-        )
-    }
+            </Modal.Footer>
+          </Modal>
+        </Tab>
+      </Sidebar>
+    )
+  }
 }
 
 
