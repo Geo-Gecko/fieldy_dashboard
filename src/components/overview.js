@@ -1,5 +1,4 @@
 import React from 'react';
-<<<<<<< HEAD
 import { Bar, Doughnut } from 'react-chartjs-2';
 
 export const OverViewBarGraph = graphData => {
@@ -35,25 +34,6 @@ export const OverViewBarGraph = graphData => {
                         }
                     ]
                 }
-=======
-import { Bar, Line } from 'react-chartjs-2';
-
-
-export const OverViewBarGraph = graphData => {
-    return (
-        <Bar
-            data={
-                { "labels": ["Crop Type 1", "Crop Type 2", "Crop Type 3", "Crop Type 4", "Crop Type 5", "Crop Type 6", "Crop Type 7", "Crop Type 8", "Crop Type 9", "Crop Type 10", "Crop Type 11", "Crop Type 12"],
-                "datasets": [
-                    {
-                        "label": "Number of Fields",
-                        "data": graphData.graphData[0],
-                        "fill": false,
-                        "borderColor": "rgb(75, 192, 192)",
-                        "lineTension": 0.1 
-                    }
-                ] }
->>>>>>> 6df2c166db3bb98fc6438040451ed019021c1d1c
             }
             options={{
                 legend: {
@@ -63,16 +43,10 @@ export const OverViewBarGraph = graphData => {
             }}
             height={60}
         />
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 6df2c166db3bb98fc6438040451ed019021c1d1c
     )
 
 }
 
-<<<<<<< HEAD
 
 // export const OverViewBarGraph = graphData => {
 //     let labels = [...new Set(graphData.graphData.map(it => it.cropType))];
@@ -123,22 +97,6 @@ export const OverViewBarGraph1 = graphData => {
                         }
                     ]
                 }
-=======
-export const OverViewBarGraph1 = graphData => {
-    return (
-        <Bar
-            data={
-                { "labels": ["Crop Type 1", "Crop Type 2", "Crop Type 3", "Crop Type 4", "Crop Type 5", "Crop Type 6", "Crop Type 7", "Crop Type 8", "Crop Type 9", "Crop Type 10", "Crop Type 11", "Crop Type 12"],
-                "datasets": [
-                    {
-                        "label": "Total Area",
-                        "data": graphData.graphData[1],
-                        "fill": false,
-                        "borderColor": "rgb(75, 192, 192)",
-                        "lineTension": 0.1 
-                    }
-                ] }
->>>>>>> 6df2c166db3bb98fc6438040451ed019021c1d1c
             }
             options={{
                 legend: {
@@ -148,11 +106,6 @@ export const OverViewBarGraph1 = graphData => {
             }}
             height={60}
         />
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 6df2c166db3bb98fc6438040451ed019021c1d1c
     )
 
 }
