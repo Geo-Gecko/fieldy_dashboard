@@ -5,7 +5,11 @@ import {
 
 const initialState = {
     createLayersPayload: {},
-    LayersPayload: {}
+    LayersPayload: {},
+    cropTypes: [
+      "Maize", "Sorghum", "Banana", "Wheat",
+      "Coffee", "Cotton", "Mangoes"
+    ]
 };
 
 export const layersReducer = (state = initialState, action) => {
