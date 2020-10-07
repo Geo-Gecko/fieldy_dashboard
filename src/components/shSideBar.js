@@ -9,7 +9,7 @@ import './leaflet-sidebar.min.css'
 import {Button, Modal} from 'react-bootstrap';
 
 import NdviLineGraph from './ndviLineGraph';
-// import NdwiLineGraph from './ndwiLineGraph';
+import { OverViewDonutGraph, OverViewBarGraph } from './overView';
 import getcreateputGraphData from '../actions/graphActions';
 
 class ShSideBar extends Component {
@@ -19,7 +19,8 @@ class ShSideBar extends Component {
             collapsed: true,
             selected: 'ndvi',
             showLogout: false,
-            field_data: []
+            field_data: [],
+            layer_data: []
         }
     }
 
@@ -47,6 +48,7 @@ class ShSideBar extends Component {
 
     handleshowLogout() {
       localStorage.removeItem('x-token')
+      localStorage.removeItem('featuregroup')
       window.location.reload()
     }
 
@@ -58,7 +60,7 @@ class ShSideBar extends Component {
       }
 
     async onOpen(id) {
-      if (id !== "logout") {
+      if (id === "ndvi") {
         await this.props.dispatch(getcreateputGraphData(
           {}, 'GET', ""
         ))
@@ -68,7 +70,33 @@ class ShSideBar extends Component {
           collapsed: false,
           selected: id
         })
-      } else {
+      } else if (id === "overview") {
+        let leafletGeoJSON = JSON.parse(localStorage.getItem('featuregroup'));
+        let areas = {}, counts = {}, results = [], cropType;
+        leafletGeoJSON.features.forEach((layer, index) => {
+          let feature_ = layer;
+          Object.keys(feature_.properties.field_attributes).forEach(attr => {
+            if (attr === "CropType") {
+              cropType = feature_.properties.field_attributes[attr]
+              if (!(cropType in areas)) {
+                areas[cropType] = 0;
+                counts[cropType] = 0;
+              }
+              areas[cropType] += parseFloat(feature_.properties.field_attributes.Area);
+              counts[cropType]++;
+            }
+          })
+        });
+        for (cropType in areas) {
+          results.push({ cropType: cropType, area: areas[cropType], count: counts[cropType]});
+        }
+        this.setState({
+          ...this.state,
+          layer_data: results,
+          collapsed: false,
+          selected: id
+        })
+      } else if (id === "logout") {
         this.setState({
           ...this.state,
           selected: id,
@@ -91,10 +119,11 @@ class ShSideBar extends Component {
                 <br/><br/>
                 <NdviLineGraph graphData={this.state.field_data} />
               </Tab>
-              {/* <Tab id="ndwi" header="NDWI" icon="fa fa-tint">
-                <p>NDWI GRAPH</p>
-                <NdwiLineGraph />
-              </Tab> */}
+              <Tab id="overview" header="OVERVIEW" icon="fa fa-table">
+                <br/><br/>
+                <OverViewDonutGraph graphData={this.state.layer_data} />
+                <OverViewBarGraph graphData={this.state.layer_data} />
+              </Tab>
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal

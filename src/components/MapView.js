@@ -24,6 +24,7 @@ import {
 } from '../actions/layerActions';
 import { getcreateputUserDetail } from '../actions/userActions';
 import getcreateputGraphData from '../actions/graphActions';
+import { attrCreator } from '../utilities/attrCreator';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -80,9 +81,11 @@ class MapView extends Component {
       features: [geo_layer]
     }
     let attributed_layer = new L.GeoJSON(geoLayerClln)
-    attributed_layer.eachLayer( (layer_, index_) => {
-      layer_.bindPopup("<p></p>", {editable: true, removable: true})
+    attributed_layer.eachLayer( layer_ => {
+      let attr_list = attrCreator(layer_, this.props.cropTypes)
+      layer_.bindPopup(attr_list, {editable: true, removable: true})
       this._editableFG.leafletElement.addLayer(layer_)
+      layer_.openPopup();
     })
 
     this._onChange();
@@ -108,10 +111,6 @@ class MapView extends Component {
 
     // populate the leaflet FeatureGroup with the geoJson layers
     let leafletFG = reactFGref.leafletElement;
-    let cropTypes = [
-      "Maize", "Sorghum", "Banana", "Wheat",
-      "Coffee", "Cotton", "Mangoes"
-    ]
 
   
     let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
@@ -124,47 +123,12 @@ class MapView extends Component {
     }
 
     let leafletGeoJSON = await this.props.getPolygonLayers();
+    localStorage.setItem("featuregroup", JSON.stringify(leafletGeoJSON))
 
     leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
-
-    leafletGeoJSON.eachLayer( (layer, index) => {
-      let feature_ = layer.feature;
-      let attr_list = ""
-      let cropOptions = cropTypes.map(type_ => {
-        if (type_ !== feature_.properties.field_attributes.CropType) {
-          return `<option >${type_}</option>`
-        } else {
-          return `<option selected>${type_}</option>`
-        }
-      })
-      attr_list += `
-        CropType: <select
-                    name=CropType
-                    id=CropType_${feature_.properties.field_id}
-                  >
-                    ${cropOptions.join("")}
-                  </select><br/>`
-      feature_.properties.field_attributes.Area = 
-        L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]).toFixed(2);
-      attr_list += `Area: ${feature_.properties.field_attributes.Area}<br/>`
-      attr_list += `
-        Planting Time:
-        <input
-          type="date" id=plant_${feature_.properties.field_id}
-          name=plantingTime
-          value=${feature_.properties.field_attributes.plantingTime}
-        ><br/>
-      `
-      attr_list += `
-        Harvest Time:
-        <input
-          type="date" id=harvest_${feature_.properties.field_id}
-          name=harvestTime
-          value=${feature_.properties.field_attributes.harvestTime}
-        ><br/>`
-
-      layer.bindPopup(attr_list, {editable: true, removable: true})
-
+    leafletGeoJSON.eachLayer( layer => { 
+      let attr_list = attrCreator(layer, this.props.cropTypes)
+      layer.bindPopup(attr_list, {editable: true, removable: true});
       leafletFG.addLayer(layer);
     });
 
@@ -256,7 +220,8 @@ class MapView extends Component {
 
 const mapStateToProps = state => ({
   createLayersPayload: state.layers.createLayersPayload,
-  LayersPayload: state.layers.LayersPayload
+  LayersPayload: state.layers.LayersPayload,
+  cropTypes: state.layers.cropTypes
 });
 
 const matchDispatchToProps = dispatch => ({

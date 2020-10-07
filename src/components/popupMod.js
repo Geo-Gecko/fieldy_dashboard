@@ -127,13 +127,13 @@ L.Popup.include({
       let cropTypeSelection = cropType.options[cropType.selectedIndex].text;
       let plantingTime = document.getElementById(`plant_${field_id}`)
       let harvestTime = document.getElementById(`harvest_${field_id}`)
-      if (!plantingTime) {
+      if (plantingTime.value === "" || harvestTime.value === "") {
          call_toast(
-            "Please ensure that at least\
-            Planting time is selected before saving.",
+            "Please ensure that\
+            Planting time and Harvest time is selected before saving.",
             5000
          )
-      } else if (plantingTime) {
+      } else if (plantingTime.value !== "" || harvestTime.value !== "") {
 
          plantingTime.setAttribute("value", plantingTime.value)
          harvestTime.setAttribute("value", harvestTime.value)
