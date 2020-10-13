@@ -124,7 +124,9 @@ L.Popup.include({
         })
 
       let cropType = document.getElementById(`CropType_${field_id}`);
-      let cropTypeSelection = cropType.options[cropType.selectedIndex].text;
+      let cropTypeSelection = cropType.options[
+         localStorage.getItem('cropType')
+      ].text;
       let plantingTime = document.getElementById(`plant_${field_id}`)
       let harvestTime = document.getElementById(`harvest_${field_id}`)
       if (plantingTime.value === "" || harvestTime.value === "") {
@@ -139,10 +141,10 @@ L.Popup.include({
          harvestTime.setAttribute("value", harvestTime.value)
 
          for (let i = 0; i < cropType.options.length; i++) {
-            cropType.options[i].setAttribute("selected", false)
+            cropType.options[i].removeAttribute("selected")
          }
          cropType.options[
-            cropType.selectedIndex
+            localStorage.getItem('cropType')
          ].setAttribute("selected", true)
 
          let newInnerHTML =

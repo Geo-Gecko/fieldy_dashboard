@@ -4,16 +4,17 @@ import L from 'leaflet';
 export let attrCreator = (layer, cropTypes) => {
   let feature_ = layer.feature;
   let attr_list = ""
-  let cropOptions = cropTypes.map(type_ => {
+  let cropOptions = cropTypes.map((type_, index) => {
     if (type_ !== feature_.properties.field_attributes.CropType) {
-      return `<option >${type_}</option>`
+      return `<option value='${index}'>${type_}</option>`
     } else {
-      return `<option selected>${type_}</option>`
+      return `<option value='${index}' selected>${type_}</option>`
     }
   })
   attr_list += `
     CropType: <select
                 name=CropType
+                onchange="localStorage.setItem('cropType', value)"
                 id=CropType_${feature_.properties.field_id}
               >
                 ${cropOptions.join("")}
