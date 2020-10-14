@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 import 'font-awesome/css/font-awesome.css';
 import './leaflet-sidebar.min.css'
 
 import {Button, Modal} from 'react-bootstrap';
 
-import NdviLineGraph from './ndviLineGraph';
+import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
 import getcreateputGraphData from '../actions/graphActions';
 
@@ -17,7 +17,7 @@ class ShSideBar extends Component {
         super(props);
         this.state = {
             collapsed: true,
-            selected: 'ndvi',
+            selected: 'overview',
             showLogout: false,
             field_data: [],
             layer_data: []
@@ -27,7 +27,7 @@ class ShSideBar extends Component {
     componentDidUpdate(prevProps, prevState) {
       if (
         prevState.collapsed === true &&
-        this.state.selected === "ndvi" &&
+        this.state.selected === "indicators" &&
         prevState.showLogout === false &&
         this.props.noFieldData === false
       ) {
@@ -37,7 +37,7 @@ class ShSideBar extends Component {
           field_data: this.props.field_data
         });
       } else if (this.props.noFieldData === true) {
-        toast("This field has no NDVI data attached yet.", {
+        toast("This field has no indicators data attached yet.", {
           position: "top-center",
           autoClose: 3500,
           closeOnClick: true,
@@ -60,7 +60,7 @@ class ShSideBar extends Component {
       }
 
     async onOpen(id) {
-      if (id === "ndvi") {
+      if (id === "indicators") {
         await this.props.dispatch(getcreateputGraphData(
           {}, 'GET', ""
         ))
@@ -115,21 +115,21 @@ class ShSideBar extends Component {
               onOpen={(id) => this.onOpen(id)}
               onClose={() => this.onClose()}
             >
-              <Tab id="ndvi" header="NDVI" icon="fa fa-leaf">
-                <br/><br/>
-                <NdviLineGraph graphData={this.state.field_data} />
-              </Tab>
               <Tab id="overview" header="OVERVIEW" icon="fa fa-table">
                 <br/><br/>
                 <OverViewDonutGraph graphData={this.state.layer_data} />
                 <OverViewBarGraph graphData={this.state.layer_data} />
+              </Tab>
+              <Tab id="indicators" header="INDICATORS" icon="fa fa-leaf">
+                <br/>
+                <IndicatorsLineGraph graphData={this.state.field_data} />
               </Tab>
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal
                  show={this.state.showLogout}
                  onHide={() => this.setState(
-                  {...this.state, showLogout: false, collapsed: true, selected: "ndvi"}
+                  {...this.state, showLogout: false, collapsed: true, selected: "indicators"}
                  )}
                  aria-labelledby="contained-modal-title-vcenter"
                  size="sm"
