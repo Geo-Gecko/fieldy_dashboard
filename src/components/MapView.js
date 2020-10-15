@@ -23,7 +23,7 @@ import {
   deletePolygonLayer, updatePolygonLayer
 } from '../actions/layerActions';
 import { getcreateputUserDetail } from '../actions/userActions';
-import getcreateputGraphData from '../actions/graphActions';
+import { getcreateputGraphData } from '../actions/graphActions';
 import { attrCreator } from '../utilities/attrCreator';
 
 delete L.Icon.Default.prototype._getIconUrl;
