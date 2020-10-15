@@ -127,18 +127,16 @@ L.Popup.include({
       let cropTypeSelection = cropType.options[
          localStorage.getItem('cropType')
       ].text;
-      let plantingTime = document.getElementById(`plant_${field_id}`)
-      let harvestTime = document.getElementById(`harvest_${field_id}`)
-      if (plantingTime.value === "" || harvestTime.value === "") {
+      let dataCollectedTime = document.getElementById(`data_collected_${field_id}`)
+      if (dataCollectedTime.value === "") {
          call_toast(
             "Please ensure that\
-            Planting time and Harvest time is selected before saving.",
+            Data Collected is selected before saving.",
             5000
          )
-      } else if (plantingTime.value !== "" || harvestTime.value !== "") {
+      } else if (dataCollectedTime.value !== "") {
 
-         plantingTime.setAttribute("value", plantingTime.value)
-         harvestTime.setAttribute("value", harvestTime.value)
+         dataCollectedTime.setAttribute("value", dataCollectedTime.value)
 
          for (let i = 0; i < cropType.options.length; i++) {
             cropType.options[i].removeAttribute("selected")
@@ -150,13 +148,12 @@ L.Popup.include({
          let newInnerHTML =
          `CropType: ${cropType.outerHTML} <br/>
          Area: ${area}<br/>
-         Planting Time: ${plantingTime.outerHTML} <br/>
-         Harvest Time: ${harvestTime.outerHTML} <br/>`
+         Data Collected: ${dataCollectedTime.outerHTML} <br/>`
          this.setContent(newInnerHTML)
 
          let content_obj = {
-            Area: area, plantingTime: plantingTime.value,
-            harvestTime: harvestTime.value, CropType: cropTypeSelection
+            dataCollectedTime: dataCollectedTime.value,
+            CropType: cropTypeSelection
          }
          changed_layer.properties.field_attributes = content_obj
          axiosInstance

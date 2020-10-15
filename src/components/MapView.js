@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { connect } from 'react-redux';
-import { Map, TileLayer, FeatureGroup } from 'react-leaflet';
+import { Map, TileLayer, FeatureGroup, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
 // import Popup from 'react-leaflet-editable-popup';
@@ -181,13 +181,24 @@ class MapView extends Component {
           center={currentLocation}
           zoom={zoom}
         >
+          <ZoomControl position="bottomright"/>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
           />
  
          <Control position="topright" >
+            <style type="text/css">
+              {`
+              .current-view {
+                box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+                border-radius: 4px;
+                border: none;
+              }
+              `}
+            </style>
             <button
+              className="current-view"
               onClick={this._saveCurrentView}
             >
               Save current view
