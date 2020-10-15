@@ -19,23 +19,12 @@ export let attrCreator = (layer, cropTypes) => {
               >
                 ${cropOptions.join("")}
               </select><br/>`
-  feature_.properties.field_attributes.Area = 
-    L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]).toFixed(2);
-  attr_list += `Area: ${feature_.properties.field_attributes.Area}<br/>`
   attr_list += `
-    Planting Time:
+    Data Collected:
     <input
-      type="date" id=plant_${feature_.properties.field_id}
-      name=plantingTime
-      value=${feature_.properties.field_attributes.plantingTime}
-    ><br/>
-  `
-  attr_list += `
-    Harvest Time:
-    <input
-      type="date" id=harvest_${feature_.properties.field_id}
-      name=harvestTime
-      value=${feature_.properties.field_attributes.harvestTime}
+      type="month" id=data_collected_${feature_.properties.field_id}
+      name=dataCollectedTime
+      value=${feature_.properties.field_attributes.DataCollected}
     ><br/>`
   
   return attr_list
