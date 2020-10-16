@@ -130,8 +130,8 @@ L.Popup.include({
       let dataCollectedTime = document.getElementById(`data_collected_${field_id}`)
       if (dataCollectedTime.value === "") {
          call_toast(
-            "Please ensure that\
-            Data Collected is selected before saving.",
+            `Please ensure that
+            Data Collected is selected before saving.`,
             5000
          )
       } else if (dataCollectedTime.value !== "") {
