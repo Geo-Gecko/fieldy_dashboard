@@ -38,10 +38,20 @@ class MapView extends Component {
     super(props);
     this.state = {
       currentLocation: { lat: 1.46, lng: 32.40 },
-      zoom: 7
+      zoom: 7,
+      userType: ""
     }
   }
 
+  componentDidMount() {
+    const tokenValue = localStorage.getItem('x-token')
+    const secret_ = process.env.REACT_APP_SECRET || ""
+    const user = jwt.verify(tokenValue, secret_);
+    this.setState({
+      ...this.state,
+      userType: user.userType
+    })
+  }  
 
   _onEdited = (e) => {
 
@@ -82,7 +92,7 @@ class MapView extends Component {
     }
     let attributed_layer = new L.GeoJSON(geoLayerClln)
     attributed_layer.eachLayer( layer_ => {
-      let attr_list = attrCreator(layer_, this.props.cropTypes)
+      let attr_list = attrCreator(layer_, this.props.cropTypes, this.state.userType)
       layer_.bindPopup(attr_list, {editable: true, removable: true})
       this._editableFG.leafletElement.addLayer(layer_)
       layer_.openPopup();
@@ -127,8 +137,12 @@ class MapView extends Component {
 
     leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
     leafletGeoJSON.eachLayer( layer => { 
-      let attr_list = attrCreator(layer, this.props.cropTypes)
-      layer.bindPopup(attr_list, {editable: true, removable: true});
+      let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
+      layer.bindPopup(
+        attr_list,
+        this.state.userType === "EDITOR" ?
+         {editable: true, removable: true} : {}
+      );
       leafletFG.addLayer(layer);
     });
 
@@ -208,7 +222,7 @@ class MapView extends Component {
            ref={ (reactFGref) => {this._onFeatureGroupReady(reactFGref);} }
            onContextmenu={this.handleRightClick} 
           >
-              <EditControl
+              {this.state.userType === "EDITOR" ? <EditControl
                 position='topright'
                 onEdited={this._onEdited}
                 onCreated={this._onCreated}
@@ -220,7 +234,7 @@ class MapView extends Component {
                   circlemarker: false,
                   polyline: false,
                 }}
-              />
+              /> : null}
           </FeatureGroup>
         </Map>
       </React.Fragment>
