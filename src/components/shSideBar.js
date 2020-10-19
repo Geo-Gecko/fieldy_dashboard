@@ -10,11 +10,11 @@ import {Button, Modal} from 'react-bootstrap';
 
 import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
-import getcreateputGraphData from '../actions/graphActions';
+import { GET_ALL_FIELD_DATA } from '../actions/types'
 
 class ShSideBar extends Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
         this.state = {
             collapsed: true,
             selected: 'overview',
@@ -27,13 +27,17 @@ class ShSideBar extends Component {
     componentDidUpdate(prevProps, prevState) {
       if (
         prevState.collapsed === true &&
-        this.state.selected === "indicators" &&
+        (prevState.selected === "indicators"
+          || prevState.selected === "overview") &&
         prevState.showLogout === false &&
-        this.props.noFieldData === false
+        this.props.noFieldData === false &&
+        this.props.fieldId !== ""
       ) {
         this.setState({
           ...this.state,
           collapsed: false,
+          selected: this.props.field_id !== "" ?
+           "indicators" : this.state.selected,
           field_data: this.props.field_data
         });
       } else if (this.props.noFieldData === true) {
@@ -53,20 +57,28 @@ class ShSideBar extends Component {
     }
 
     onClose() {
-        this.setState({
-          ...this.state,
-          collapsed: true 
-        });
+      this.props.dispatch({
+          type: GET_ALL_FIELD_DATA,
+          payload: {
+            data_: this.props.allFieldData, collapsed: false
+          }
+      })
+      this.setState({
+        ...this.state,
+        collapsed: true 
+      });
       }
 
     async onOpen(id) {
       if (id === "indicators") {
-        await this.props.dispatch(getcreateputGraphData(
-          {}, 'GET', ""
-        ))
+        this.props.dispatch({
+            type: GET_ALL_FIELD_DATA,
+            payload: {
+              data_: this.props.allFieldData, collapsed: false
+            }
+        })
         this.setState({
           ...this.state,
-          field_data: this.props.field_data,
           collapsed: false,
           selected: id
         })
@@ -122,7 +134,7 @@ class ShSideBar extends Component {
               </Tab>
               <Tab id="indicators" header="INDICATORS" icon="fa fa-leaf">
                 <br/>
-                <IndicatorsLineGraph graphData={this.state.field_data} />
+                <IndicatorsLineGraph SidePanelCollapsed={this.state.collapsed} />
               </Tab>
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
                >
@@ -167,6 +179,8 @@ class ShSideBar extends Component {
 
 const mapStateToProps = state => ({
   field_data: state.graphs.field_data,
+  allFieldData: state.graphs.allFieldData,
+  fieldId: state.graphs.fieldId,
   SidePanelCollapsed: state.graphs.SidePanelCollapsed,
   noFieldData: state.graphs.noFieldData
 });
