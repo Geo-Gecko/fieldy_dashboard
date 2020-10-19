@@ -1,11 +1,14 @@
 import {
     GET_FIELD_DATA,
-    GET_FIELD_DATA_FAIL
+    GET_FIELD_DATA_FAIL,
+    GET_ALL_FIELD_DATA
 } from '../actions/types';
 
 const initialState = {
-    FIELD_ID: null,
-    field_data: [],
+    fieldId: "",
+    cropType: "",
+    field_data: {},
+    allFieldData: {},
     SidePanelCollapsed: true,
     noFieldData: false
 };
@@ -16,7 +19,17 @@ const graphsReducer = (state = initialState, action) => {
             return {
                 ...state,
                 field_data: action.payload.data_,
-                SidePanelCollapsed: action.payload.SidePanelCollapsed,
+                fieldId: action.payload.fieldId,
+                cropType: action.payload.cropType,
+                SidePanelCollapsed: true,
+                noFieldData: false
+            };
+        case GET_ALL_FIELD_DATA:
+            return {
+                ...state,
+                allFieldData: action.payload.data_,
+                fieldId: "",
+                SidePanelCollapsed: true,
                 noFieldData: false
             };
         case GET_FIELD_DATA_FAIL:

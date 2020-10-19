@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { Map, TileLayer, FeatureGroup, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
-// import Popup from 'react-leaflet-editable-popup';
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
 
@@ -34,8 +33,8 @@ L.Icon.Default.mergeOptions({
 });
 
 class MapView extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
       currentLocation: { lat: 1.46, lng: 32.40 },
       zoom: 7,
@@ -179,7 +178,8 @@ class MapView extends Component {
 
   handleRightClick = e => {
     this.props.dispatch(getcreateputGraphData(
-      {}, 'GET', e.layer.feature.properties.field_id
+      {}, 'GET', e.layer.feature.properties.field_id,
+      e.layer.feature.properties.field_attributes.CropType
     ))
   }
 
