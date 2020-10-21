@@ -2,22 +2,11 @@ import React from 'react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 
 export const OverViewDonutGraph = graphData => {
-    function getRandomColor() {
-        var letters = '0123456789ABCDEF'.split('');
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
 
     let labels = [...new Set(graphData.graphData.map(data_ => data_.cropType))];
     let count = [...new Set(graphData.graphData.map(data_ => data_.count))];
 
-    let colours = [...new Set(graphData.graphData.map(() => getRandomColor()))];
-
-
-
+    console.log(graphData);
 
     return (
         <Doughnut
@@ -28,7 +17,7 @@ export const OverViewDonutGraph = graphData => {
                         {
                             "label": "Number of Fields",
                             "data": count,
-                            "backgroundColor": colours,
+                            // "backgroundColor": colours,
                         }
                     ]
                 }
