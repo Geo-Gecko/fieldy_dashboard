@@ -27,6 +27,11 @@ export const getPolygonLayers = () => {
   return axiosInstance
       .get('/layers/listcreatepolygonlayer/')
       .then(response => {
+          let cropTypes = new Set()
+          response.data.features.forEach(feature_ => {
+            cropTypes.add(feature_.properties.field_attributes.CropType)
+          })
+          localStorage.setItem("cropTypes", JSON.stringify(Array.from(cropTypes)))
           return response.data
       })
       .catch(error => {

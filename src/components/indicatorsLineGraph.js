@@ -5,37 +5,50 @@ import { Line } from 'react-chartjs-2';
 import {Dropdown, DropdownButton, ButtonGroup} from 'react-bootstrap';
 
 import getcreateputGraphData, { months_ } from '../actions/graphActions';
+import { getPolygonLayers } from '../actions/layerActions';
 
 class IndicatorsLineGraph extends React.Component {
   constructor() {
     super();
     this.state = {
         dataset: [],
-        selectedIndicator: "Indicator",
+        selectedIndicator: "field_rainfall",
         indicatorObj: {
-            field_rainfall: "Rainfall",
-            field_ndvi: "NDVI",
-            field_ndwi: "NDWI",
-            field_temperature: "Ground Temperature"
-        }
+            "Rainfall": "field_rainfall",
+            "NDVI": "field_ndvi",
+            "NDWI": "field_ndwi",
+            "Ground Temperature": "field_temperature"
+        },
+        displayedIndicator: "Rainfall",
+        selectedCropType: "Crop Type",
+        cropTypes: []
     }
   }
 
   async componentDidMount() {
+    // this is being called twice and needs to be changed.
+    let leafletGeoJSON = await this.props.getPolygonLayers();
+    localStorage.setItem("featuregroup", JSON.stringify(leafletGeoJSON))
     await this.props.dispatch(getcreateputGraphData(
       {}, 'GET', ""
     ))
-    this.setState({dataset: this.props.allFieldData.field_rainfall})
+    let cropTypes = JSON.parse(localStorage.getItem("cropTypes"))
+    this.setState({
+      ...this.state,
+      cropTypes,
+      dataset: this.props.allFieldData["field_rainfall"][cropTypes[0]]
+    })
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (
       this.props.fieldId !== "" && prevProps.fieldId !== this.props.fieldId
     ) {
       this.setState({
         ...this.state,
-        dataset: this.props.field_data.field_rainfall,
-        selectedIndicator: "Rainfall"
+        dataset: this.props.field_data["field_rainfall"][this.props.cropType],
+        selectedCropType: this.props.cropType,
+        selectedIndicator: "field_rainfall"
       })
     } else if (
       this.props.fieldId === "" &&
@@ -43,22 +56,32 @@ class IndicatorsLineGraph extends React.Component {
     ) {
       this.setState({
         ...this.state,
-        dataset: this.props.allFieldData.field_rainfall,
-        selectedIndicator: "Rainfall"
+        dataset: this.props.allFieldData["field_rainfall"][this.props.cropTypes[0]],
+        selectedCropType: this.props.cropTypes[0],
+        selectedIndicator: "field_rainfall"
       })
     }
   }
 
   getEvent = eventKey => {
-    if (
-      typeof(eventKey) === "string" &&
-        !["all", "sorghum", "maize"].includes(eventKey)
-    ) {
-      let { allFieldData, fieldId, field_data } = this.props
-      this.setState({
-        dataset: fieldId === "" ? allFieldData[eventKey] : field_data[eventKey],
-        selectedIndicator: this.state.indicatorObj[eventKey]
-      })
+    if (typeof(eventKey) === "string") {
+      let { allFieldData, fieldId, field_data, cropTypes } = this.props
+      if (cropTypes.includes(eventKey)) {
+        this.setState({
+          dataset: fieldId === "" ?
+           allFieldData[this.state.selectedIndicator][eventKey]
+            : field_data[this.state.selectedIndicator][eventKey],
+          selectedCropType: eventKey
+        })
+      } else {
+        this.setState({
+          dataset: fieldId === "" ?
+           allFieldData[this.state.indicatorObj[eventKey]][this.state.selectedCropType]
+            : field_data[this.state.indicatorObj[eventKey]][this.state.selectedCropType],
+          selectedIndicator: this.state.indicatorObj[eventKey],
+          displayedIndicator: eventKey
+        })
+      }
     }
   }
 
@@ -81,21 +104,23 @@ class IndicatorsLineGraph extends React.Component {
         variant={"dropdown"}
         className="mr-1"
         id="dropdown-basic-button"
-        title={this.state.selectedIndicator}
+        title={this.state.displayedIndicator}
         as={ButtonGroup}
         >
           {Object.keys(this.state.indicatorObj).map(obj_ => 
               <Dropdown.Item eventKey={obj_} onSelect={this.getEvent}>
-                  {this.state.indicatorObj[obj_]}
+                  {obj_}
               </Dropdown.Item>
           )}
         </DropdownButton>
         <DropdownButton
         variant={"dropdown"}
         id="dropdown-basic-button"
-        title={this.props.fieldId === "" ? "Crop Type" : this.props.cropType}
+        title={this.props.fieldId === "" ? this.state.selectedCropType : this.props.cropType}
         as={ButtonGroup}
         >
+          {/* NOTE: this should remain as getting from redux state because actual
+          croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
           {this.props.fieldId === "" ? this.props.cropTypes.map(type_ => 
               <Dropdown.Item eventKey={type_} onSelect={this.getEvent}>
                   {type_}
@@ -108,7 +133,7 @@ class IndicatorsLineGraph extends React.Component {
               {
                   "labels": months_,
                   "datasets": [{
-                      "label": this.state.selectedIndicator,
+                      "label": this.state.displayedIndicator,
                       "data": this.state.dataset,
                       "fill": false,
                       "borderColor": "rgb(75, 192, 192)",
@@ -125,7 +150,7 @@ class IndicatorsLineGraph extends React.Component {
                   yAxes: [{
                     scaleLabel: {
                       display: true,
-                      labelString: this.state.selectedIndicator
+                      labelString: this.state.displayedIndicator
                     }
                   }],
                   xAxes: [{
@@ -150,11 +175,11 @@ const mapStateToProps = state => ({
   allFieldData: state.graphs.allFieldData,
   fieldId: state.graphs.fieldId,
   cropType: state.graphs.cropType,
-  noFieldData: state.graphs.noFieldData,
   cropTypes: state.layers.cropTypes
 });
 
 const matchDispatchToProps = dispatch => ({
+  getPolygonLayers,
   dispatch
 });
 

@@ -147,7 +147,6 @@ L.Popup.include({
 
          let newInnerHTML =
          `CropType: ${cropType.outerHTML} <br/>
-         Area: ${area}<br/>
          Data Collected: ${dataCollectedTime.outerHTML} <br/>`
          this.setContent(newInnerHTML)
 

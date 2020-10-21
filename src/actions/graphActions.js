@@ -20,39 +20,83 @@ const getcreateputGraphData = (
     })
         .then(response => {
             let data_;
+            let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
+            let layers_ = JSON.parse(localStorage.getItem('featuregroup'))
             if (field_id !== "") {
+                let fieldcType = layers_.features.find(
+                    field_ =>
+                     field_.properties.field_id === response.data.field_id
+                )
+                fieldcType = fieldcType.properties.field_attributes.CropType
+                let createCropObj = () => {
+                    let cropTypeObj = {};
+                    cropTypeObj[fieldcType] = [...months_.map(month_ => 0)]
+                    return cropTypeObj
+                }
                 data_ = {
-                    field_ndvi: [],
-                    field_ndwi: [],
-                    field_rainfall: [],
-                    field_temperature: []
+                    field_ndvi: createCropObj(),
+                    field_ndwi: createCropObj(),
+                    field_rainfall: createCropObj(),
+                    field_temperature: createCropObj()
                 }
                 Object.keys(data_).forEach(indicator_ => {
-                    months_.forEach(month_ => {
-                        data_[indicator_].push(parseFloat(response.data[indicator_][month_]))
+                    months_.forEach((month_, index) => {
+                        data_[indicator_][fieldcType][index] = 
+                         parseFloat(response.data[indicator_][month_])
                     })
                 })
-                console.log(cropType)
                 dispatch({
                     type: GET_FIELD_DATA,
                     payload: {data_, collapsed: false, fieldId: field_id, cropType}
                 })
             } else if (method_ === "GET" && field_id === "") {
-                data_ = {
-                    field_ndvi: [],
-                    field_ndwi: [],
-                    field_rainfall: [],
-                    field_temperature: []
+                let createCropObj = () => {
+                    let cropTypeObj = {};
+                    cropTypes.forEach(
+                        type_ => cropTypeObj[type_] = [...months_.map(month_ => 0)]
+                    )
+                    return cropTypeObj
                 }
-                // getting an average of each indicator for each month for all fields
-                Object.keys(data_).forEach(indicator_ => {
-                    months_.forEach((month_, index) => {
-                        data_[indicator_][index] = 0
-                        response.data.forEach(field_ => {
-                            data_[indicator_][index] += parseFloat(field_[indicator_][month_])
+                // this variable will store the total fields for each cropType
+                let totalCropTypes = {}; cropTypes.forEach(type_ => totalCropTypes[type_] = 0)
+
+                data_ = {
+                    field_ndvi: createCropObj(),
+                    field_ndwi: createCropObj(),
+                    field_rainfall: createCropObj(),
+                    field_temperature: createCropObj()
+                }
+                let indicators = Object.keys(data_)
+
+
+                response.data.forEach(field_ => {
+                    let fieldcType = layers_.features.find(
+                        layerField =>
+                        layerField.properties.field_id === field_.field_id
+                    )
+                    fieldcType = fieldcType.properties.field_attributes.CropType
+                    // regarding if for fieldcType (cropType)
+                    // , some fields may not have a cropType attached
+                    if (fieldcType) {
+                        totalCropTypes[fieldcType] += 1
+                        Object.keys(field_).forEach(field_key => {
+                            if (indicators.includes(field_key)) {
+                                months_.forEach((month_, index) => {
+                                    data_[field_key][fieldcType][index] +=
+                                     parseFloat(field_[field_key][month_])
+                                })
+                            }
                         })
-                        data_[indicator_][index] = data_[indicator_][index] / response.data.length
-                        data_[indicator_][index] = parseFloat(data_[indicator_][index].toFixed(2))
+                    }
+                })
+
+                Object.keys(data_).forEach(indicator_ => {
+                    Object.keys(data_[indicator_]).forEach(cType =>{
+                        data_[indicator_][cType] = data_[indicator_][cType].map(value_ => {
+                            let new_value = value_ / totalCropTypes[cType]
+                            new_value = parseFloat(new_value.toFixed(2))
+                            return new_value
+                        })
                     })
                 })
                 dispatch({

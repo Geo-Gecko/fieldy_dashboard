@@ -10,7 +10,7 @@ import {Button, Modal} from 'react-bootstrap';
 
 import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
-import { GET_ALL_FIELD_DATA } from '../actions/types'
+import { GET_ALL_FIELD_DATA, GET_FIELD_DATA_FAIL } from '../actions/types'
 
 class ShSideBar extends Component {
     constructor() {
@@ -46,6 +46,10 @@ class ShSideBar extends Component {
           autoClose: 3500,
           closeOnClick: true,
           pauseOnHover: true,
+          })
+          this.props.dispatch({
+              type: GET_FIELD_DATA_FAIL,
+              payload: false
           })
       }
     }
