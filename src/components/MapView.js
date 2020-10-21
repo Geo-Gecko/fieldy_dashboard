@@ -198,7 +198,7 @@ class MapView extends Component {
           <ZoomControl position="bottomright"/>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. Please note his imagery isn't necessarily up to date "
+            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. <br/> Please note this imagery isn't necessarily up to date "
           />
  
          <Control position="topright" >

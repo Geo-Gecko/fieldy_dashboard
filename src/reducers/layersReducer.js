@@ -6,8 +6,9 @@ import {
 const initialState = {
     createLayersPayload: {},
     LayersPayload: {},
+    // need to pick this up from the fields // "Wheat"
     cropTypes: [
-      "Maize", "Sorghum", "Banana", "Wheat",
+      "Maize", "Sorghum", "Banana",
       "Coffee", "Cotton", "Mangoes"
     ]
 };

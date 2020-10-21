@@ -21,7 +21,7 @@ export const getcreateputUserDetail = (postData, method_) => {
             if (method_ === "PUT") {
                 call_toast("Current view has been saved :)")
             }
-            console.log(`User ${method_ === "POST"  ? "updated" : "retrieved"}`, response)
+            console.log(`User ${method_ === "POST"  ? "updated" : "retrieved"}`)
             return response.data
         })
         .catch(error => {
