@@ -86,7 +86,6 @@ class ShSideBar extends Component {
   }
 
       if (id === "indicators") {
-        document.getElementById('indicated').innerHTML = 'Overview';
         this.props.dispatch({
             type: GET_ALL_FIELD_DATA,
             payload: {
@@ -103,10 +102,9 @@ class ShSideBar extends Component {
         let areas = {}, counts = {}, results = [], cropType, colours = {};
         leafletGeoJSON.features.forEach((layer, index) => {
           let feature_ = layer;
-          Object.keys(feature_.properties.field_attributes).forEach((attr, index) => {
+          Object.keys(feature_.properties.field_attributes).forEach(attr => {
             if (attr === "CropType") {
               cropType = feature_.properties.field_attributes[attr]
-              console.log(index)
               if (!(cropType in areas)) {
                 areas[cropType] = 0;
                 counts[cropType] = 0;
@@ -154,7 +152,6 @@ class ShSideBar extends Component {
               </Tab>
               <Tab id="indicators" header="INDICATORS" icon="fa fa-leaf">
                 <br/>
-                <p>Area: <span id='indicated'>Overview</span></p>
                 <IndicatorsLineGraph SidePanelCollapsed={this.state.collapsed} />
               </Tab>
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
