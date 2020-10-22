@@ -19,6 +19,7 @@ const getcreateputGraphData = (
         data: postData
     })
         .then(response => {
+            document.getElementById('indicated').innerHTML = response.data.field_id;
             let data_;
             let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
             let layers_ = JSON.parse(localStorage.getItem('featuregroup'))

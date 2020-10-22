@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { connect } from 'react-redux';
-import { Map, TileLayer, FeatureGroup, ZoomControl } from 'react-leaflet';
+import { Map, TileLayer, FeatureGroup, ZoomControl, LayersControl } from 'react-leaflet';
 import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
@@ -31,6 +31,8 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-shadow.png',
 });
+
+const { BaseLayer } = LayersControl
 
 class MapView extends Component {
   constructor() {
@@ -195,12 +197,27 @@ class MapView extends Component {
           center={currentLocation}
           zoom={zoom}
         >
-          <ZoomControl position="bottomright"/>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. <br/> Please note this imagery isn't necessarily up to date "
-          />
- 
+          <LayersControl position="bottomright">
+          <BaseLayer checked name="Google Satellite">
+            <TileLayer
+              url="https://mt0.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
+              attribution="powered by Google. <br/> Please note this imagery isn't necessarily up to date "
+            />
+          </BaseLayer>
+          <BaseLayer name="OpenStreetMap.BlackAndWhite">
+            <TileLayer
+              attribution="&amp;copy <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors  <br/> Please note this imagery isn't necessarily up to date "
+              url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
+            />
+          </BaseLayer>
+          <BaseLayer name="OpenStreetMap.Mapnik">
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. <br/> Please note this imagery isn't necessarily up to date "
+            />
+          </BaseLayer>
+        </LayersControl>
+          <ZoomControl position="bottomright"/> 
          <Control position="topright" >
             <style type="text/css">
               {`

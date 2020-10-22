@@ -13,6 +13,7 @@ export let attrCreator = (layer, cropTypes, userType) => {
       }
     })
     attr_list += `
+      <strong>Field Identifier: </strong><small> ${feature_.properties.field_id} </small> <br/>
       <strong>CropType:</strong> <select
                   name=CropType
                   onchange="localStorage.setItem('cropType', value)"
@@ -29,6 +30,7 @@ export let attrCreator = (layer, cropTypes, userType) => {
       >`
   } else {
     attr_list += `
+      <strong>Field Identifier: </strong><small> ${feature_.properties.field_id} </small> <br/>
       <strong>CropType:</strong> ${feature_.properties.field_attributes.CropType}<br/>`
     attr_list += `
       <strong>Data Collected:</strong> ${feature_.properties.field_attributes.DataCollected}`
