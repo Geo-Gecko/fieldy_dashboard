@@ -142,6 +142,12 @@ class IndicatorsLineGraph extends React.Component {
               }
           }
           options={{
+            title: {
+                display: true,
+                position: "top",
+                fontSize: 18,
+                text: `${this.props.fieldId ? "Field UUID: " + this.props.fieldId : "All fields"}`
+            },
               legend: {
                   display: true,
                   position: "bottom",

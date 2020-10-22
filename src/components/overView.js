@@ -2,22 +2,10 @@ import React from 'react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 
 export const OverViewDonutGraph = graphData => {
-    function getRandomColor() {
-        var letters = '0123456789ABCDEF'.split('');
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
 
     let labels = [...new Set(graphData.graphData.map(data_ => data_.cropType))];
     let count = [...new Set(graphData.graphData.map(data_ => data_.count))];
-
-    let colours = [...new Set(graphData.graphData.map(() => getRandomColor()))];
-
-
-
+    let colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
 
     return (
         <Doughnut
@@ -38,6 +26,21 @@ export const OverViewDonutGraph = graphData => {
                     display: true,
                     position: "bottom",
                 },
+                tooltips: {
+                    callbacks: {
+                      label: function(tooltipItem, data) {
+                        var dataset = data.datasets[tooltipItem.datasetIndex];
+                        var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+                        var total = meta.total;
+                        var currentValue = dataset.data[tooltipItem.index];
+                        var percentage = parseFloat((currentValue/total*100).toFixed(1));
+                        return currentValue + ' fields - representing (' + percentage + '%)';
+                      },
+                      title: function(tooltipItem, data) {
+                        return data.labels[tooltipItem[0].index];
+                      }
+                    }
+                  },
             }}
             height={60}
         />
@@ -50,6 +53,8 @@ export const OverViewBarGraph = graphData => {
 
     let labels = [...new Set(graphData.graphData.map(it => it.cropType))];
     let area = [...new Set(graphData.graphData.map(it => it.area))];
+    let colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+
     return (
         <Bar
             data={
@@ -59,7 +64,7 @@ export const OverViewBarGraph = graphData => {
                         {
                             "label": "Total Area",
                             "data": area,
-                            "backgroundColor": 'red',
+                            "backgroundColor": colours,
                             "borderColor": "rgb(75, 192, 192)",
                             "lineTension": 0.1
                         }
@@ -71,6 +76,17 @@ export const OverViewBarGraph = graphData => {
                     display: true,
                     position: "bottom",
                 },
+                scales: {
+                    yAxes: [
+                      {
+                        ticks: {
+                          callback: function(value) {
+                            return `${value} sq m`;
+                          }
+                        }
+                      }
+                    ]
+                  }
             }}
             height={60}
         />

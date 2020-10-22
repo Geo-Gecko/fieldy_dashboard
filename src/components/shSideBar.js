@@ -74,6 +74,17 @@ class ShSideBar extends Component {
       }
 
     async onOpen(id) {
+      
+
+    function getRandomColor() {
+      var letters = '0123456789ABCDEF'.split('');
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+  }
+
       if (id === "indicators") {
         this.props.dispatch({
             type: GET_ALL_FIELD_DATA,
@@ -88,7 +99,7 @@ class ShSideBar extends Component {
         })
       } else if (id === "overview") {
         let leafletGeoJSON = JSON.parse(localStorage.getItem('featuregroup'));
-        let areas = {}, counts = {}, results = [], cropType;
+        let areas = {}, counts = {}, results = [], cropType, colours = {};
         leafletGeoJSON.features.forEach((layer, index) => {
           let feature_ = layer;
           Object.keys(feature_.properties.field_attributes).forEach(attr => {
@@ -97,15 +108,18 @@ class ShSideBar extends Component {
               if (!(cropType in areas)) {
                 areas[cropType] = 0;
                 counts[cropType] = 0;
+                colours[cropType] = "";
               }
               areas[cropType] += parseFloat(feature_.properties.field_attributes.Area);
               counts[cropType]++;
+              colours[cropType] = getRandomColor();
             }
           })
         });
         for (cropType in areas) {
-          results.push({ cropType: cropType, area: areas[cropType], count: counts[cropType]});
+          results.push({ cropType: cropType, area: areas[cropType], count: counts[cropType], colours: colours[cropType]});
         }
+
         this.setState({
           ...this.state,
           layer_data: results,
