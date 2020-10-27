@@ -79,13 +79,11 @@ const getcreateputGraphData = (
                     // , some fields may not have a cropType attached
                     if (fieldcType) {
                         totalCropTypes[fieldcType] += 1
-                        Object.keys(field_).forEach(field_key => {
-                            if (indicators.includes(field_key)) {
+                        indicators.forEach(indicator_ => {
                                 months_.forEach((month_, index) => {
-                                    data_[field_key][fieldcType][index] +=
-                                     parseFloat(field_[field_key][month_])
+                                    data_[indicator_][fieldcType][index] +=
+                                     parseFloat(field_[indicator_][month_])
                                 })
-                            }
                         })
                     }
                 })
