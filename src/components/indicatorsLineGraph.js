@@ -54,10 +54,12 @@ class IndicatorsLineGraph extends React.Component {
       this.props.fieldId === "" &&
        prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
     ) {
+      let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
       this.setState({
         ...this.state,
-        dataset: this.props.allFieldData["field_rainfall"][this.props.cropTypes[0]],
-        selectedCropType: this.props.cropTypes[0],
+        cropTypes,
+        dataset: this.props.allFieldData["field_rainfall"][cropTypes[0]],
+        selectedCropType: cropTypes[0],
         selectedIndicator: "field_rainfall"
       })
     }
@@ -65,7 +67,8 @@ class IndicatorsLineGraph extends React.Component {
 
   getEvent = eventKey => {
     if (typeof(eventKey) === "string") {
-      let { allFieldData, fieldId, field_data, cropTypes } = this.props
+      let { allFieldData, fieldId, field_data } = this.props;
+      let cropTypes = this.state.cropTypes;
       if (cropTypes.includes(eventKey)) {
         this.setState({
           dataset: fieldId === "" ?
@@ -121,8 +124,8 @@ class IndicatorsLineGraph extends React.Component {
         >
           {/* NOTE: this should remain as getting from redux state because actual
           croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
-          {this.props.fieldId === "" ? this.props.cropTypes.map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
+          {this.props.fieldId === "" ? this.state.cropTypes.map(type_ => 
+              <Dropdown.Item eventKey={type_} onSelect={this.getEvent}>
                   {type_}
               </Dropdown.Item>
           ) : ""}

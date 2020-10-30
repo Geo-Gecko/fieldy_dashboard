@@ -27,7 +27,7 @@ const getcreateputGraphData = (
             let data_;
             let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
             let layers_ = JSON.parse(localStorage.getItem('featuregroup'))
-            if (field_id !== "") {
+            if (method_ === "GET" && field_id !== "") {
                 let fieldcType = layers_.features.find(
                     field_ =>
                      field_.properties.field_id === response.data.field_id
@@ -83,11 +83,17 @@ const getcreateputGraphData = (
                     // regarding if for fieldcType (cropType)
                     // , some fields may not have a cropType attached
                     if (fieldcType) {
+                        // this sum is probably affected if there is more than one year
                         totalCropTypes[fieldcType] += 1
                         indicators.forEach(indicator_ => {
                                 months_.forEach((month_, index) => {
-                                    data_[indicator_][fieldcType][index] +=
-                                     parseFloat(field_[indicator_][month_])
+                                    if (field_[indicator_][month_]) {
+                                        data_[indicator_][fieldcType][index] +=
+                                         parseFloat(
+                                            // only adding 2019
+                                             field_.year === 2019 ? field_[indicator_][month_] : 0
+                                         )
+                                    }
                                 })
                         })
                     }
@@ -96,7 +102,8 @@ const getcreateputGraphData = (
                 Object.keys(data_).forEach(indicator_ => {
                     Object.keys(data_[indicator_]).forEach(cType =>{
                         data_[indicator_][cType] = data_[indicator_][cType].map(value_ => {
-                            let new_value = value_ / totalCropTypes[cType]
+                            // dividing by 2 to consider only the one year of 2019
+                            let new_value = value_ / (totalCropTypes[cType] / 2)
                             new_value = parseFloat(new_value.toFixed(2))
                             return new_value
                         })
