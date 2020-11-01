@@ -21,6 +21,7 @@ import {
   postPointLayer, postPolygonLayer, getPolygonLayers,
   deletePolygonLayer, updatePolygonLayer
 } from '../actions/layerActions';
+import { GET_ALL_FIELD_DATA_INITIATED } from '../actions/types';
 import { getcreateputUserDetail } from '../actions/userActions';
 import getcreateputGraphData from '../actions/graphActions';
 import { attrCreator } from '../utilities/attrCreator';
@@ -178,7 +179,11 @@ class MapView extends Component {
     this.props.getcreateputUserDetail(current_centre, 'PUT')
   }
 
-  handleRightClick = e => {
+  handleRightClick = async e => {
+    await this.props.dispatch({
+        type: GET_ALL_FIELD_DATA_INITIATED,
+        payload: true
+    })
     this.props.dispatch(getcreateputGraphData(
       {}, 'GET', e.layer.feature.properties.field_id,
       e.layer.feature.properties.field_attributes.CropType

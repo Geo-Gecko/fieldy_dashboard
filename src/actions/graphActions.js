@@ -20,10 +20,6 @@ const getcreateputGraphData = (
         data: postData
     })
         .then(async response => {
-            dispatch({
-                type: GET_ALL_FIELD_DATA_INITIATED,
-                payload: true
-            })
             let data_;
             let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
             let layers_ = JSON.parse(localStorage.getItem('featuregroup'))
@@ -55,6 +51,10 @@ const getcreateputGraphData = (
                     payload: {data_, collapsed: false, fieldId: field_id, cropType}
                 })
             } else if (method_ === "GET" && field_id === "") {
+                await dispatch({
+                    type: GET_ALL_FIELD_DATA_INITIATED,
+                    payload: true
+                })
                 let createCropObj = () => {
                     let cropTypeObj = {};
                     cropTypes.forEach(
