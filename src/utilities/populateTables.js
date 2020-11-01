@@ -48,3 +48,8 @@ export function populateIndicators(leafletGeoJSON) {
 
 
 }
+
+// equivalent to python's time.sleep
+export function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
