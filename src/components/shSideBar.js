@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import L from 'leaflet';
 import { connect } from 'react-redux';
 import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
 import { toast } from 'react-toastify';
@@ -7,6 +8,7 @@ import 'font-awesome/css/font-awesome.css';
 import './leaflet-sidebar.min.css'
 
 import {Button, Modal} from 'react-bootstrap';
+import Spinner from 'react-bootstrap/Spinner';
 
 import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
@@ -19,12 +21,23 @@ class ShSideBar extends Component {
             collapsed: true,
             selected: 'overview',
             showLogout: false,
-            field_data: [],
+            initiateGetData: true,
+            field_data: {},
             layer_data: []
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
+      // this is placed here because otherwise,
+      // the sidebar buttons are clickable momentary on first
+      // landing in the dashboard
+      if (prevProps.initiateGetData !== this.props.initiateGetData) {
+        this.setState({
+          ...this.state,
+          initiateGetData: this.props.initiateGetData
+        })
+      }
+
       if (
         prevState.collapsed === true &&
         (prevState.selected === "indicators"
@@ -33,12 +46,15 @@ class ShSideBar extends Component {
         this.props.noFieldData === false &&
         this.props.fieldId !== ""
       ) {
+        // this if clause considers a particular field
+        // all fields are hit by onOpen function
         this.setState({
           ...this.state,
           collapsed: false,
           selected: this.props.field_id !== "" ?
            "indicators" : this.state.selected,
-          field_data: this.props.field_data
+          field_data: this.props.field_data,
+          initiateGetData: false
         });
       } else if (this.props.noFieldData === true) {
         toast("This field has no indicators data attached yet.", {
@@ -74,16 +90,15 @@ class ShSideBar extends Component {
       }
 
     async onOpen(id) {
-      
 
-    function getRandomColor() {
-      var letters = '0123456789ABCDEF'.split('');
-      var color = '#';
-      for (var i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
+      function getRandomColor() {
+        var letters = '0123456789ABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
       }
-      return color;
-  }
 
       if (id === "indicators") {
         this.props.dispatch({
@@ -102,19 +117,21 @@ class ShSideBar extends Component {
         let areas = {}, counts = {}, results = [], cropType, colours = {};
         leafletGeoJSON.features.forEach((layer, index) => {
           let feature_ = layer;
-          Object.keys(feature_.properties.field_attributes).forEach(attr => {
-            if (attr === "CropType") {
-              cropType = feature_.properties.field_attributes[attr]
-              if (!(cropType in areas)) {
-                areas[cropType] = 0;
-                counts[cropType] = 0;
-                colours[cropType] = "";
-              }
-              areas[cropType] += parseFloat(feature_.properties.field_attributes.Area);
-              counts[cropType]++;
-              colours[cropType] = getRandomColor();
-            }
-          })
+          let totalArea =
+           L.GeometryUtil.geodesicArea(
+            feature_.geometry.coordinates[0].map(x => new L.latLng(x.reverse()))
+           ).toFixed(2)
+           if (feature_.properties.field_attributes.CropType) {
+             cropType = feature_.properties.field_attributes.CropType
+             if (!(cropType in areas)) {
+               areas[cropType] = 0;
+               counts[cropType] = 0;
+               colours[cropType] = "";
+             }
+             areas[cropType] += parseFloat(totalArea);
+             counts[cropType]++;
+             colours[cropType] = getRandomColor();
+           }
         });
         for (cropType in areas) {
           results.push({ cropType: cropType, area: areas[cropType], count: counts[cropType], colours: colours[cropType]});
@@ -145,15 +162,34 @@ class ShSideBar extends Component {
               onOpen={(id) => this.onOpen(id)}
               onClose={() => this.onClose()}
             >
-              <Tab id="overview" header="OVERVIEW" icon="fa fa-table">
+              <Tab
+                id="overview"
+                header="OVERVIEW"
+                icon="fa fa-table"
+                disabled={this.state.initiateGetData}  
+              >
                 <br/><br/>
                 <OverViewDonutGraph graphData={this.state.layer_data} />
                 <OverViewBarGraph graphData={this.state.layer_data} />
               </Tab>
-              <Tab id="indicators" header="INDICATORS" icon="fa fa-leaf">
+              <Tab
+                id="indicators"
+                header="INDICATORS"
+                icon="fa fa-leaf"
+                disabled={this.state.initiateGetData}
+              >
                 <br/>
                 <IndicatorsLineGraph SidePanelCollapsed={this.state.collapsed} />
               </Tab>
+              {
+              this.state.initiateGetData ?
+              <Tab
+                id="loader"
+                header="LOADER"
+                icon={<Spinner animation="grow" variant="danger" />}
+              >
+              </Tab> : null
+              }
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal
@@ -200,7 +236,8 @@ const mapStateToProps = state => ({
   allFieldData: state.graphs.allFieldData,
   fieldId: state.graphs.fieldId,
   SidePanelCollapsed: state.graphs.SidePanelCollapsed,
-  noFieldData: state.graphs.noFieldData
+  noFieldData: state.graphs.noFieldData,
+  initiateGetData: state.graphs.initiateGetAllFieldData
 });
 
 const matchDispatchToProps = dispatch => ({

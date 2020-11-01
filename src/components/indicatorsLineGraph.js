@@ -108,7 +108,7 @@ class IndicatorsLineGraph extends React.Component {
         as={ButtonGroup}
         >
           {Object.keys(this.state.indicatorObj).map(obj_ => 
-              <Dropdown.Item eventKey={obj_} onSelect={this.getEvent}>
+              <Dropdown.Item key={obj_} eventKey={obj_} onSelect={this.getEvent}>
                   {obj_}
               </Dropdown.Item>
           )}
@@ -122,7 +122,7 @@ class IndicatorsLineGraph extends React.Component {
           {/* NOTE: this should remain as getting from redux state because actual
           croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
           {this.props.fieldId === "" ? this.props.cropTypes.map(type_ => 
-              <Dropdown.Item eventKey={type_} onSelect={this.getEvent}>
+              <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
                   {type_}
               </Dropdown.Item>
           ) : ""}

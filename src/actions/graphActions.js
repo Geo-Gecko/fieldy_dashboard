@@ -1,6 +1,7 @@
 import axiosInstance from './axiosInstance';
 import {
-    GET_FIELD_DATA, GET_FIELD_DATA_FAIL, GET_ALL_FIELD_DATA
+    GET_FIELD_DATA, GET_FIELD_DATA_FAIL, GET_ALL_FIELD_DATA,
+    GET_ALL_FIELD_DATA_INITIATED
 } from './types';
 
 export const months_ = [
@@ -18,7 +19,11 @@ const getcreateputGraphData = (
         method: method_,
         data: postData
     })
-        .then(response => {
+        .then(async response => {
+            dispatch({
+                type: GET_ALL_FIELD_DATA_INITIATED,
+                payload: true
+            })
             let data_;
             let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
             let layers_ = JSON.parse(localStorage.getItem('featuregroup'))
