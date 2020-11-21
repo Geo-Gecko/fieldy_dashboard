@@ -79,10 +79,10 @@ const getcreateputGraphData = (
                         layerField =>
                         layerField.properties.field_id === field_.field_id
                     )
-                    fieldcType = fieldcType.properties.field_attributes.CropType
                     // regarding if for fieldcType (cropType)
                     // , some fields may not have a cropType attached
                     if (fieldcType) {
+                        fieldcType = fieldcType.properties.field_attributes.CropType
                         // this sum is probably affected if there is more than one year
                         totalCropTypes[fieldcType] += 1
                         indicators.forEach(indicator_ => {
