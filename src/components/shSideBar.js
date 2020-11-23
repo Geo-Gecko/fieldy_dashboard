@@ -10,6 +10,8 @@ import './leaflet-sidebar.min.css'
 import {Button, Modal} from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
 
+import ContactFormRequest from './contactForm'
+
 import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
 import { GET_ALL_FIELD_DATA, GET_FIELD_DATA_FAIL } from '../actions/types'
@@ -21,6 +23,7 @@ class ShSideBar extends Component {
             collapsed: true,
             selected: 'overview',
             showLogout: false,
+            showContactForm: false,
             initiateGetData: true,
             field_data: {},
             layer_data: []
@@ -149,6 +152,11 @@ class ShSideBar extends Component {
           selected: id,
           showLogout: true
         })
+      } else if (id === "contact") {
+        this.setState({
+          ...this.state,
+          showContactForm: true
+        })
       }
     }
 
@@ -190,12 +198,27 @@ class ShSideBar extends Component {
               >
               </Tab> : null
               }
+              <Tab
+                id="contact"
+                anchor="bottom"
+                header="CONTACT"
+                icon="fa fa-comment"
+                disabled={this.state.initiateGetData}
+              >
+                <br/>
+                <ContactFormRequest
+                 showContactForm={this.state.showContactForm}
+                 hideContactForm={
+                  () => this.setState({...this.state, showContactForm : false})
+                 }
+                />
+              </Tab>
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal
                  show={this.state.showLogout}
                  onHide={() => this.setState(
-                  {...this.state, showLogout: false, collapsed: true, selected: "indicators"}
+                  {...this.state, showLogout: false, collapsed: true, selected: "overview"}
                  )}
                  aria-labelledby="contained-modal-title-vcenter"
                  size="sm"
