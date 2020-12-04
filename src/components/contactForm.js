@@ -46,7 +46,6 @@ const ContactFormRequest = ({ showContactForm, hideContactForm }) => {
 
   return (
     <div>
-      {console.log(optionalMessage, message)}
       <Modal show={showContactForm} onHide={() => hideContactForm()}>
         <style type="text/css">
           {`

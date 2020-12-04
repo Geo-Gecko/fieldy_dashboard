@@ -4,10 +4,21 @@ import {
     GET_ALL_FIELD_DATA_INITIATED
 } from './types';
 
-export const months_ = [
-    "january", "february", "march", "april", "may", "june",
-    "july", "august", "september", "october","november", "december"
-]
+export const months_ = (() => {
+    let current_month = new Date()
+    current_month = new Intl.DateTimeFormat(
+        'en-US', {month: 'long'}
+    ).format(current_month).toLowerCase();
+    let months_ = [
+        "january", "february", "march", "april", "may", "june",
+        "july", "august", "september", "october","november", "december"
+    ]
+    let older_months = months_.slice(months_.indexOf(current_month))
+    months_ = months_.slice(0, months_.indexOf(current_month))
+    older_months.push(...months_)
+    return older_months
+
+})()
 
 const getcreateputGraphData = (
     postData, method_, field_id, cropType=""
@@ -84,15 +95,14 @@ const getcreateputGraphData = (
                     if (fieldcType) {
                         fieldcType = fieldcType.properties.field_attributes.CropType
                         // this sum is probably affected if there is more than one year
+                        // ##################NOTE##################
+                        // 30th_november_2020 ==> start migration to using 2020 data
                         totalCropTypes[fieldcType] += 1
                         indicators.forEach(indicator_ => {
                                 months_.forEach((month_, index) => {
                                     if (field_[indicator_][month_]) {
                                         data_[indicator_][fieldcType][index] +=
-                                         parseFloat(
-                                            // only adding 2019
-                                             field_.year === 2019 ? field_[indicator_][month_] : 0
-                                         )
+                                        parseFloat(field_[indicator_][month_])
                                     }
                                 })
                         })
@@ -103,7 +113,8 @@ const getcreateputGraphData = (
                     Object.keys(data_[indicator_]).forEach(cType =>{
                         data_[indicator_][cType] = data_[indicator_][cType].map(value_ => {
                             // dividing by 2 to consider only the one year of 2019
-                            let new_value = value_ / (totalCropTypes[cType] / 2)
+                            // 30th_november_2020 ==> start migration to using 2020 data
+                            let new_value = value_ / totalCropTypes[cType]
                             new_value = parseFloat(new_value.toFixed(2))
                             return new_value
                         })
