@@ -10,7 +10,7 @@ import './leaflet-sidebar.min.css'
 import {Button, Modal} from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
 
-import ContactFormRequest from './contactForm'
+// import ContactFormRequest from './contactForm'
 
 import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
@@ -198,7 +198,8 @@ class ShSideBar extends Component {
               >
               </Tab> : null
               }
-              <Tab
+              {/* CONTACT PAGE FEATURE MARKED FOR REMOVAL */}
+              {/* <Tab
                 id="contact"
                 anchor="bottom"
                 header="CONTACT"
@@ -212,7 +213,7 @@ class ShSideBar extends Component {
                   () => this.setState({...this.state, showContactForm : false})
                  }
                 />
-              </Tab>
+              </Tab> */}
               <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal
