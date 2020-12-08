@@ -120,6 +120,21 @@ const getcreateputGraphData = (
                         })
                     })
                 })
+
+                // convert temperature from Kelvin
+                Object.keys(data_.field_temperature).forEach(croptype => {
+                    data_.field_temperature[croptype] =
+                     data_.field_temperature[croptype].map(
+                        value_ => {
+                            if (value_) {
+                                let diff = value_ - 273.15
+                                diff = parseFloat(diff.toFixed(2))
+                                return diff
+                            }
+                            return value_
+                        }
+                    )
+                })
                 dispatch({
                     type: GET_ALL_FIELD_DATA,
                     payload: {data_, collapsed: false}
