@@ -15,8 +15,8 @@ class IndicatorsLineGraph extends React.Component {
         selectedIndicator: "field_rainfall",
         indicatorObj: {
             "Rainfall": "field_rainfall",
-            "NDVI": "field_ndvi",
-            "NDWI": "field_ndwi",
+            "Vegetation Health": "field_ndvi",
+            "Soil Moisture": "field_ndwi",
             "Ground Temperature": "field_temperature"
         },
         displayedIndicator: "Rainfall",
@@ -95,6 +95,7 @@ class IndicatorsLineGraph extends React.Component {
         {`
         .btn-dropdown {
             background-color: #e15b26;
+            color: white;
         }
         .dropdown-item.active, .dropdown-item:active {
             color: #fff;
