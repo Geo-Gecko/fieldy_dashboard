@@ -258,6 +258,32 @@ class MapView extends Component {
                 }}
               /> : null}
           </FeatureGroup>
+          <Control position="topright" >
+              <style type="text/css">
+                {`
+                .current-view {
+                  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+                  border-radius: 4px;
+                  border: none;
+                }
+                #field_download_link, field_download_link:hover {
+                  color: black;
+                  text-decoration: none;
+                }
+                `}
+              </style>
+              <button className="current-view">
+              <a
+                href={`data:text/json;charset=utf-8,${encodeURIComponent(
+                  localStorage.getItem('featuregroup')
+                )}`}
+                id="field_download_link"
+                download="field_poygons.json"
+              >
+                Download fields
+              </a>
+              </button>
+            </Control>
         </Map>
       </React.Fragment>
     );

@@ -3,6 +3,7 @@ import {
     GET_FIELD_DATA, GET_FIELD_DATA_FAIL, GET_ALL_FIELD_DATA,
     GET_ALL_FIELD_DATA_INITIATED
 } from './types';
+import objToArray from '../utilities/objectToArray'
 
 export const months_ = (() => {
     let current_month = new Date()
@@ -34,7 +35,9 @@ const getcreateputGraphData = (
             let data_;
             let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
             let layers_ = JSON.parse(localStorage.getItem('featuregroup'))
+            // dispatch two, one for all data and one for a specific field
             if (method_ === "GET" && field_id !== "") {
+                let data_array = objToArray([response.data], months_)
                 let fieldcType = layers_.features.find(
                     field_ =>
                      field_.properties.field_id === response.data.field_id
@@ -59,13 +62,18 @@ const getcreateputGraphData = (
                 })
                 dispatch({
                     type: GET_FIELD_DATA,
-                    payload: {data_, collapsed: false, fieldId: field_id, cropType}
+                    payload: {
+                        data_, collapsed: false,
+                        FieldindicatorArray: data_array,
+                        fieldId: field_id, cropType
+                    }
                 })
             } else if (method_ === "GET" && field_id === "") {
                 await dispatch({
                     type: GET_ALL_FIELD_DATA_INITIATED,
                     payload: true
                 })
+                let data_array = objToArray(response.data, months_)
                 let createCropObj = () => {
                     let cropTypeObj = {};
                     cropTypes.forEach(
@@ -137,7 +145,10 @@ const getcreateputGraphData = (
                 })
                 dispatch({
                     type: GET_ALL_FIELD_DATA,
-                    payload: {data_, collapsed: false}
+                    payload: {
+                        data_, collapsed: false,
+                        allFieldsIndicatorArray: data_array
+                    }
                 })
             }
             return response.data

@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Line } from 'react-chartjs-2';
 
-import {Dropdown, DropdownButton, ButtonGroup} from 'react-bootstrap';
+import { CSVLink } from "react-csv";
+import {Dropdown, DropdownButton, ButtonGroup, Button} from 'react-bootstrap';
 
 import getcreateputGraphData, { months_ } from '../actions/graphActions';
 import { getPolygonLayers } from '../actions/layerActions';
@@ -21,7 +22,9 @@ class IndicatorsLineGraph extends React.Component {
         },
         displayedIndicator: "Rainfall",
         selectedCropType: "Crop Type",
-        cropTypes: []
+        cropTypes: [],
+        FieldindicatorArray: [],
+        allFieldsIndicatorArray: []
     }
   }
 
@@ -33,9 +36,11 @@ class IndicatorsLineGraph extends React.Component {
       {}, 'GET', ""
     ))
     let cropTypes = JSON.parse(localStorage.getItem("cropTypes"))
+    // this isn't setting croptypes for admins
     this.setState({
       ...this.state,
       cropTypes,
+      allFieldsIndicatorArray: this.props.allFieldsIndicatorArray,
       dataset: this.props.allFieldData["field_rainfall"][cropTypes[0]]
     })
   }
@@ -47,6 +52,7 @@ class IndicatorsLineGraph extends React.Component {
       this.setState({
         ...this.state,
         dataset: this.props.field_data["field_rainfall"][this.props.cropType],
+        FieldindicatorArray: this.props.FieldindicatorArray,
         selectedCropType: this.props.cropType,
         selectedIndicator: "field_rainfall"
       })
@@ -102,6 +108,18 @@ class IndicatorsLineGraph extends React.Component {
             text-decoration: none;
             background-color: #e15b26;
         }
+        #indicator_download_button {
+          
+          background-color: #e15b26;
+          border-color: #e15b26;
+        }
+        a {
+          color: white;
+        }
+        a:hover {
+          color: black;
+          text-decoration: none;
+        }
         `}
         </style>
         <DropdownButton
@@ -131,6 +149,26 @@ class IndicatorsLineGraph extends React.Component {
               </Dropdown.Item>
           ) : ""}
         </DropdownButton>
+        {' '}
+        <Button id="indicator_download_button">
+          <CSVLink
+          // if indicatorsArray is undefined will return an error,
+          // so need to check for it
+           data={
+             this.props.fieldId ?
+              this.state.FieldindicatorArray ? this.state.FieldindicatorArray : []
+               :
+              this.state.allFieldsIndicatorArray
+            }
+           target="_blank"
+           filename={
+             this.props.fieldId ?
+              `${this.props.fieldId}_indicators_data.csv` : "indicators_data.csv"
+           }
+          >
+          Download Data
+          </CSVLink>
+        </Button>
         <br/><br/>
         <Line
           data={
@@ -150,7 +188,7 @@ class IndicatorsLineGraph extends React.Component {
                 display: true,
                 position: "top",
                 fontSize: 18,
-                text: `${this.props.fieldId ? "Field UUID: " + this.props.fieldId : "All fields"}`
+                text: `${this.props.fieldId ? "Field Identifier: " + this.props.fieldId : "All fields"}`
             },
               legend: {
                   display: true,
@@ -181,6 +219,8 @@ class IndicatorsLineGraph extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  FieldindicatorArray: state.graphs.FieldindicatorArray,
+  allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
   field_data: state.graphs.field_data,
   allFieldData: state.graphs.allFieldData,
   fieldId: state.graphs.fieldId,
