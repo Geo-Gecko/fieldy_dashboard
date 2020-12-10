@@ -12,7 +12,9 @@ const initialState = {
     allFieldData: {},
     SidePanelCollapsed: true,
     noFieldData: false,
-    initiateGetAllFieldData: false
+    initiateGetAllFieldData: false,
+    allFieldsIndicatorArray: [],
+    FieldindicatorArray: []
 };
 
 const graphsReducer = (state = initialState, action) => {
@@ -25,6 +27,7 @@ const graphsReducer = (state = initialState, action) => {
         case GET_FIELD_DATA:
             return {
                 ...state,
+                FieldindicatorArray: action.payload.FieldindicatorArray,
                 field_data: action.payload.data_,
                 fieldId: action.payload.fieldId,
                 cropType: action.payload.cropType,
@@ -35,6 +38,7 @@ const graphsReducer = (state = initialState, action) => {
         case GET_ALL_FIELD_DATA:
             return {
                 ...state,
+                allFieldsIndicatorArray: action.payload.allFieldsIndicatorArray,
                 allFieldData: action.payload.data_,
                 fieldId: "",
                 SidePanelCollapsed: true,
