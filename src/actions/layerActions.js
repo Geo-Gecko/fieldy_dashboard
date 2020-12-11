@@ -1,5 +1,8 @@
 // import { toast } from 'react-toastify';
 import axiosInstance from './axiosInstance';
+import {
+  GET_LAYERS_SUCCESS
+} from './types';
 
 export const postPointLayer = postData => {
     return axiosInstance
@@ -23,7 +26,7 @@ return axiosInstance
     });
 };
 
-export const getPolygonLayers = () => {
+export const getPolygonLayers = () => dispatch => {
   return axiosInstance
       .get('/layers/listcreatepolygonlayer/')
       .then(response => {
@@ -33,7 +36,13 @@ export const getPolygonLayers = () => {
               cropTypes.add(feature_.properties.field_attributes.CropType)
             }
           })
-          localStorage.setItem("cropTypes", JSON.stringify(Array.from(cropTypes)))
+          dispatch({
+            type: GET_LAYERS_SUCCESS,
+            payload: {
+              LayersPayload: response.data,
+              cropTypes: Array.from(cropTypes)
+            }
+          })
           return response.data
       })
       .catch(error => {

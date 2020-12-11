@@ -116,7 +116,7 @@ class ShSideBar extends Component {
           selected: id
         })
       } else if (id === "overview") {
-        let leafletGeoJSON = JSON.parse(localStorage.getItem('featuregroup'));
+        let leafletGeoJSON = this.props.LayersPayload;
         let areas = {}, counts = {}, results = [], cropType, colours = {};
         leafletGeoJSON.features.forEach((layer, index) => {
           let feature_ = layer;
@@ -187,7 +187,11 @@ class ShSideBar extends Component {
                 disabled={this.state.initiateGetData}
               >
                 <br/>
-                <IndicatorsLineGraph SidePanelCollapsed={this.state.collapsed} />
+                {this.props.cropTypes.length > 0 ?
+                 <IndicatorsLineGraph
+                  SidePanelCollapsed={this.state.collapsed}
+                 />
+                 : <React.Fragment />}
               </Tab>
               {
               this.state.initiateGetData ?
@@ -261,7 +265,9 @@ const mapStateToProps = state => ({
   fieldId: state.graphs.fieldId,
   SidePanelCollapsed: state.graphs.SidePanelCollapsed,
   noFieldData: state.graphs.noFieldData,
-  initiateGetData: state.graphs.initiateGetAllFieldData
+  initiateGetData: state.graphs.initiateGetAllFieldData,
+  LayersPayload: state.layers.LayersPayload,
+  cropTypes: state.layers.cropTypes
 });
 
 const matchDispatchToProps = dispatch => ({

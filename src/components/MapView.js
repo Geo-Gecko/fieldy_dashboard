@@ -45,7 +45,7 @@ class MapView extends Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const tokenValue = localStorage.getItem('x-token')
     const secret_ = process.env.REACT_APP_SECRET || ""
     const user = jwt.verify(tokenValue, secret_);
@@ -53,7 +53,22 @@ class MapView extends Component {
       ...this.state,
       userType: user.userType
     })
-  }  
+
+    let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
+    if (current_center) {
+      console.log(current_center.geometry.coordinates)
+      let currentView = current_center.geometry.coordinates
+      this.setState({
+        ...this.state,
+        zoom: current_center.properties.zoom_level,
+        currentLocation: {lat: currentView[0], lng: currentView[1]}
+      })
+    }
+
+    // ON 2020-dec-11-friday solved the data-flow through the code. yipeee!!
+    // this is being called twice and needs to be changed.
+    await this.props.dispatch(getPolygonLayers());
+  }
 
   _onEdited = (e) => {
 
@@ -122,35 +137,28 @@ class MapView extends Component {
   _onFeatureGroupReady = async (reactFGref) => {
 
     // populate the leaflet FeatureGroup with the geoJson layers
-    let leafletFG = reactFGref.leafletElement;
+    if (
+      reactFGref && Object.keys(this.props.LayersPayload).length > 0
+    ) {
+      let leafletFG = reactFGref.leafletElement;
 
-  
-    let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
-    if (current_center) {
-      let [lat, lng] = current_center.geometry.coordinates
-      leafletFG._map.setView(
-        [lat, lng],
-        current_center.properties.zoom_level
-      )
+      let leafletGeoJSON = this.props.LayersPayload
+
+      leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
+      leafletGeoJSON.eachLayer( layer => {
+        let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
+        layer.bindPopup(
+          attr_list,
+          this.state.userType === "EDITOR" ?
+          {editable: true, removable: true} : {}
+        );
+        leafletFG.addLayer(layer);
+      });
+
+      // store the ref for future access to content
+
+      this._editableFG = reactFGref;
     }
-
-    let leafletGeoJSON = await this.props.getPolygonLayers();
-    localStorage.setItem("featuregroup", JSON.stringify(leafletGeoJSON))
-
-    leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
-    leafletGeoJSON.eachLayer( layer => { 
-      let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
-      layer.bindPopup(
-        attr_list,
-        this.state.userType === "EDITOR" ?
-         {editable: true, removable: true} : {}
-      );
-      leafletFG.addLayer(layer);
-    });
-
-    // store the ref for future access to content
-
-    this._editableFG = reactFGref;
   }
 
   _onChange = () => {
@@ -186,7 +194,8 @@ class MapView extends Component {
     })
     this.props.dispatch(getcreateputGraphData(
       {}, 'GET', e.layer.feature.properties.field_id,
-      e.layer.feature.properties.field_attributes.CropType
+      e.layer.feature.properties.field_attributes.CropType,
+      this.props.cropTypes, this.props.LayersPayload
     ))
   }
 
@@ -275,7 +284,7 @@ class MapView extends Component {
               <button className="current-view">
               <a
                 href={`data:text/json;charset=utf-8,${encodeURIComponent(
-                  localStorage.getItem('featuregroup')
+                  JSON.stringify(this.props.LayersPayload)
                 )}`}
                 id="field_download_link"
                 download="field_poygons.json"
@@ -298,7 +307,7 @@ const mapStateToProps = state => ({
 });
 
 const matchDispatchToProps = dispatch => ({
-  postPointLayer, postPolygonLayer, getPolygonLayers,
+  postPointLayer, postPolygonLayer,
   deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail,
   dispatch
 });
