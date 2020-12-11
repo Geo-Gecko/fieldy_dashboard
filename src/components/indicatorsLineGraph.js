@@ -29,13 +29,10 @@ class IndicatorsLineGraph extends React.Component {
   }
 
   async componentDidMount() {
-    // this is being called twice and needs to be changed.
-    let leafletGeoJSON = await this.props.getPolygonLayers();
-    localStorage.setItem("featuregroup", JSON.stringify(leafletGeoJSON))
     await this.props.dispatch(getcreateputGraphData(
-      {}, 'GET', ""
+      {}, 'GET', "", "", this.props.cropTypes, this.props.LayersPayload
     ))
-    let cropTypes = JSON.parse(localStorage.getItem("cropTypes"))
+    let cropTypes = this.props.cropTypes
     // this isn't setting croptypes for admins
     this.setState({
       ...this.state,
@@ -60,7 +57,7 @@ class IndicatorsLineGraph extends React.Component {
       this.props.fieldId === "" &&
        prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
     ) {
-      let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
+      let cropTypes = this.props.cropTypes
       this.setState({
         ...this.state,
         cropTypes,
@@ -225,7 +222,8 @@ const mapStateToProps = state => ({
   allFieldData: state.graphs.allFieldData,
   fieldId: state.graphs.fieldId,
   cropType: state.graphs.cropType,
-  cropTypes: state.layers.cropTypes
+  cropTypes: state.layers.cropTypes,
+  LayersPayload: state.layers.LayersPayload
 });
 
 const matchDispatchToProps = dispatch => ({

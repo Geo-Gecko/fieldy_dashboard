@@ -7,10 +7,7 @@ const initialState = {
     createLayersPayload: {},
     LayersPayload: {},
     // need to pick this up from the fields // "Wheat"
-    cropTypes: [
-      "Maize", "Sorghum", "Banana",
-      "Coffee", "Cotton", "Mangoes"
-    ]
+    cropTypes: []
 };
 
 export const layersReducer = (state = initialState, action) => {
@@ -23,7 +20,8 @@ export const layersReducer = (state = initialState, action) => {
             case GET_LAYERS_SUCCESS:
                 return {
                     ...state,
-                    LayersPayload: action.payload
+                    LayersPayload: action.payload.LayersPayload,
+                    cropTypes: action.payload.cropTypes
                 };
         default:
             return state;

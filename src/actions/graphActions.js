@@ -22,7 +22,7 @@ export const months_ = (() => {
 })()
 
 const getcreateputGraphData = (
-    postData, method_, field_id, cropType=""
+    postData, method_, field_id, cropType="", cropTypes=[], layers_ = {}
 ) => dispatch => {
     return axiosInstance({
         url: `/layers/fieldindicators/${
@@ -33,8 +33,6 @@ const getcreateputGraphData = (
     })
         .then(async response => {
             let data_;
-            let cropTypes = JSON.parse(localStorage.getItem('cropTypes'))
-            let layers_ = JSON.parse(localStorage.getItem('featuregroup'))
             // dispatch two, one for all data and one for a specific field
             if (method_ === "GET" && field_id !== "") {
                 let data_array = objToArray([response.data], months_)
