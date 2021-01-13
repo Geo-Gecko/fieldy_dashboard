@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { connect } from 'react-redux';
 import { Map, TileLayer, FeatureGroup, ZoomControl, LayersControl } from 'react-leaflet';
-import L from 'leaflet';
+import L, { polygon } from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
@@ -34,8 +34,27 @@ L.Icon.Default.mergeOptions({
 });
 
 const { BaseLayer } = LayersControl
-
+//put the grid here to make it accesbile by the buttons to be added or removed
 let grid;
+
+function inside(point, vs) {
+  // ray-casting algorithm based on
+  // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+  
+  var x = point[0], y = point[1];
+  
+  var inside = false;
+  for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      var xi = vs[i][0], yi = vs[i][1];
+      var xj = vs[j][0], yj = vs[j][1];
+      
+      var intersect = ((yi > y) != (yj > y))
+          && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+  }
+  
+  return inside;
+};
 
 class MapView extends Component {
   constructor() {
@@ -138,6 +157,8 @@ class MapView extends Component {
 
   _onFeatureGroupReady = async (reactFGref) => {
 
+    let coordinates = [];
+
     // populate the leaflet FeatureGroup with the geoJson layers
     if (
       reactFGref && Object.keys(this.props.LayersPayload).length > 0
@@ -148,6 +169,8 @@ class MapView extends Component {
 
       leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
       leafletGeoJSON.eachLayer(layer => {
+        //Generates and array of centroids that i can use to attach to the grid, here other information such as croptypes and perhaps values to be attached to the grid later on
+        coordinates.push(layer.getBounds().getCenter());
         let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
         layer.bindPopup(
           attr_list,
@@ -161,16 +184,19 @@ class MapView extends Component {
 
       this._editableFG = reactFGref;
     }
+
+    //here if the feature group is loaded, then we split the area into gridcells that can then be put into a geojson variable that i can load into leaflet
     if (this._editableFG) {
       let bounds = this._editableFG.leafletElement.getBounds();
       let width = bounds._northEast.lng - bounds._southWest.lng;
       let height = bounds._northEast.lat - bounds._southWest.lat;
-      var countX = 10; //cells by x
-      var countY = 10; //cells by y
+      //here we modify the number of gridcells, can be changed to account for closer clusters of gridcells
+      var countX = 5; //cells by x
+      var countY = 5; //cells by y
       var cellWidth = width / countX;
       var cellHeight = height / countY;
 
-      var coordinates = [],
+      var features = [],
         c = { x: bounds._southWest.lng, y: bounds._northEast.lat }, //cursor
         //top-left/top-right/bottom-right/bottom-left
         tLx, tLy, tRx, tRy,
@@ -189,7 +215,13 @@ class MapView extends Component {
             // top-left/top-right/bottom-right/bottom-left/top-left
             [tLx, tLy], [tRx, tRy], [bRx, bRy], [bLx, bLy], [tLx, tLy]
           ];
-          coordinates.push(cell);
+          features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [cell]
+            }
+          });
           // refresh cusror for cell
           c.x = c.x + cellWidth;
         }
@@ -200,18 +232,35 @@ class MapView extends Component {
 
       grid = {
         type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'MultiPolygon',
-              coordinates: [coordinates]
-            }
-          }
-        ]
+        features: features
       };
 
       grid = new L.GeoJSON(grid);
+
+      //loop through the grid cells here to attach information summarised elsewhere
+      grid.eachLayer(layer => {
+        let poly = [[layer.getLatLngs()[0][0].lat,layer.getLatLngs()[0][0].lng],[layer.getLatLngs()[0][1].lat,layer.getLatLngs()[0][1].lng],[layer.getLatLngs()[0][2].lat,layer.getLatLngs()[0][2].lng],[layer.getLatLngs()[0][3].lat,layer.getLatLngs()[0][3].lng]]
+        let count = 0;
+        //calcualtes the number (COUNT) of centroids that fall within each polygon (I wish to be able to remove from the array as they are found, but i dont want to spent too much time on that.)
+        coordinates.forEach(element => {
+          if (inside([element.lat, element.lng], poly)) count++;
+        });
+        //bind a popup for now just showing the count of the features per grid cell
+        layer.bindPopup("Count: " + count);
+
+        //grid style per gridcell depending on factors, for now just visibility of a cell.
+        layer.setStyle({
+            // the fillColor is adapted from a property which can be changed by the user (segment)
+            // fillColor: this.getColor(feature.properties.scores[this.state.segment]),
+            // weight: 0.3,
+            //stroke-width: to have a constant width on the screen need to adapt with scale 
+            opacity: count > 0 ? 1 : 0 ,
+            // color: ,
+            // dashArray: '3',
+            fillOpacity: count > 0 ? 0.2 : 0
+        })
+
+      });
 
       if (this.refs.myMap) {
         this.refs.myMap.leafletElement.addLayer(grid);
@@ -265,7 +314,7 @@ class MapView extends Component {
   }
 
   removeLayers = () => {
-    console.log('removeGrid')    
+    console.log('removeGrid')
     this.refs.myMap.leafletElement.removeLayer(grid);
   }
 
@@ -283,7 +332,7 @@ class MapView extends Component {
           zoom={zoom}
         >
           <LayersControl position="bottomright">
-          <BaseLayer checked name="OpenStreetMap.Mapnik">
+            <BaseLayer checked name="OpenStreetMap.Mapnik">
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. <br/> Please note this imagery isn't necessarily up to date "
@@ -301,7 +350,7 @@ class MapView extends Component {
                 url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
               />
             </BaseLayer>
-            
+
           </LayersControl>
           <ZoomControl position="bottomright" />
           <Control position="topright" >
