@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter, Switch } from 'react-router-dom';
 
 import store from './store'
-import MapView from './components/MapView';
+import MapView from './components/MapComponents/MapView';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 

@@ -3,16 +3,9 @@ import React, { Component } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { connect } from 'react-redux';
-import { Map, TileLayer, FeatureGroup, ZoomControl, LayersControl } from 'react-leaflet';
-import L, { polygon } from 'leaflet';
-import { EditControl } from "react-leaflet-draw";
-import Control from 'react-leaflet-control';
-import { ToastContainer } from 'react-toastify';
+import { LayersControl } from 'react-leaflet';
+import L from 'leaflet';
 
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
-import './popupMod'
-import './popupMod.css'
 
 
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
@@ -20,24 +13,16 @@ import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 
 // our components
-import ShSideBar from './shSideBar';
 import {
   postPointLayer, postPolygonLayer, getPolygonLayers,
   deletePolygonLayer, updatePolygonLayer
-} from '../actions/layerActions';
-import { GET_ALL_FIELD_DATA_INITIATED } from '../actions/types';
-import { getcreateputUserDetail } from '../actions/userActions';
-import getcreateputGraphData from '../actions/graphActions';
-import { attrCreator } from '../utilities/attrCreator';
+} from '../../actions/layerActions';
+import { GET_ALL_FIELD_DATA_INITIATED } from '../../actions/types';
+import { getcreateputUserDetail } from '../../actions/userActions';
+import getcreateputGraphData from '../../actions/graphActions';
+import { attrCreator } from '../../utilities/attrCreator';
+import ShMap from './shMap';
 
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-shadow.png',
-});
-
-const { BaseLayer } = LayersControl
 
 // put the grid and maxCount here to make it accessible by the buttons to be added or removed
 let grid;
@@ -65,6 +50,7 @@ function inside(point, vs) {
 class MapView extends Component {
   constructor() {
     super();
+    this.myMap = React.createRef();
     this.state = {
       currentLocation: { lat: 1.46, lng: 32.40 },
       zoom: 7,
@@ -271,7 +257,8 @@ class MapView extends Component {
 
       });
 
-      if (this.refs.myMap) {
+      if (this.myMap && this.myMap.leafletElement) {
+        console.log(this.myMap)
 
         const thresholds = d3Array
           .range(0, 10)
@@ -295,11 +282,11 @@ class MapView extends Component {
           })
 
         })
-        this.refs.myMap.leafletElement.addLayer(grid);
+        this.myMap.leafletElement.addLayer(grid);
         //this removes the grid when the user zooms in past zoom level 11
-        this.refs.myMap.leafletElement.on('moveend', () => {
-          if (this.refs.myMap.leafletElement.getZoom() > 10) {
-            this.refs.myMap.leafletElement.removeLayer(grid)
+        this.myMap.leafletElement.on('moveend', () => {
+          if (this.myMap.leafletElement.getZoom() > 10) {
+            this.myMap.leafletElement.removeLayer(grid)
           }
         })
       }
@@ -356,113 +343,11 @@ class MapView extends Component {
     const { currentLocation, zoom } = this.state;
 
     return (
-      <React.Fragment>
-        <ShSideBar />
-        <ToastContainer />
-        <Map
-          ref="myMap"
-          zoomControl={false}
-          center={currentLocation}
-          zoom={zoom}
-        >
-          <LayersControl position="bottomright">
-          <BaseLayer name="Google Satellite">
-            <TileLayer
-              url="https://mt0.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
-              attribution="powered by Google. <br/> Please note this imagery isn't necessarily up to date "
-            />
-          </BaseLayer>
-          <BaseLayer checked name="OpenStreetMap.BlackAndWhite">
-            <TileLayer
-              attribution="&amp;copy <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors  <br/> Please note this imagery isn't necessarily up to date "
-              url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
-            />
-          </BaseLayer>
-          <BaseLayer name="OpenStreetMap.Mapnik">
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. <br/> Please note this imagery isn't necessarily up to date "
-            />
-          </BaseLayer>
-        </LayersControl>
-          <ZoomControl position="bottomright"/> 
-         <Control position="topright" >
-            <style type="text/css">
-              {`
-              .current-view {
-                box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                border-radius: 4px;
-                border: none;
-              }
-              `}
-            </style>
-            <button
-              className="current-view"
-              onClick={this._saveCurrentView}
-            >
-              Save current view
-            </button>
-          </Control>
-          <Control position="topright" >
-            <style type="text/css">
-              {`
-              .grid-view {
-                box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                border-radius: 4px;
-                border: none;
-              }
-              `}
-            </style>
-            <button className="grid-view" onClick={this.addGridLayers}>Add Grid</button>
-            {' '}
-            <button className="grid-view" onClick={this.removeGridLayers}>Remove Grid</button>
-          </Control>
-          <FeatureGroup
-           ref={ (reactFGref) => {this._onFeatureGroupReady(reactFGref);} }
-           onContextmenu={this.handleRightClick} 
-          >
-              {this.state.userType === "EDITOR" ? <EditControl
-                position='topright'
-                onEdited={this._onEdited}
-                onCreated={this._onCreated}
-                onDeleted={this._onDeleted}
-                draw={{
-                  rectangle: false,
-                  circle: false,
-                  marker: false,
-                  circlemarker: false,
-                  polyline: false,
-                }}
-              /> : null}
-          </FeatureGroup>
-          <Control position="topright" >
-              <style type="text/css">
-                {`
-                .current-view {
-                  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                  border-radius: 4px;
-                  border: none;
-                }
-                #field_download_link, field_download_link:hover {
-                  color: black;
-                  text-decoration: none;
-                }
-                `}
-              </style>
-              <button className="current-view">
-              <a
-                href={`data:text/json;charset=utf-8,${encodeURIComponent(
-                  JSON.stringify(this.props.LayersPayload)
-                )}`}
-                id="field_download_link"
-                download="field_poygons.json"
-              >
-                Download fields
-              </a>
-              </button>
-            </Control>
-        </Map>
-      </React.Fragment>
+      <ShMap
+        state={this.state}
+        myMap={this.myMap}
+        mapInstance={this}
+      />
     );
   }
 }
