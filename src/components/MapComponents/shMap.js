@@ -49,13 +49,13 @@ let ShMap = ({
       zoom={zoom}
     >
       <LayersControl position="bottomright">
-        <BaseLayer checked name="Google Satellite">
+        <BaseLayer name="Google Satellite">
           <TileLayer
             url="https://mt0.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
             attribution="powered by Google. <br/> Please note this imagery isn't necessarily up to date "
           />
         </BaseLayer>
-        <BaseLayer name="OpenStreetMap.BlackAndWhite">
+        <BaseLayer checked name="OpenStreetMap.BlackAndWhite">
           <TileLayer
             attribution="&amp;copy <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors  <br/> Please note this imagery isn't necessarily up to date "
             url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
