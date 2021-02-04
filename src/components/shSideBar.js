@@ -3,6 +3,7 @@ import L from 'leaflet';
 import { connect } from 'react-redux';
 import { Sidebar, Tab } from 'react-leaflet-sidebarv2';
 import { toast } from 'react-toastify';
+import jwt from 'jsonwebtoken';
 
 import 'font-awesome/css/font-awesome.css';
 import './leaflet-sidebar.min.css'
@@ -11,7 +12,7 @@ import {Button, Modal} from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
 
 // import ContactFormRequest from './contactForm'
-
+import ForecastBarGraph from './forecastBarGraph';
 import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
 import { GET_ALL_FIELD_DATA, GET_FIELD_DATA_FAIL } from '../actions/types'
@@ -26,8 +27,17 @@ class ShSideBar extends Component {
             showContactForm: false,
             initiateGetData: true,
             field_data: {},
-            layer_data: []
+            layer_data: [],
+            user: ""
         }
+    }
+
+    componentDidMount() {
+      const tokenValue = localStorage.getItem('x-token')
+      const secret_ = process.env.REACT_APP_SECRET || ""
+      const user = jwt.verify(tokenValue, secret_);
+      this.setState({ ...this.state, user })
+
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -44,7 +54,8 @@ class ShSideBar extends Component {
       if (
         prevState.collapsed === true &&
         (prevState.selected === "indicators"
-          || prevState.selected === "overview") &&
+          || prevState.selected === "overview"
+          || prevState.selected === "forecast") &&
         prevState.showLogout === false &&
         this.props.noFieldData === false &&
         this.props.fieldId !== ""
@@ -146,6 +157,25 @@ class ShSideBar extends Component {
           collapsed: false,
           selected: id
         })
+      } else if (id === "forecast") {
+        // there is no summary of forecast data. As such,
+        // clicking should not show the data
+        if (this.props.forecastFieldId) {
+          this.setState({
+            ...this.state,
+            collapsed: false,
+            selected: id
+          })
+        } else {
+          toast("Please right click on a field to show this chart", {
+            position: "top-center",
+            autoClose: 3500,
+            closeOnClick: true,
+            pauseOnHover: true,
+            })
+        }
+
+  
       } else if (id === "logout") {
         this.setState({
           ...this.state,
@@ -193,6 +223,21 @@ class ShSideBar extends Component {
                  />
                  : <React.Fragment />}
               </Tab>
+              {
+                this.state.user.uid === "5fa113599e2a01000a655cee" ||
+                 this.state.user.uid === "5fa114919e2a01000a655cef" ?
+                <Tab
+                id="forecast"
+                header="FORECAST"
+                icon="fa fa-bolt"
+                disabled={this.state.initiateGetData}
+                >
+                  <br /><br />
+                  <ForecastBarGraph
+                    SidePanelCollapsed={this.state.collapsed}
+                  />
+                </Tab> : null
+              }
               {
               this.state.initiateGetData ?
               <Tab
@@ -266,6 +311,7 @@ const mapStateToProps = state => ({
   SidePanelCollapsed: state.graphs.SidePanelCollapsed,
   noFieldData: state.graphs.noFieldData,
   initiateGetData: state.graphs.initiateGetAllFieldData,
+  forecastFieldId: state.graphs.forecastFieldId,
   LayersPayload: state.layers.LayersPayload,
   cropTypes: state.layers.cropTypes
 });

@@ -2,7 +2,8 @@ import {
     GET_FIELD_DATA,
     GET_FIELD_DATA_FAIL,
     GET_ALL_FIELD_DATA,
-    GET_ALL_FIELD_DATA_INITIATED
+    GET_ALL_FIELD_DATA_INITIATED,
+    FORECAST_FIELD_ID
 } from '../actions/types';
 
 const initialState = {
@@ -14,7 +15,8 @@ const initialState = {
     noFieldData: false,
     initiateGetAllFieldData: false,
     allFieldsIndicatorArray: [],
-    FieldindicatorArray: []
+    FieldindicatorArray: [],
+    forecastFieldId: undefined
 };
 
 const graphsReducer = (state = initialState, action) => {
@@ -51,6 +53,11 @@ const graphsReducer = (state = initialState, action) => {
                 noFieldData: action.payload,
                 initiateGetAllFieldData: false
             };
+            case FORECAST_FIELD_ID:
+                return {
+                    ...state,
+                    forecastFieldId: action.payload,
+                };
         default:
             return state;
     }
