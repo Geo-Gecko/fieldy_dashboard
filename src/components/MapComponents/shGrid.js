@@ -3,7 +3,7 @@ import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 
-
+import { months_ } from '../../actions/graphActions';
 
 let maxCount = 0;
 
@@ -26,8 +26,9 @@ function inside(point, vs) {
   return inside;
 };
 
-let createGrid = (_editableFG, myMap, coordinates) => {
+let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
   let bounds = _editableFG.leafletElement.getBounds();
+  leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
   let width = bounds._northEast.lng - bounds._southWest.lng;
   let height = bounds._northEast.lat - bounds._southWest.lat;
   //here we modify the number of gridcells, can be changed to account for closer clusters of gridcells
@@ -88,18 +89,69 @@ let createGrid = (_editableFG, myMap, coordinates) => {
       [layer.getLatLngs()[0][2].lat, layer.getLatLngs()[0][2].lng],
       [layer.getLatLngs()[0][3].lat, layer.getLatLngs()[0][3].lng]
     ]
-    let count = 0;
-    //calcualtes the number (COUNT) of centroids that fall within each polygon
+    let fieldCount = 0;
+    // calcualtes the number (COUNT) of centroids that fall within each polygon
     // (I wish to be able to remove from the array as they are found,
     // but i dont want to spent too much time on that.) --- Zeus
-    coordinates.forEach(element => {
-      if (inside([element.lat, element.lng], poly)) count++;
-    });
-    layer.feature.properties.count = count;
-    //bind a popup for now just showing the count of the features per grid cell
-    layer.bindPopup("Count: " + count);
+    let grid_summary = {
+      "field_ndvi": 0,
+      "field_ndwi": 0,
+      "field_rainfall": 0,
+      "field_temperature": 0
+    }
 
-    maxCount = count > maxCount ? count : maxCount;
+    leafletGeoJSON.eachLayer(layer => {
+      // console.log(layer)
+
+      let layerLatLng = layer.getBounds().getCenter()
+      if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
+        fieldCount++
+      };
+    })
+    
+    leafletGeoJSON.eachLayer(layer => {
+      // console.log(layer)
+
+      let layerLatLng = layer.getBounds().getCenter()
+      if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
+
+        let fieldId = layer.feature.properties.field_id
+        Object.keys(grid_summary).forEach(key => {
+          indicatorsArray.forEach(fieldArray => {
+            if (fieldArray[0] === fieldId && fieldArray[1] === key) {
+              let month_index = months_.indexOf(months_[months_.length - 1])
+              let indicatorValue = fieldArray[month_index + 2]
+              grid_summary[key] += indicatorValue
+            }
+          })
+
+        })
+      }
+    })
+
+    Object.keys(grid_summary).forEach(key => {
+      grid_summary[key] = grid_summary[key] / fieldCount
+      if (key === "field_temperature") {
+        grid_summary[key] = grid_summary[key] - 273.15
+      }
+    })
+
+    layer.feature.properties.count = fieldCount;
+    //bind a popup for now just showing the count of the features per grid cell
+    if (fieldCount > 0) {
+      layer.bindPopup(
+        `
+        <strong>Field Count: </strong><small> ${fieldCount} </small> <br/><br/>
+
+        <strong>Average values for ${months_[months_.length - 1]}</strong><br/>
+        <strong>Crop Health: </strong><small> ${grid_summary["field_ndvi"].toFixed(2)} </small> <br/>
+        <strong>Soil Moisture: </strong><small> ${grid_summary["field_ndwi"].toFixed(2)} </small> <br/>
+        <strong>Ground Temperature: </strong><small> ${grid_summary["field_temperature"].toFixed(2)} </small> <br/>
+        `
+      )
+    }
+
+    maxCount = fieldCount > maxCount ? fieldCount : maxCount;
 
 
   });
