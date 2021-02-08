@@ -120,7 +120,6 @@ class MapView extends Component {
   _editableFG = null
 
   _onFeatureGroupReady = async (reactFGref) => {
-    let coordinates = [];
 
     // populate the leaflet FeatureGroup with the geoJson layers
     if (
@@ -132,10 +131,6 @@ class MapView extends Component {
 
       leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
       leafletGeoJSON.eachLayer( layer => {
-        //Generates and array of centroids that i can use to attach to the grid,
-        // here other information such as croptypes and perhaps values
-        // to be attached to the grid later on --- Zeus
-        coordinates.push(layer.getBounds().getCenter());
         let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
         layer.bindPopup(
           attr_list,
@@ -153,7 +148,12 @@ class MapView extends Component {
     //here if the feature group is loaded, then we split the area into gridcells
     // that can then be put into a geojson variable that i can load into leaflet --- Zeus
     if (this._editableFG) {
-      grid = await createGrid(this._editableFG, this.myMap, coordinates)
+      if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
+        grid = createGrid(
+          this._editableFG, this.myMap, this.props.LayersPayload,
+          this.props.allFieldsIndicatorArray
+        )
+      }
     }
   }
 
@@ -218,7 +218,8 @@ class MapView extends Component {
 const mapStateToProps = state => ({
   createLayersPayload: state.layers.createLayersPayload,
   LayersPayload: state.layers.LayersPayload,
-  cropTypes: state.layers.cropTypes
+  cropTypes: state.layers.cropTypes,
+  allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
 });
 
 const matchDispatchToProps = dispatch => ({
