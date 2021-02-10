@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { connect } from 'react-redux';
 import L from 'leaflet';
+import ReactGA from 'react-ga';
 
 
 // our components
@@ -24,10 +25,12 @@ class MapView extends Component {
   constructor() {
     super();
     this.myMap = React.createRef();
+    this.myCookiePref = React.createRef();
     this.state = {
       currentLocation: { lat: 1.46, lng: 32.40 },
       zoom: 7,
-      userType: ""
+      userType: "",
+      showCookiePolicy: false
     }
   }
 
@@ -39,6 +42,8 @@ class MapView extends Component {
       ...this.state,
       userType: user.userType
     })
+    ReactGA.initialize(process.env.REACT_APP_ANALYTIC || "");
+    ReactGA.set({ userId: user.uid })
 
     let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
     if (current_center) {
