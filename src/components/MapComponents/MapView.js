@@ -42,8 +42,15 @@ class MapView extends Component {
       ...this.state,
       userType: user.userType
     })
-    ReactGA.initialize(process.env.REACT_APP_ANALYTIC || "");
-    ReactGA.set({ userId: user.uid })
+    ReactGA.initialize(
+      process.env.REACT_APP_ANALYTIC || "", {
+      gaOptions: {
+        userId: user.uid
+      }
+    }
+    );
+    ReactGA.pageview(window.location.pathname + window.location.search);
+    
 
     let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
     if (current_center) {
