@@ -129,34 +129,45 @@ class ShSideBar extends Component {
       } else if (id === "overview") {
         let leafletGeoJSON = this.props.LayersPayload;
         let areas = {}, counts = {}, results = [], cropType, colours = {};
-        leafletGeoJSON.features.forEach((layer, index) => {
-          let feature_ = layer;
-          let totalArea =
-           L.GeometryUtil.geodesicArea(
-            feature_.geometry.coordinates[0].map(x => new L.latLng(x.reverse()))
-           ).toFixed(2)
-           if (feature_.properties.field_attributes.CropType) {
-             cropType = feature_.properties.field_attributes.CropType
-             if (!(cropType in areas)) {
-               areas[cropType] = 0;
-               counts[cropType] = 0;
-               colours[cropType] = "";
+        // stop random color coming up on pressing button each time using if below
+        if (this.state.layer_data.length === 0) {
+          leafletGeoJSON.features.forEach(feature_ => {
+            let totalArea =
+             L.GeometryUtil.geodesicArea(
+              feature_.geometry.coordinates[0].map(x => new L.latLng(x.reverse()))
+             ).toFixed(2)
+             if (feature_.properties.field_attributes.CropType) {
+               cropType = feature_.properties.field_attributes.CropType
+               if (!(cropType in areas)) {
+                 areas[cropType] = 0;
+                 counts[cropType] = 0;
+                 colours[cropType] = "";
+               }
+               areas[cropType] += parseFloat(totalArea);
+               counts[cropType]++;
+               colours[cropType] = getRandomColor();
              }
-             areas[cropType] += parseFloat(totalArea);
-             counts[cropType]++;
-             colours[cropType] = getRandomColor();
-           }
-        });
-        for (cropType in areas) {
-          results.push({ cropType: cropType, area: areas[cropType], count: counts[cropType], colours: colours[cropType]});
+          });
+          for (cropType in areas) {
+            results.push({
+              cropType: cropType, area: areas[cropType].toFixed(2),
+              count: counts[cropType], colours: colours[cropType]
+            });
+          }
+          this.setState({
+            ...this.state,
+            layer_data: results,
+            collapsed: false,
+            selected: id
+          })
+        } else {
+          this.setState({
+            ...this.state,
+            collapsed: false,
+            selected: id
+          })
         }
 
-        this.setState({
-          ...this.state,
-          layer_data: results,
-          collapsed: false,
-          selected: id
-        })
       } else if (id === "forecast") {
         // there is no summary of forecast data. As such,
         // clicking should not show the data

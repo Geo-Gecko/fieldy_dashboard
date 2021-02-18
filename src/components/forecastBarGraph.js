@@ -42,31 +42,51 @@ class ForecastBarGraph extends React.Component {
       });
 
       if (isValid) {
+        let totalPrecip = precipitation.reduce(
+          (acc, currentValue) => parseFloat(acc) + parseFloat(currentValue)
+        )
+        let yAxes = [{
+          id: 'precip',
+          type: 'linear',
+          position: 'right',
+          scaleLabel: {
+            display: true,
+            labelString: 'Precipitation'
+          },
+        }, {
+          id: 'temp',
+          type: 'linear',
+          position: 'left',
+          scaleLabel: {
+            display: true,
+            labelString: 'Temperature'
+          },
+        }], datasets = [{
+          'label': 'Precipitation Forecast',
+          'yAxisID': totalPrecip === 0 ? null : 'precip',
+          'data': precipitation,
+          "backgroundColor": 'blue',
+          // this dataset is drawn below
+          'order': 2
+        }, {
+          'label': 'Temperature Forecast',
+          'yAxisID': 'temp',
+          'data': temperature,
+          'type': 'line',
+          "backgroundColor": 'red',
+          'fill': false,
+          'borderColor': 'red',
+          // this dataset is drawn on top
+          'order': 1
+        }]
+        if (totalPrecip === 0) {
+          yAxes.splice(0, 1)
+          datasets.splice(0, 1)
+        }
 
         return (
           <Bar
-            data={
-              {
-                'datasets': [{
-                  'label': 'Precipitation Forecast',
-                  'data': precipitation,
-                  "backgroundColor": 'blue',
-                  // this dataset is drawn below
-                  'order': 1
-                }, {
-                  'label': 'Temperature Forecast',
-                  'data': temperature,
-                  'type': 'line',
-                  "backgroundColor": 'red',
-                  'fill': false,
-                  'borderColor': 'red',
-                  // this dataset is drawn on top
-                  'order': 2
-                }],
-                'labels': labels
-              }
-            }
-
+            data={{ datasets, labels }}
             options={{
               title: {
                 display: true,
@@ -85,9 +105,10 @@ class ForecastBarGraph extends React.Component {
                     labelString: "forecast days"
                   }
                 }],
+                yAxes
               }
             }}
-            height={60}
+            height={120}
           />
         )
 
