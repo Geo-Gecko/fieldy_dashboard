@@ -94,10 +94,12 @@ let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
     // (I wish to be able to remove from the array as they are found,
     // but i dont want to spent too much time on that.) --- Zeus
     let grid_summary = {
-      "field_ndvi": 0,
-      "field_ndwi": 0,
-      "field_rainfall": 0,
-      "field_temperature": 0
+      // first element in array is for average, second is for lowest value,
+      // third is the max value
+      "field_ndvi": [0, 0, 0],
+      "field_ndwi": [0, 0, 0],
+      "field_rainfall": [0, 0, 0],
+      "field_temperature": [0, 0, 0]
     }
 
     leafletGeoJSON.eachLayer(layer => {
@@ -121,7 +123,15 @@ let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
             if (fieldArray[0] === fieldId && fieldArray[1] === key) {
               let month_index = months_.indexOf(months_[months_.length - 1])
               let indicatorValue = fieldArray[month_index + 2]
-              grid_summary[key] += indicatorValue
+              grid_summary[key][0] += indicatorValue
+              if (grid_summary[key][1] === 0 && grid_summary[key][2] === 0) {
+                grid_summary[key][1] = indicatorValue
+                grid_summary[key][2] = indicatorValue
+              } else if (grid_summary[key][1] > indicatorValue) {
+                grid_summary[key][1] = indicatorValue
+              } else if (grid_summary[key][2] < indicatorValue) {
+                grid_summary[key][2] = indicatorValue
+              }
             }
           })
 
@@ -130,9 +140,11 @@ let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
     })
 
     Object.keys(grid_summary).forEach(key => {
-      grid_summary[key] = grid_summary[key] / fieldCount
+      grid_summary[key][0] = grid_summary[key][0] / fieldCount
       if (key === "field_temperature") {
-        grid_summary[key] = grid_summary[key] - 273.15
+        grid_summary[key][0] = grid_summary[key][0] - 273.15
+        grid_summary[key][1] = grid_summary[key][1] - 273.15
+        grid_summary[key][2] = grid_summary[key][2] - 273.15
       }
     })
 
@@ -143,10 +155,18 @@ let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
         `
         <strong>Field Count: </strong><small> ${fieldCount} </small> <br/><br/>
 
-        <strong>Average values for ${months_[months_.length - 1]}</strong><br/>
-        <strong>Crop Health: </strong><small> ${grid_summary["field_ndvi"].toFixed(2)} </small> <br/>
-        <strong>Soil Moisture: </strong><small> ${grid_summary["field_ndwi"].toFixed(2)} </small> <br/>
-        <strong>Ground Temperature: </strong><small> ${grid_summary["field_temperature"].toFixed(2)} </small> <br/>
+        Summary of values for ${months_[months_.length - 1]};<br/>
+        <strong>Avg Crop Health: </strong><small> ${grid_summary["field_ndvi"][0].toFixed(2)} </small> <br/>
+        <strong>Avg Soil Moisture: </strong><small> ${grid_summary["field_ndwi"][0].toFixed(2)} </small> <br/>
+        <strong>Avg Precipitation: </strong><small> ${grid_summary["field_rainfall"][0].toFixed(2)} </small> <br/>
+        <strong>Avg Ground Temperature: </strong><small> ${grid_summary["field_temperature"][0].toFixed(2)} </small>
+        
+        ${fieldCount > 1 ?
+        `<br/><br/><strong>Min, Max Crop Health: </strong><small> ${grid_summary["field_ndvi"][1].toFixed(2)}, ${grid_summary["field_ndvi"][2].toFixed(2)} </small> <br/>
+        <strong>Min, Max Soil Moisture: </strong><small> ${grid_summary["field_ndwi"][1].toFixed(2)}, ${grid_summary["field_ndwi"][2].toFixed(2)} </small> <br/>
+        <strong>Min, Max Precipitation: </strong><small> ${grid_summary["field_rainfall"][1].toFixed(2)}, ${grid_summary["field_rainfall"][2].toFixed(2)} </small> <br/>`
+        : `<br/>`}
+        
         `
       )
     }

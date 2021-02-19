@@ -13,6 +13,7 @@ import Spinner from 'react-bootstrap/Spinner';
 
 // import ContactFormRequest from './contactForm'
 import ForecastBarGraph from './forecastBarGraph';
+import { IndicatorInformation } from './indicatorInformation';
 import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
 import { GET_ALL_FIELD_DATA, GET_FIELD_DATA_FAIL } from '../actions/types'
@@ -24,6 +25,7 @@ class ShSideBar extends Component {
             collapsed: true,
             selected: 'overview',
             showLogout: false,
+            showIndicatorInfo: false,
             showContactForm: false,
             initiateGetData: true,
             field_data: {},
@@ -57,6 +59,7 @@ class ShSideBar extends Component {
           || prevState.selected === "overview"
           || prevState.selected === "forecast") &&
         prevState.showLogout === false &&
+        prevState.showIndicatorInfo === false &&
         this.props.noFieldData === false &&
         this.props.fieldId !== ""
       ) {
@@ -193,6 +196,12 @@ class ShSideBar extends Component {
           selected: id,
           showLogout: true
         })
+      } else if (id === "indicatorInfo") {
+        this.setState({
+          ...this.state,
+          selected: id,
+          showIndicatorInfo: true
+        })
       } else if (id === "contact") {
         this.setState({
           ...this.state,
@@ -274,7 +283,11 @@ class ShSideBar extends Component {
                  }
                 />
               </Tab> */}
-              <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
+              <Tab id="indicatorInfo" header="Indicator Information" icon="fa fa-info" anchor="bottom"
+               >
+                 <IndicatorInformation sideBarInstance={this} />
+               </Tab>
+              <Tab id="logout" header="Indicator Information" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal
                  show={this.state.showLogout}
