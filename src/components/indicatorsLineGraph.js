@@ -15,10 +15,10 @@ class IndicatorsLineGraph extends React.Component {
         dataset: [],
         selectedIndicator: "field_rainfall",
         indicatorObj: {
-            "Rainfall": "field_rainfall",
-            "Vegetation Health": "field_ndvi",
-            "Soil Moisture": "field_ndwi",
-            "Ground Temperature": "field_temperature"
+            "Rainfall": ["field_rainfall", "Precipitation (mm)"],
+            "Vegetation Health": ["field_ndvi", "Vegetation Health Index (-1, 1)"],
+            "Soil Moisture": ["field_ndwi", "Soil Moisture Index (-1, 1)"],
+            "Ground Temperature": ["field_temperature", "Ground Temperature (°Celcius)"]
         },
         displayedIndicator: "Rainfall",
         selectedCropType: "Crop Type",
@@ -82,9 +82,9 @@ class IndicatorsLineGraph extends React.Component {
       } else {
         this.setState({
           dataset: fieldId === "" ?
-           allFieldData[this.state.indicatorObj[eventKey]][this.state.selectedCropType]
-            : field_data[this.state.indicatorObj[eventKey]][this.state.selectedCropType],
-          selectedIndicator: this.state.indicatorObj[eventKey],
+           allFieldData[this.state.indicatorObj[eventKey][0]][this.state.selectedCropType]
+            : field_data[this.state.indicatorObj[eventKey][0]][this.state.selectedCropType],
+          selectedIndicator: this.state.indicatorObj[eventKey][0],
           displayedIndicator: eventKey
         })
       }
@@ -92,6 +92,11 @@ class IndicatorsLineGraph extends React.Component {
   }
 
   render () {
+    let { 
+      displayedIndicator, indicatorObj, allFieldsIndicatorArray,
+      selectedCropType, FieldindicatorArray, dataset, cropTypes
+     } = this.state
+
     return (
       <React.Fragment>
         <style type="text/css">
@@ -123,10 +128,10 @@ class IndicatorsLineGraph extends React.Component {
         variant={"dropdown"}
         className="mr-1"
         id="dropdown-basic-button"
-        title={this.state.displayedIndicator}
+        title={displayedIndicator}
         as={ButtonGroup}
         >
-          {Object.keys(this.state.indicatorObj).map(obj_ => 
+          {Object.keys(indicatorObj).map(obj_ => 
               <Dropdown.Item key={obj_} eventKey={obj_} onSelect={this.getEvent}>
                   {obj_}
               </Dropdown.Item>
@@ -135,12 +140,12 @@ class IndicatorsLineGraph extends React.Component {
         <DropdownButton
         variant={"dropdown"}
         id="dropdown-basic-button"
-        title={this.props.fieldId === "" ? this.state.selectedCropType : this.props.cropType}
+        title={this.props.fieldId === "" ? selectedCropType : this.props.cropType}
         as={ButtonGroup}
         >
           {/* NOTE: this should remain as getting from redux state because actual
           croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
-          {this.props.fieldId === "" ? this.state.cropTypes.map(type_ => 
+          {this.props.fieldId === "" ? cropTypes.map(type_ => 
               <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
                   {type_}
               </Dropdown.Item>
@@ -153,9 +158,9 @@ class IndicatorsLineGraph extends React.Component {
           // so need to check for it
            data={
              this.props.fieldId ?
-              this.state.FieldindicatorArray ? this.state.FieldindicatorArray : []
+              FieldindicatorArray ? FieldindicatorArray : []
                :
-              this.state.allFieldsIndicatorArray
+              allFieldsIndicatorArray
             }
            target="_blank"
            filename={
@@ -172,8 +177,8 @@ class IndicatorsLineGraph extends React.Component {
               {
                   "labels": months_,
                   "datasets": [{
-                      "label": this.state.displayedIndicator,
-                      "data": this.state.dataset,
+                      "label": indicatorObj[displayedIndicator][1],
+                      "data": dataset,
                       "fill": false,
                       "borderColor": "rgb(75, 192, 192)",
                       "lineTension": 0.1 
@@ -195,7 +200,7 @@ class IndicatorsLineGraph extends React.Component {
                   yAxes: [{
                     scaleLabel: {
                       display: true,
-                      labelString: this.state.displayedIndicator
+                      labelString: indicatorObj[displayedIndicator][1]
                     }
                   }],
                   xAxes: [{

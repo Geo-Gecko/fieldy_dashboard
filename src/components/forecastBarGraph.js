@@ -51,7 +51,7 @@ class ForecastBarGraph extends React.Component {
           position: 'right',
           scaleLabel: {
             display: true,
-            labelString: 'Precipitation'
+            labelString: 'Precipitation (Total - millimetres)'
           },
         }, {
           id: 'temp',
@@ -59,7 +59,7 @@ class ForecastBarGraph extends React.Component {
           position: 'left',
           scaleLabel: {
             display: true,
-            labelString: 'Temperature'
+            labelString: 'Temperature (Average - °Celcius)'
           },
         }], datasets = [{
           'label': 'Precipitation Forecast',
