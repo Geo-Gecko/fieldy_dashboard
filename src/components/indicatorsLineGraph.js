@@ -5,7 +5,7 @@ import { Line } from 'react-chartjs-2';
 import { CSVLink } from "react-csv";
 import {Dropdown, DropdownButton, ButtonGroup, Button} from 'react-bootstrap';
 
-import getcreateputGraphData, { months_ } from '../actions/graphActions';
+import getcreateputGraphData, { getcreateputArrayedGraphData, months_ } from '../actions/graphActions';
 import { getPolygonLayers } from '../actions/layerActions';
 
 class IndicatorsLineGraph extends React.Component {
@@ -29,16 +29,22 @@ class IndicatorsLineGraph extends React.Component {
   }
 
   async componentDidMount() {
+    let {
+      cropTypes, LayersPayload, allFieldsIndicatorArray, allFieldData
+    } = this.props
     await this.props.dispatch(getcreateputGraphData(
       {}, 'GET', "", "", this.props.cropTypes, this.props.LayersPayload
     ))
-    let cropTypes = this.props.cropTypes
+    await this.props.dispatch(getcreateputArrayedGraphData(
+      cropTypes, LayersPayload
+    ))
+
     // this isn't setting croptypes for admins
     this.setState({
       ...this.state,
       cropTypes,
-      allFieldsIndicatorArray: this.props.allFieldsIndicatorArray,
-      dataset: this.props.allFieldData["field_rainfall"][cropTypes[0]]
+      allFieldsIndicatorArray: allFieldsIndicatorArray,
+      dataset: allFieldData["field_rainfall"][cropTypes[0]]
     })
   }
 
