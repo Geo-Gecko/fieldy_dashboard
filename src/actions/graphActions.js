@@ -21,6 +21,47 @@ export const months_ = (() => {
 
 })()
 
+export const getcreateputArrayedGraphData = (
+    cropTypes=[], layers_ = {}
+) => dispatch => {
+    return axiosInstance({
+        url: `/layers/arrayedfieldindicators/`,
+        method: 'GET'
+    }).then(response => {
+        console.log(response.data)
+        let data_ = {}
+        let indicators_ = [
+            "field_ndvi", "field_ndwi","field_rainfall", "field_temperature"
+        ]
+        indicators_.forEach(kator => {
+            // kator stands for indi_Kator
+            data_[kator] = {}
+            cropTypes.forEach(crop => {
+                let katorFields = response.data.filter(katorArr => {
+                    let correspLayer = layers_.features.find(
+                        field_ =>
+                         field_.properties.field_id === katorArr.field_id
+                    )
+                    return correspLayer.properties.field_attributes.CropType === crop && katorArr.indicator === kator
+                })
+                // let katorFields = cropFields.filter(katorArr => katorArr.indicator === kator)
+                data_[kator][crop] = [];
+                months_.forEach(month_ => {
+                    let sumKatorCrop = katorFields.reduce(
+                        // don't need parseFloat...I think
+                        (accumulator, nextField) => accumulator + nextField[month_], 0
+                    )
+                    sumKatorCrop = sumKatorCrop / katorFields.length
+                    if (kator === "field_temperature") {
+                        sumKatorCrop = sumKatorCrop - 273.15
+                    }
+                    data_[kator][crop].push(parseFloat(sumKatorCrop.toFixed(2)))
+                })
+            })
+        })
+    })
+}
+
 const getcreateputGraphData = (
     postData, method_, field_id, cropType="", cropTypes=[], layers_ = {}
 ) => dispatch => {
