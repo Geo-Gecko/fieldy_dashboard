@@ -48,6 +48,7 @@ let ShMap = ({
       zoomControl={false}
       center={currentLocation}
       zoom={zoom}
+      minZoom={5}
     >
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       {!localStorage.getItem("cookieusagedisplayed") ?
@@ -91,19 +92,19 @@ let ShMap = ({
         <BaseLayer name="Google Satellite">
           <TileLayer
             url="https://mt0.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
-            attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeoGecko <br/> Please note this imagery isn't necessarily up to date `}
+            attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Please note this imagery isn't necessarily up to date `}
           />
         </BaseLayer>
         <BaseLayer checked name="OpenStreetMap.BlackAndWhite">
           <TileLayer
-            attribution={`&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors | &copy; ${new Date().getFullYear()} GeoGecko  <br/> Please note this imagery isn't necessarily up to date `}
+            attribution={`&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors | &copy; ${new Date().getFullYear()} GeckosUnited  <br/> Please note this imagery isn't necessarily up to date `}
             url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
           />
         </BaseLayer>
         <BaseLayer name="OpenStreetMap.Mapnik">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution={`&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. | &copy; ${new Date().getFullYear()} GeoGecko <br/> Please note this imagery isn't necessarily up to date `}
+            attribution={`&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Please note this imagery isn't necessarily up to date `}
           />
         </BaseLayer>
       </LayersControl>

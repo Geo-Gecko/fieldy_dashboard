@@ -13,6 +13,7 @@ import Spinner from 'react-bootstrap/Spinner';
 
 // import ContactFormRequest from './contactForm'
 import ForecastBarGraph from './forecastBarGraph';
+import { IndicatorInformation } from './indicatorInformation';
 import IndicatorsLineGraph from './indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from './overView';
 import { GET_ALL_FIELD_DATA, GET_FIELD_DATA_FAIL } from '../actions/types'
@@ -24,6 +25,7 @@ class ShSideBar extends Component {
             collapsed: true,
             selected: 'overview',
             showLogout: false,
+            showIndicatorInfo: false,
             showContactForm: false,
             initiateGetData: true,
             field_data: {},
@@ -57,6 +59,7 @@ class ShSideBar extends Component {
           || prevState.selected === "overview"
           || prevState.selected === "forecast") &&
         prevState.showLogout === false &&
+        prevState.showIndicatorInfo === false &&
         this.props.noFieldData === false &&
         this.props.fieldId !== ""
       ) {
@@ -129,34 +132,45 @@ class ShSideBar extends Component {
       } else if (id === "overview") {
         let leafletGeoJSON = this.props.LayersPayload;
         let areas = {}, counts = {}, results = [], cropType, colours = {};
-        leafletGeoJSON.features.forEach((layer, index) => {
-          let feature_ = layer;
-          let totalArea =
-           L.GeometryUtil.geodesicArea(
-            feature_.geometry.coordinates[0].map(x => new L.latLng(x.reverse()))
-           ).toFixed(2)
-           if (feature_.properties.field_attributes.CropType) {
-             cropType = feature_.properties.field_attributes.CropType
-             if (!(cropType in areas)) {
-               areas[cropType] = 0;
-               counts[cropType] = 0;
-               colours[cropType] = "";
+        // stop random color coming up on pressing button each time using if below
+        if (this.state.layer_data.length === 0) {
+          leafletGeoJSON.features.forEach(feature_ => {
+            let totalArea =
+             L.GeometryUtil.geodesicArea(
+              feature_.geometry.coordinates[0].map(x => new L.latLng(x.reverse()))
+             ).toFixed(2)
+             if (feature_.properties.field_attributes.CropType) {
+               cropType = feature_.properties.field_attributes.CropType
+               if (!(cropType in areas)) {
+                 areas[cropType] = 0;
+                 counts[cropType] = 0;
+                 colours[cropType] = "";
+               }
+               areas[cropType] += parseFloat(totalArea);
+               counts[cropType]++;
+               colours[cropType] = getRandomColor();
              }
-             areas[cropType] += parseFloat(totalArea);
-             counts[cropType]++;
-             colours[cropType] = getRandomColor();
-           }
-        });
-        for (cropType in areas) {
-          results.push({ cropType: cropType, area: areas[cropType], count: counts[cropType], colours: colours[cropType]});
+          });
+          for (cropType in areas) {
+            results.push({
+              cropType: cropType, area: areas[cropType].toFixed(2),
+              count: counts[cropType], colours: colours[cropType]
+            });
+          }
+          this.setState({
+            ...this.state,
+            layer_data: results,
+            collapsed: false,
+            selected: id
+          })
+        } else {
+          this.setState({
+            ...this.state,
+            collapsed: false,
+            selected: id
+          })
         }
 
-        this.setState({
-          ...this.state,
-          layer_data: results,
-          collapsed: false,
-          selected: id
-        })
       } else if (id === "forecast") {
         // there is no summary of forecast data. As such,
         // clicking should not show the data
@@ -181,6 +195,12 @@ class ShSideBar extends Component {
           ...this.state,
           selected: id,
           showLogout: true
+        })
+      } else if (id === "indicatorInfo") {
+        this.setState({
+          ...this.state,
+          selected: id,
+          showIndicatorInfo: true
         })
       } else if (id === "contact") {
         this.setState({
@@ -263,7 +283,11 @@ class ShSideBar extends Component {
                  }
                 />
               </Tab> */}
-              <Tab id="logout" header="LogOut" icon="fa fa-power-off" anchor="bottom"
+              <Tab id="indicatorInfo" header="Indicator Information" icon="fa fa-info" anchor="bottom"
+               >
+                 <IndicatorInformation sideBarInstance={this} />
+               </Tab>
+              <Tab id="logout" header="Indicator Information" icon="fa fa-power-off" anchor="bottom"
                >
                 <Modal
                  show={this.state.showLogout}

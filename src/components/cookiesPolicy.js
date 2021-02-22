@@ -14,8 +14,10 @@ export const CookiesPolicy = ({mapInstance, state}) => {
       centered
     >
 
-      <Modal.Body className="text-center">
+      <Modal.Title className="text-center">
         <h1>Cookie Policy for Fieldy</h1>
+      </Modal.Title>
+      <Modal.Body className="text-left">
 
         <p>This is the Cookie Policy for Fieldy, accessible from https://fieldy.geogecko.com</p>
 
@@ -59,7 +61,7 @@ export const CookiesPolicy = ({mapInstance, state}) => {
         <p>However if you are still looking for more information then you can contact us through one of our preferred contact methods:</p>
 
         <ul>
-          <li>Email: info@geogecko.com</li>
+          <li>Email: bernard@geckosunited.com</li>
 
         </ul>
 
