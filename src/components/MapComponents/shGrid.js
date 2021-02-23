@@ -103,7 +103,6 @@ let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
     }
 
     leafletGeoJSON.eachLayer(layer => {
-      // console.log(layer)
 
       let layerLatLng = layer.getBounds().getCenter()
       if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
@@ -112,7 +111,6 @@ let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
     })
     
     leafletGeoJSON.eachLayer(layer => {
-      // console.log(layer)
 
       let layerLatLng = layer.getBounds().getCenter()
       if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
