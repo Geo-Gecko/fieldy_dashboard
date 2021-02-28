@@ -27,6 +27,8 @@ function inside(point, vs) {
 };
 
 let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
+  let prevMonth = months_[months_.length - 1]
+  let neededMonth = indicatorsArray[0].indexOf(prevMonth)
   let bounds = _editableFG.leafletElement.getBounds();
   leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
   let width = bounds._northEast.lng - bounds._southWest.lng;
@@ -107,31 +109,23 @@ let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
       let layerLatLng = layer.getBounds().getCenter()
       if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
         fieldCount++
-      };
-    })
-    
-    leafletGeoJSON.eachLayer(layer => {
-
-      let layerLatLng = layer.getBounds().getCenter()
-      if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
-
         let fieldId = layer.feature.properties.field_id
         Object.keys(grid_summary).forEach(key => {
-          indicatorsArray.forEach(fieldArray => {
-            if (fieldArray[0] === fieldId && fieldArray[1] === key) {
-              let month_index = months_.indexOf(months_[months_.length - 1])
-              let indicatorValue = fieldArray[month_index + 2]
-              grid_summary[key][0] += indicatorValue
-              if (grid_summary[key][1] === 0 && grid_summary[key][2] === 0) {
-                grid_summary[key][1] = indicatorValue
-                grid_summary[key][2] = indicatorValue
-              } else if (grid_summary[key][1] > indicatorValue) {
-                grid_summary[key][1] = indicatorValue
-              } else if (grid_summary[key][2] < indicatorValue) {
-                grid_summary[key][2] = indicatorValue
-              }
+          let fieldArray = indicatorsArray.find(
+            fieldArr => fieldArr[0] === fieldId && fieldArr[1] === key
+          )
+          if (fieldArray) {
+            let indicatorValue = fieldArray[neededMonth]
+            grid_summary[key][0] += indicatorValue
+            if (indicatorValue && grid_summary[key][1] === 0 && grid_summary[key][2] === 0) {
+              grid_summary[key][1] = indicatorValue
+              grid_summary[key][2] = indicatorValue
+            } else if (indicatorValue && grid_summary[key][1] > indicatorValue) {
+              grid_summary[key][1] = indicatorValue
+            } else if (indicatorValue && grid_summary[key][2] < indicatorValue) {
+              grid_summary[key][2] = indicatorValue
             }
-          })
+          }
 
         })
       }
@@ -198,7 +192,6 @@ let createGrid = (_editableFG, myMap, leafletGeoJSON, indicatorsArray) => {
       })
 
     })
-    myMap.current.leafletElement.addLayer(grid);
     //this removes the grid when the user zooms in past zoom level 11
     myMap.current.leafletElement.on('moveend', () => {
       if (myMap.current.leafletElement.getZoom() > 10) {

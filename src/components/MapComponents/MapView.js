@@ -19,7 +19,6 @@ import { attrCreator } from '../../utilities/attrCreator';
 import ShMap from './shMap';
 import createGrid from './shGrid';
 
-let grid;
 
 class MapView extends Component {
   constructor() {
@@ -30,7 +29,8 @@ class MapView extends Component {
       currentLocation: { lat: 1.46, lng: 32.40 },
       zoom: 7,
       userType: "",
-      showCookiePolicy: false
+      showCookiePolicy: false,
+      grid: undefined
     }
   }
 
@@ -159,12 +159,16 @@ class MapView extends Component {
 
     //here if the feature group is loaded, then we split the area into gridcells
     // that can then be put into a geojson variable that i can load into leaflet --- Zeus
-    if (this._editableFG) {
+    if (this._editableFG && !this.state.grid) {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
-        grid = createGrid(
-          this._editableFG, this.myMap, this.props.LayersPayload,
-          this.props.allFieldsIndicatorArray
-        )
+        if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
+          let grid = createGrid(
+            this._editableFG, this.myMap, this.props.LayersPayload,
+            this.props.allFieldsIndicatorArray
+          )
+          await this.setState({...this.state, grid})
+          this.myMap.current.leafletElement.addLayer(this.state.grid)
+        }
       }
     }
   }
@@ -208,10 +212,10 @@ class MapView extends Component {
   }
 
   addGridLayers = () => {
-    this.myMap.current.leafletElement.addLayer(grid);
+    this.myMap.current.leafletElement.addLayer(this.state.grid);
   }
   removeGridLayers = () => {
-    this.myMap.current.leafletElement.removeLayer(grid);
+    this.myMap.current.leafletElement.removeLayer(this.state.grid);
   }
 
   render() {

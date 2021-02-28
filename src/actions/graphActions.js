@@ -82,32 +82,42 @@ const getcreateputGraphData = (
                     })
                     return fieldCsvData
                 })()
-
-                indicators_.forEach(kator => {
-                    // kator stands for indi_Kator
-                    data_[kator] = {}
-                    cropTypes.forEach(crop => {
-                        let katorFields = response.data.filter(katorArr => {
-                            let correspLayer = layers_.features.find(
-                                field_ =>
-                                 field_.properties.field_id === katorArr.field_id
-                            )
-                            return correspLayer.properties.field_attributes.CropType === crop
-                             && katorArr.indicator === kator
+                // this is done to ensure process below runs in parallel
+                let fillDataObj = kator => {
+                    return new Promise(resolve => {
+                        // kator stands for indi_Kator
+                        data_[kator] = {}
+                        cropTypes.forEach(crop => {
+                            let katorFields = response.data.filter(katorArr => {
+                                let correspLayer = layers_.features.find(
+                                    field_ =>
+                                     field_.properties.field_id === katorArr.field_id
+                                )
+                                if (correspLayer) {
+                                    return correspLayer.properties.field_attributes.CropType === crop
+                                     && katorArr.indicator === kator
+                                }
+                                return false
+                            })
+                            data_[kator][crop] = [];
+                            months_.forEach(month_ => {
+                                let sumKatorCrop = katorFields.reduce(
+                                    (accumulator, nextField) => accumulator + nextField[month_], 0
+                                )
+                                sumKatorCrop = sumKatorCrop / katorFields.length
+                                if (kator === "field_temperature") {
+                                    sumKatorCrop = sumKatorCrop - 273.15
+                                }
+                                data_[kator][crop].push(parseFloat(sumKatorCrop.toFixed(2)))
+                            })
                         })
-                        data_[kator][crop] = [];
-                        months_.forEach(month_ => {
-                            let sumKatorCrop = katorFields.reduce(
-                                (accumulator, nextField) => accumulator + nextField[month_], 0
-                            )
-                            sumKatorCrop = sumKatorCrop / katorFields.length
-                            if (kator === "field_temperature") {
-                                sumKatorCrop = sumKatorCrop - 273.15
-                            }
-                            data_[kator][crop].push(parseFloat(sumKatorCrop.toFixed(2)))
-                        })
+                        resolve(data_[kator])
                     })
-                })
+                }
+                Promise.all([
+                    fillDataObj("field_ndvi"), fillDataObj("field_ndwi"),
+                    fillDataObj("field_rainfall"), fillDataObj("field_temperature")
+                ])
                 dispatch({
                     type: GET_ALL_FIELD_DATA,
                     payload: {
