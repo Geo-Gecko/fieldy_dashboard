@@ -3,7 +3,6 @@ import {
     GET_FIELD_DATA, GET_FIELD_DATA_FAIL, GET_ALL_FIELD_DATA,
     GET_ALL_FIELD_DATA_INITIATED
 } from './types';
-import objToArray from '../utilities/objectToArray'
 
 export const months_ = (() => {
     let current_month = new Date()
@@ -32,32 +31,36 @@ const getcreateputGraphData = (
         data: postData
     })
         .then(async response => {
-            let data_;
+            let indicators_ = [
+                "field_ndvi", "field_ndwi","field_rainfall", "field_temperature"
+            ]
             // dispatch two, one for all data and one for a specific field
             if (method_ === "GET" && field_id !== "") {
-                let data_array = objToArray([response.data], months_)
-                let fieldcType = layers_.features.find(
-                    field_ =>
-                     field_.properties.field_id === response.data.field_id
-                )
-                fieldcType = fieldcType.properties.field_attributes.CropType
-                let createCropObj = () => {
-                    let cropTypeObj = {};
-                    cropTypeObj[fieldcType] = [...months_.map(month_ => 0)]
-                    return cropTypeObj
-                }
-                data_ = {
-                    field_ndvi: createCropObj(),
-                    field_ndwi: createCropObj(),
-                    field_rainfall: createCropObj(),
-                    field_temperature: createCropObj()
-                }
-                Object.keys(data_).forEach(indicator_ => {
-                    months_.forEach((month_, index) => {
-                        data_[indicator_][fieldcType][index] = 
-                         parseFloat(response.data[indicator_][month_])
+                let data_ = {}
+                indicators_.forEach(kator => {
+                    // kator stands for indi_Kator
+                    data_[kator] = {}
+                    data_[kator][cropType] = [];
+                    let katorRow = response.data.find(row_ => row_.indicator === kator)
+                    months_.forEach(month_ => {
+                        if (katorRow[month_]) {
+                            if (kator === "field_temperature") {
+                                katorRow[month_] = katorRow[month_] - 273.15
+                            }
+                            data_[kator][cropType].push(parseFloat(katorRow[month_].toFixed(2)))
+                        } else {
+                            data_[kator][cropType].push(katorRow[month_])
+                        }
                     })
                 })
+                // data array for downloading data
+                let data_array = (() => {
+                    let fieldCsvData = [[...Object.keys(response.data[0])]]
+                    response.data.forEach(row_ => {
+                        fieldCsvData.push([...Object.values(row_)])
+                    })
+                    return fieldCsvData
+                })()
                 dispatch({
                     type: GET_FIELD_DATA,
                     payload: {
@@ -71,76 +74,50 @@ const getcreateputGraphData = (
                     type: GET_ALL_FIELD_DATA_INITIATED,
                     payload: true
                 })
-                let data_array = objToArray(response.data, months_)
-                let createCropObj = () => {
-                    let cropTypeObj = {};
-                    cropTypes.forEach(
-                        type_ => cropTypeObj[type_] = [...months_.map(month_ => 0)]
-                    )
-                    return cropTypeObj
-                }
-                // this variable will store the total fields for each cropType
-                let totalCropTypes = {}; cropTypes.forEach(type_ => totalCropTypes[type_] = 0)
-
-                data_ = {
-                    field_ndvi: createCropObj(),
-                    field_ndwi: createCropObj(),
-                    field_rainfall: createCropObj(),
-                    field_temperature: createCropObj()
-                }
-                let indicators = Object.keys(data_)
-
-
-                response.data.forEach(field_ => {
-                    let fieldcType = layers_.features.find(
-                        layerField =>
-                        layerField.properties.field_id === field_.field_id
-                    )
-                    // regarding if for fieldcType (cropType)
-                    // , some fields may not have a cropType attached
-                    if (fieldcType) {
-                        fieldcType = fieldcType.properties.field_attributes.CropType
-                        // this sum is probably affected if there is more than one year
-                        // ##################NOTE##################
-                        // 30th_november_2020 ==> start migration to using 2020 data
-                        totalCropTypes[fieldcType] += 1
-                        indicators.forEach(indicator_ => {
-                                months_.forEach((month_, index) => {
-                                    if (field_[indicator_][month_]) {
-                                        data_[indicator_][fieldcType][index] +=
-                                        parseFloat(field_[indicator_][month_])
-                                    }
-                                })
-                        })
-                    }
-                })
-
-                Object.keys(data_).forEach(indicator_ => {
-                    Object.keys(data_[indicator_]).forEach(cType =>{
-                        data_[indicator_][cType] = data_[indicator_][cType].map(value_ => {
-                            // dividing by 2 to consider only the one year of 2019
-                            // 30th_november_2020 ==> start migration to using 2020 data
-                            let new_value = value_ / totalCropTypes[cType]
-                            new_value = parseFloat(new_value.toFixed(2))
-                            return new_value
-                        })
+                let data_ = {}
+                let data_array = (() => {
+                    let fieldCsvData = [[...Object.keys(response.data[0])]]
+                    response.data.forEach(row_ => {
+                        fieldCsvData.push([...Object.values(row_)])
                     })
-                })
-
-                // convert temperature from Kelvin
-                Object.keys(data_.field_temperature).forEach(croptype => {
-                    data_.field_temperature[croptype] =
-                     data_.field_temperature[croptype].map(
-                        value_ => {
-                            if (value_) {
-                                let diff = value_ - 273.15
-                                diff = parseFloat(diff.toFixed(2))
-                                return diff
-                            }
-                            return value_
-                        }
-                    )
-                })
+                    return fieldCsvData
+                })()
+                // this is done to ensure process below runs in parallel
+                let fillDataObj = kator => {
+                    return new Promise(resolve => {
+                        // kator stands for indi_Kator
+                        data_[kator] = {}
+                        cropTypes.forEach(crop => {
+                            let katorFields = response.data.filter(katorArr => {
+                                let correspLayer = layers_.features.find(
+                                    field_ =>
+                                     field_.properties.field_id === katorArr.field_id
+                                )
+                                if (correspLayer) {
+                                    return correspLayer.properties.field_attributes.CropType === crop
+                                     && katorArr.indicator === kator
+                                }
+                                return false
+                            })
+                            data_[kator][crop] = [];
+                            months_.forEach(month_ => {
+                                let sumKatorCrop = katorFields.reduce(
+                                    (accumulator, nextField) => accumulator + nextField[month_], 0
+                                )
+                                sumKatorCrop = sumKatorCrop / katorFields.length
+                                if (kator === "field_temperature") {
+                                    sumKatorCrop = sumKatorCrop - 273.15
+                                }
+                                data_[kator][crop].push(parseFloat(sumKatorCrop.toFixed(2)))
+                            })
+                        })
+                        resolve(data_[kator])
+                    })
+                }
+                Promise.all([
+                    fillDataObj("field_ndvi"), fillDataObj("field_ndwi"),
+                    fillDataObj("field_rainfall"), fillDataObj("field_temperature")
+                ])
                 dispatch({
                     type: GET_ALL_FIELD_DATA,
                     payload: {
