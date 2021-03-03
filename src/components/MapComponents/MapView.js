@@ -15,9 +15,11 @@ import {
 import { GET_ALL_FIELD_DATA_INITIATED } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData from '../../actions/graphActions';
+import getGridData from '../../actions/gridActions';
 import { attrCreator } from '../../utilities/attrCreator';
 import ShMap from './shMap';
 import createGrid from './shGrid';
+import axiosInstance from '../../actions/axiosInstance'
 
 
 class MapView extends Component {
@@ -64,6 +66,7 @@ class MapView extends Component {
 
     // ON 2020-dec-11-friday solved the data-flow through the code. yipeee!!
     // this is being called twice and needs to be changed.
+    this.props.dispatch(getGridData());
     await this.props.dispatch(getPolygonLayers());
   }
 
@@ -142,15 +145,17 @@ class MapView extends Component {
       let leafletGeoJSON = this.props.LayersPayload
 
       leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
-      leafletGeoJSON.eachLayer( layer => {
-        let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
-        layer.bindPopup(
-          attr_list,
-          this.state.userType === "EDITOR" ?
-          {editable: true, removable: true} : {}
-        );
-        leafletFG.addLayer(layer);
-      });
+      if (!this.props.gridLayer.features.length) {
+        leafletGeoJSON.eachLayer( layer => {
+          let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
+          layer.bindPopup(
+            attr_list,
+            this.state.userType === "EDITOR" ?
+            {editable: true, removable: true} : {}
+          );
+          leafletFG.addLayer(layer);
+        });
+      }
 
       // store the ref for future access to content
 
@@ -162,10 +167,34 @@ class MapView extends Component {
     if (this._editableFG && !this.state.grid) {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
+          console.time()
           let grid = createGrid(
             this._editableFG, this.myMap, this.props.LayersPayload,
-            this.props.allFieldsIndicatorArray
+            this.props.allFieldsIndicatorArray, this.props.gridLayer
           )
+          console.timeEnd()
+
+          // console.log(grid.toGeoJSON())
+          // SCRIPT FOR CREATING GRIDS
+          // let gridFeatures = grid.toGeoJSON()
+          // return axiosInstance
+          //     .post('/layers/gridlayers/', gridFeatures.features[0])
+          //     .then(response => {
+          //         console.log("Layer saved", response)
+          //     })
+          //     .catch(error => {
+          //     console.log(error)
+          //     });
+          // gridFeatures.features.forEach(ft_ => {
+          //   return axiosInstance
+          //       .post('/layers/gridlayers/', ft_)
+          //       .then(response => {
+          //           console.log("Layer saved", response)
+          //       })
+          //       .catch(error => {
+          //       console.log(error)
+          //       });
+          // })
           await this.setState({...this.state, grid})
           this.myMap.current.leafletElement.addLayer(this.state.grid)
         }
@@ -236,6 +265,7 @@ const mapStateToProps = state => ({
   LayersPayload: state.layers.LayersPayload,
   cropTypes: state.layers.cropTypes,
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
+  gridLayer: state.grid.gridPayload
 });
 
 const matchDispatchToProps = dispatch => ({
