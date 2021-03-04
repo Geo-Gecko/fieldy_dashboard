@@ -45,10 +45,6 @@ let createGrid = (
   leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
   let width = bounds._northEast.lng - bounds._southWest.lng;
   let height = bounds._northEast.lat - bounds._southWest.lat;
-
-  // this is to be commented out. And no layers added if grid ain't there.
-  // myMap.current.leafletElement.removeLayer(_editableFG.leafletElement)
-
   //here we modify the number of gridcells, can be changed to account for closer clusters of gridcells
   var countX = 10; //cells by x
   var countY = 10; //cells by y

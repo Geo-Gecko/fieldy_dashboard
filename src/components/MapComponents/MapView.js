@@ -15,7 +15,7 @@ import {
 import { GET_ALL_FIELD_DATA_INITIATED } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData from '../../actions/graphActions';
-import getGridData from '../../actions/gridActions';
+import { getGridData } from '../../actions/gridActions';
 import { attrCreator } from '../../utilities/attrCreator';
 import ShMap from './shMap';
 import createGrid from './shGrid';
@@ -167,34 +167,12 @@ class MapView extends Component {
     if (this._editableFG && !this.state.grid) {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
-          console.time()
           let grid = createGrid(
             this._editableFG, this.myMap, this.props.LayersPayload,
             this.props.allFieldsIndicatorArray, this.props.gridLayer
           )
-          console.timeEnd()
 
-          // console.log(grid.toGeoJSON())
-          // SCRIPT FOR CREATING GRIDS
-          // let gridFeatures = grid.toGeoJSON()
-          // return axiosInstance
-          //     .post('/layers/gridlayers/', gridFeatures.features[0])
-          //     .then(response => {
-          //         console.log("Layer saved", response)
-          //     })
-          //     .catch(error => {
-          //     console.log(error)
-          //     });
-          // gridFeatures.features.forEach(ft_ => {
-          //   return axiosInstance
-          //       .post('/layers/gridlayers/', ft_)
-          //       .then(response => {
-          //           console.log("Layer saved", response)
-          //       })
-          //       .catch(error => {
-          //       console.log(error)
-          //       });
-          // })
+          // SCRIPT FOR SAVING GRIDS GOES HERE
           await this.setState({...this.state, grid})
           this.myMap.current.leafletElement.addLayer(this.state.grid)
         }
