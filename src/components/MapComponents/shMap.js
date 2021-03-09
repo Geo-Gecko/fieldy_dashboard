@@ -126,20 +126,23 @@ let ShMap = ({
           Save current view
             </button>
       </Control>
-      <Control position="topright" >
-        <style type="text/css">
-          {`
-              .grid-view {
-                box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                border-radius: 4px;
-                border: none;
-              }
-              `}
-        </style>
-        <button className="grid-view" onClick={addGridLayers}>Add Grid</button>
-        {' '}
-        <button className="grid-view" onClick={removeGridLayers}>Remove Grid</button>
-      </Control>
+      {
+        props.gridLayer.features && props.gridLayer.features.length ? null :
+        <Control position="topright" >
+          <style type="text/css">
+            {`
+                .grid-view {
+                  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+                  border-radius: 4px;
+                  border: none;
+                }
+                `}
+          </style>
+          <button className="grid-view" onClick={addGridLayers}>Add Grid</button>
+          {' '}
+          <button className="grid-view" onClick={removeGridLayers}>Remove Grid</button>
+        </Control>
+      }
       <FeatureGroup
         ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
         onContextmenu={handleRightClick}

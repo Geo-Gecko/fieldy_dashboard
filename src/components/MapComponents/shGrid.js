@@ -5,9 +5,11 @@ import { inside, colorGrid, bindGridPopup } from '../../utilities/gridFns';
 
 let maxCount = 0;
 
-let createGrid = (
-  _editableFG, myMap, leafletGeoJSON, indicatorsArray, savedGrid
-) => {
+let createGrid = mapViewInst => {
+  let { _editableFG, myMap } = mapViewInst
+  let { LayersPayload, allFieldsIndicatorArray, cropTypes } = mapViewInst.props
+  let savedGrid = mapViewInst.props.gridLayer
+
   if (savedGrid.features.length) {
 
     savedGrid.features.forEach(gridLayer => {
@@ -29,7 +31,8 @@ let createGrid = (
       if (fieldCount > 0) {
         bindGridPopup(
           layer, fieldCount,
-          layer.feature.properties.field_attributes.grid_summary
+          layer.feature.properties.field_attributes.grid_summary,
+          cropTypes, mapViewInst.state.userType, LayersPayload
         )
       }
     })
@@ -40,9 +43,9 @@ let createGrid = (
   } else {
 
   let prevMonth = months_[months_.length - 1]
-  let neededMonth = indicatorsArray[0].indexOf(prevMonth)
+  let neededMonth = allFieldsIndicatorArray[0].indexOf(prevMonth)
   let bounds = _editableFG.leafletElement.getBounds();
-  leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
+  LayersPayload = new L.GeoJSON(LayersPayload)
   let width = bounds._northEast.lng - bounds._southWest.lng;
   let height = bounds._northEast.lat - bounds._southWest.lat;
   //here we modify the number of gridcells, can be changed to account for closer clusters of gridcells
@@ -116,14 +119,14 @@ let createGrid = (
       "field_temperature": [0, 0, 0]
     }
 
-    leafletGeoJSON.eachLayer(fieldLayer => {
+    LayersPayload.eachLayer(fieldLayer => {
 
       let layerLatLng = fieldLayer.getBounds().getCenter()
       if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
         fieldCount++
         let fieldId = fieldLayer.feature.properties.field_id
         Object.keys(grid_summary).forEach(key => {
-          let fieldArray = indicatorsArray.find(
+          let fieldArray = allFieldsIndicatorArray.find(
             fieldArr => fieldArr[0] === fieldId && fieldArr[1] === key
           )
           if (fieldArray) {

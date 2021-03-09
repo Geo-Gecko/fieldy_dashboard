@@ -36,7 +36,7 @@ export let attrCreator = (layer, cropTypes, userType) => {
       <strong>Field Identifier: </strong><small> ${feature_.properties.field_id} </small> <br/>
       <strong>CropType:</strong> ${feature_.properties.field_attributes.CropType}<br/>`
     attr_list += `
-      <strong>Data Collected:</strong> ${
+      <strong>Date Collected:</strong> ${
         feature_.properties.field_attributes.DataCollected ?
          feature_.properties.field_attributes.DataCollected : ""
       }`

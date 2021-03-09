@@ -50,7 +50,9 @@ export const colorGrid = grid => {
   })
 }
 
-export const bindGridPopup = (layer, fieldCount, grid_summary) => {
+export const bindGridPopup = (
+  layer, fieldCount, grid_summary, cropTypes=[], userType="", LayersPayload={}
+) => {
   layer.bindPopup(
     `
     <strong>Field Count: </strong><small> ${fieldCount} </small> <br/><br/>
@@ -67,6 +69,6 @@ export const bindGridPopup = (layer, fieldCount, grid_summary) => {
     <strong>Min, Max Precipitation: </strong><small> ${grid_summary["field_rainfall"][1].toFixed(2)}, ${grid_summary["field_rainfall"][2].toFixed(2)} </small> <br/>`
       : `<br/>`}
     
-    `
+    `, {removable: Object.keys(LayersPayload).length ? true : false, cropTypes, userType, LayersPayload}
   )
 }

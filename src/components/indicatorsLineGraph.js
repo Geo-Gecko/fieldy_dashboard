@@ -41,7 +41,8 @@ class IndicatorsLineGraph extends React.Component {
       ...this.state,
       cropTypes,
       allFieldsIndicatorArray: this.props.allFieldsIndicatorArray,
-      dataset: this.props.allFieldData["field_rainfall"][cropTypes[0]]
+      dataset: this.props.allFieldData["field_rainfall"] ?
+       this.props.allFieldData["field_rainfall"][cropTypes[0]] : []
     })
   }
 
@@ -64,7 +65,8 @@ class IndicatorsLineGraph extends React.Component {
       this.setState({
         ...this.state,
         cropTypes,
-        dataset: this.props.allFieldData["field_rainfall"][cropTypes[0]],
+        dataset: this.props.allFieldData["field_rainfall"] ?
+         this.props.allFieldData["field_rainfall"][cropTypes[0]] : [],
         selectedCropType: cropTypes[0],
         selectedIndicator: "field_rainfall"
       })
