@@ -7,6 +7,7 @@ import {Dropdown, DropdownButton, ButtonGroup, Button} from 'react-bootstrap';
 
 import getcreateputGraphData, { months_ } from '../actions/graphActions';
 import { getPolygonLayers } from '../actions/layerActions';
+import { getIndicatorData } from '../actions/gridActions';
 
 class IndicatorsLineGraph extends React.Component {
   constructor() {
@@ -29,8 +30,10 @@ class IndicatorsLineGraph extends React.Component {
   }
 
   async componentDidMount() {
+    await this.props.dispatch(getIndicatorData())
     await this.props.dispatch(getcreateputGraphData(
-      {}, 'GET', "", "", this.props.cropTypes, this.props.LayersPayload
+      {}, 'GET', "", "", this.props.cropTypes,
+      this.props.LayersPayload, this.props.katorPayload
     ))
     let cropTypes = this.props.cropTypes
     // this isn't setting croptypes for admins
@@ -228,7 +231,8 @@ const mapStateToProps = state => ({
   fieldId: state.graphs.fieldId,
   cropType: state.graphs.cropType,
   cropTypes: state.layers.cropTypes,
-  LayersPayload: state.layers.LayersPayload
+  LayersPayload: state.layers.LayersPayload,
+  katorPayload: state.grid.katorPayload
 });
 
 const matchDispatchToProps = dispatch => ({
