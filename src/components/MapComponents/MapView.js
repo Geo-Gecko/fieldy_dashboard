@@ -19,7 +19,6 @@ import { getGridData } from '../../actions/gridActions';
 import { attrCreator } from '../../utilities/attrCreator';
 import ShMap from './shMap';
 import createGrid from './shGrid';
-import axiosInstance from '../../actions/axiosInstance'
 
 
 class MapView extends Component {
@@ -167,10 +166,7 @@ class MapView extends Component {
     if (this._editableFG && !this.state.grid) {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
-          let grid = createGrid(
-            this._editableFG, this.myMap, this.props.LayersPayload,
-            this.props.allFieldsIndicatorArray, this.props.gridLayer
-          )
+          let grid = createGrid(this)
 
           // SCRIPT FOR SAVING GRIDS GOES HERE
           await this.setState({...this.state, grid})

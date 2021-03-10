@@ -2,6 +2,9 @@ import L from 'leaflet';
 import axiosInstance from '../actions/axiosInstance';
 import { toast } from 'react-toastify';
 
+import { inside } from '../utilities/gridFns';
+import { attrCreator } from '../utilities/attrCreator';
+
 // Adding nametag labels to all popup-able leaflet layers
 const sourceTypes = ['Layer','Circle','CircleMarker','Marker','Polyline','Polygon','ImageOverlay','VideoOverlay','SVGOverlay','Rectangle','LayerGroup','FeatureGroup','GeoJSON']
 
@@ -15,7 +18,14 @@ sourceTypes.forEach( type => {
 L.Popup.mergeOptions({
    removable: false,
    editable: false,
+   // wanted to add these but won't work
+   userType: undefined,
+   cropTypes: [],
+   LayersPayload: {}
 })
+
+let shownFields = [];
+let removedGridCell;
 
 // Modifying the popup mechanics
 L.Popup.include({
@@ -67,7 +77,11 @@ L.Popup.include({
          var userActionButtons = this._userActionButtons = L.DomUtil.create('div', prefix + '-useraction-buttons', wrapper);
          let removeButton = this._removeButton = L.DomUtil.create('a', prefix + '-remove-button', userActionButtons);
          removeButton.href = '#close';
-         removeButton.innerHTML = `Remove this ${nametag}`;
+         if (this._source.feature.properties.count) {
+            removeButton.innerHTML = `Show fields in this cell`;
+         } else {
+            removeButton.innerHTML = `Remove this ${nametag}`;
+         }
          this.options.minWidth = 110;
 
          L.DomEvent.on(removeButton, 'click', this._onRemoveButtonClick, this);
@@ -99,15 +113,55 @@ L.Popup.include({
 
    _onRemoveButtonClick: function (e) {
       let deleted_layer = this._source
-      deleted_layer.remove();
-      axiosInstance
-      .delete(`/layers/getupdatedeletelayer/${deleted_layer.feature.properties.field_id}/`)
-      .then(() => {
-          console.log("Layer has been deleted")
-      })
-      .catch(error => {
-      console.log(error)
-      });
+      if (deleted_layer.feature.properties.count) {
+         let poly = [
+            [deleted_layer.getLatLngs()[0][0].lat, deleted_layer.getLatLngs()[0][0].lng],
+            [deleted_layer.getLatLngs()[0][1].lat, deleted_layer.getLatLngs()[0][1].lng],
+            [deleted_layer.getLatLngs()[0][2].lat, deleted_layer.getLatLngs()[0][2].lng],
+            [deleted_layer.getLatLngs()[0][3].lat, deleted_layer.getLatLngs()[0][3].lng]
+         ]
+         let leafletGeoJSON = this.options.LayersPayload
+         leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
+
+         if (removedGridCell) {
+            deleted_layer._map.addLayer(removedGridCell)
+         }
+         shownFields.forEach(fieldInstance => {
+            deleted_layer._map.removeLayer(fieldInstance)
+         })
+         leafletGeoJSON.eachLayer(fieldLayer => {
+            let layerLatLng = fieldLayer.getBounds().getCenter()
+            if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
+               console.log("passed thru here")
+               // this should be added to the FeatureGroup. -- bb_ron
+               deleted_layer._map.eachLayer(mapLayer => {
+                  // get featuregroup instance below
+                  if (mapLayer._events && mapLayer._events.contextmenu) {
+                     let attr_list = attrCreator(fieldLayer, this.options.cropTypes, this.options.userType)
+                     fieldLayer.bindPopup(
+                       attr_list,
+                       this.options.userType === "EDITOR" ?
+                       {editable: true, removable: true} : {}
+                     );
+                     mapLayer.addLayer(fieldLayer)
+                     shownFields.push(fieldLayer)
+                  }
+               })
+            }
+         })
+         deleted_layer.remove();
+         removedGridCell = deleted_layer
+      } else {
+         deleted_layer.remove();
+         axiosInstance
+         .delete(`/layers/getupdatedeletelayer/${deleted_layer.feature.properties.field_id}/`)
+         .then(() => {
+             console.log("Layer has been deleted")
+         })
+         .catch(error => {
+         console.log(error)
+         });
+      }
       L.DomEvent.stop(e);
    },
 
