@@ -9,7 +9,7 @@ import ReactGA from 'react-ga';
 
 // our components
 import {
-  postPointLayer, postPolygonLayer, getPolygonLayers,
+  postPolygonLayer, getPolygonLayers,
   deletePolygonLayer, updatePolygonLayer
 } from '../../actions/layerActions';
 import {
@@ -258,8 +258,8 @@ const mapStateToProps = state => ({
 });
 
 const matchDispatchToProps = dispatch => ({
-  postPointLayer, postPolygonLayer,
-  deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail,
+  postPolygonLayer, deletePolygonLayer,
+  updatePolygonLayer, getcreateputUserDetail,
   dispatch
 });
 
