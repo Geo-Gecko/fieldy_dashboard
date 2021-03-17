@@ -16,6 +16,7 @@ import { GET_ALL_FIELD_DATA_INITIATED } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData from '../../actions/graphActions';
 import { getGridData } from '../../actions/gridActions';
+import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
 import ShMap from './shMap';
 import createGrid from './shGrid';
@@ -66,6 +67,7 @@ class MapView extends Component {
     // ON 2020-dec-11-friday solved the data-flow through the code. yipeee!!
     // this is being called twice and needs to be changed.
     this.props.dispatch(getGridData());
+    this.props.dispatch(getFCastData())
     await this.props.dispatch(getPolygonLayers());
   }
 

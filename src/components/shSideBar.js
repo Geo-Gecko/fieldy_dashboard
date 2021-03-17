@@ -244,8 +244,7 @@ class ShSideBar extends Component {
                  : <React.Fragment />}
               </Tab>
               {
-                this.state.user.uid === "5fa113599e2a01000a655cee" ||
-                 this.state.user.uid === "5fa114919e2a01000a655cef" ?
+                this.props.forecastData.length ?
                 <Tab
                 id="forecast"
                 header="FORECAST"
@@ -337,7 +336,8 @@ const mapStateToProps = state => ({
   initiateGetData: state.graphs.initiateGetAllFieldData,
   forecastFieldId: state.graphs.forecastFieldId,
   LayersPayload: state.layers.LayersPayload,
-  cropTypes: state.layers.cropTypes
+  cropTypes: state.layers.cropTypes,
+  forecastData: state.forecast.foreCastPayload
 });
 
 const matchDispatchToProps = dispatch => ({
