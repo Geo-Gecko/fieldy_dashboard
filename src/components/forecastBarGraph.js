@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
-import { forecastData } from './forecastData'
 
 import { FORECAST_FIELD_ID } from '../actions/types'
 
@@ -32,7 +31,7 @@ class ForecastBarGraph extends React.Component {
 
       let isValid = false
 
-      forecastData.forEach(element => {
+      this.props.forecastData.forEach(element => {
         if (element.field_id === selectedfield) {
           isValid = true;
           labels.push(element.day.substring(6, 10));
@@ -118,6 +117,7 @@ class ForecastBarGraph extends React.Component {
 }
 const mapStateToProps = state => ({
   fieldId: state.graphs.fieldId,
+  forecastData: state.forecast.foreCastPayload
 });
 
 const matchDispatchToProps = dispatch => ({
