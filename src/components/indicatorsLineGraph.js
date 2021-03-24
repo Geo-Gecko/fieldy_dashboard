@@ -58,7 +58,7 @@ class IndicatorsLineGraph extends React.Component {
         selectedIndicator: "field_rainfall"
       })
     } else if (
-      this.props.fieldId === "" &&
+      (this.props.fieldId === "" && !Object.keys(this.props.groupFieldData).length ) &&
        prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
     ) {
       let cropTypes = this.props.cropTypes
@@ -67,6 +67,19 @@ class IndicatorsLineGraph extends React.Component {
         cropTypes,
         dataset: this.props.allFieldData["field_rainfall"] ?
          this.props.allFieldData["field_rainfall"][cropTypes[0]] : [],
+        selectedCropType: cropTypes[0],
+        selectedIndicator: "field_rainfall"
+      })
+    } else if (
+      Object.keys(this.props.groupFieldData).length &&
+       prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
+    ) {
+      let cropTypes = this.props.cropTypes
+      this.setState({
+        ...this.state,
+        cropTypes,
+        dataset: this.props.groupFieldData["field_rainfall"] ?
+         this.props.groupFieldData["field_rainfall"][cropTypes[0]] : [],
         selectedCropType: cropTypes[0],
         selectedIndicator: "field_rainfall"
       })
@@ -230,6 +243,8 @@ const mapStateToProps = state => ({
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
   field_data: state.graphs.field_data,
   allFieldData: state.graphs.allFieldData,
+  groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
+  groupFieldData: state.graphs.groupFieldData,
   fieldId: state.graphs.fieldId,
   cropType: state.graphs.cropType,
   cropTypes: state.layers.cropTypes,

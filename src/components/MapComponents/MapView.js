@@ -18,6 +18,7 @@ import getcreateputGraphData from '../../actions/graphActions';
 import { getGridData } from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
+import { getKatorsInCell, newkatorArr } from '../../utilities/IndicatorArr';
 import ShMap from './shMap';
 import createGrid from './shGrid';
 
@@ -169,6 +170,15 @@ class MapView extends Component {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
           let grid = createGrid(this)
+          grid.on("contextmenu", e => {
+            let indicatorsInCell = getKatorsInCell(
+              e.layer, this.props.allFieldsIndicatorArray,
+              new L.GeoJSON(this.props.LayersPayload)
+            )
+            this.props.dispatch(newkatorArr(
+              indicatorsInCell, this.props.cropTypes, this.props.LayersPayload
+            ))
+          })
 
           // SCRIPT FOR SAVING GRIDS GOES HERE
           await this.setState({...this.state, grid})

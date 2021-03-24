@@ -55,13 +55,16 @@ class ShSideBar extends Component {
 
       if (
         prevState.collapsed === true &&
-        (prevState.selected === "indicators"
-          || prevState.selected === "overview"
-          || prevState.selected === "forecast") &&
+        [
+          "indicators", "overview", "forecast"
+        ].includes(prevState.selected) &&
         prevState.showLogout === false &&
         prevState.showIndicatorInfo === false &&
         this.props.noFieldData === false &&
-        this.props.fieldId !== ""
+        (
+          this.props.fieldId !== "" ||
+           Object.keys(this.props.groupFieldData).length
+        )
       ) {
         // this if clause considers a particular field
         // all fields are hit by onOpen function
@@ -97,7 +100,9 @@ class ShSideBar extends Component {
       this.props.dispatch({
           type: GET_ALL_FIELD_DATA,
           payload: {
-            data_: this.props.allFieldData, collapsed: false
+            data_: this.props.allFieldData,
+            collapsed: false,
+            allFieldsIndicatorArray: this.props.allFieldsIndicatorArray
           }
       })
       this.setState({
@@ -121,7 +126,8 @@ class ShSideBar extends Component {
         this.props.dispatch({
             type: GET_ALL_FIELD_DATA,
             payload: {
-              data_: this.props.allFieldData, collapsed: false
+              data_: this.props.allFieldData, collapsed: false,
+              allFieldsIndicatorArray: this.props.allFieldsIndicatorArray
             }
         })
         this.setState({
@@ -137,7 +143,11 @@ class ShSideBar extends Component {
           leafletGeoJSON.features.forEach(feature_ => {
             let totalArea =
              L.GeometryUtil.geodesicArea(
-              feature_.geometry.coordinates[0].map(x => new L.latLng(x.reverse()))
+              //  [...x] returns a copy of x otherwise the corrdinates in 
+              // this.props.LayersPayload are reversed in place. This affected the
+              // function for right clicking a graph cell to pull up the indicator
+              // line graph --- 24/03/2021
+              feature_.geometry.coordinates[0].map(x => new L.latLng([...x].reverse()))
              ).toFixed(2)
              if (feature_.properties.field_attributes.CropType) {
                cropType = feature_.properties.field_attributes.CropType
@@ -330,6 +340,7 @@ class ShSideBar extends Component {
 const mapStateToProps = state => ({
   field_data: state.graphs.field_data,
   allFieldData: state.graphs.allFieldData,
+  allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,  
   fieldId: state.graphs.fieldId,
   SidePanelCollapsed: state.graphs.SidePanelCollapsed,
   noFieldData: state.graphs.noFieldData,
@@ -337,7 +348,8 @@ const mapStateToProps = state => ({
   forecastFieldId: state.graphs.forecastFieldId,
   LayersPayload: state.layers.LayersPayload,
   cropTypes: state.layers.cropTypes,
-  forecastData: state.forecast.foreCastPayload
+  forecastData: state.forecast.foreCastPayload,
+  groupFieldData: state.graphs.groupFieldData
 });
 
 const matchDispatchToProps = dispatch => ({

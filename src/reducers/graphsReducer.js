@@ -2,6 +2,7 @@ import {
     GET_FIELD_DATA,
     GET_FIELD_DATA_FAIL,
     GET_ALL_FIELD_DATA,
+    GET_GROUP_FIELD_DATA,
     GET_ALL_FIELD_DATA_INITIATED,
     FORECAST_FIELD_ID
 } from '../actions/types';
@@ -11,10 +12,12 @@ const initialState = {
     cropType: "",
     field_data: {},
     allFieldData: {},
+    groupFieldData: {},
     SidePanelCollapsed: true,
     noFieldData: false,
     initiateGetAllFieldData: false,
     allFieldsIndicatorArray: [],
+    groupFieldIndicatorArray: [],
     FieldindicatorArray: [],
     forecastFieldId: undefined
 };
@@ -31,6 +34,7 @@ const graphsReducer = (state = initialState, action) => {
                 ...state,
                 FieldindicatorArray: action.payload.FieldindicatorArray,
                 field_data: action.payload.data_,
+                groupFieldData: {},
                 fieldId: action.payload.fieldId,
                 cropType: action.payload.cropType,
                 SidePanelCollapsed: true,
@@ -42,11 +46,22 @@ const graphsReducer = (state = initialState, action) => {
                 ...state,
                 allFieldsIndicatorArray: action.payload.allFieldsIndicatorArray,
                 allFieldData: action.payload.data_,
+                groupFieldData: {},
                 fieldId: "",
-                SidePanelCollapsed: true,
+                SidePanelCollapsed: action.payload.collapsed,
                 noFieldData: false,
                 initiateGetAllFieldData: false
             };
+            case GET_GROUP_FIELD_DATA:
+                return {
+                    ...state,
+                    groupFieldIndicatorArray: action.payload.allFieldsIndicatorArray,
+                    groupFieldData: action.payload.data_,
+                    fieldId: "",
+                    SidePanelCollapsed: action.payload.collapsed,
+                    noFieldData: false,
+                    initiateGetAllFieldData: false
+                };
         case GET_FIELD_DATA_FAIL:
             return {
                 ...state,
