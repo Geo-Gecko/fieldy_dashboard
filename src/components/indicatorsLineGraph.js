@@ -74,13 +74,14 @@ class IndicatorsLineGraph extends React.Component {
       Object.keys(this.props.groupFieldData).length &&
        prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
     ) {
-      let cropTypes = this.props.cropTypes
+      let { groupFieldData } = this.props
+      let groupCrops = Object.keys(groupFieldData.field_rainfall)
       this.setState({
         ...this.state,
-        cropTypes,
         dataset: this.props.groupFieldData["field_rainfall"] ?
-         this.props.groupFieldData["field_rainfall"][cropTypes[0]] : [],
-        selectedCropType: cropTypes[0],
+         this.props.groupFieldData["field_rainfall"][groupCrops[0]] : [],
+         FieldindicatorArray: this.props.FieldindicatorArray,
+        selectedCropType: groupCrops[0],
         selectedIndicator: "field_rainfall"
       })
     }
@@ -88,12 +89,14 @@ class IndicatorsLineGraph extends React.Component {
 
   getEvent = eventKey => {
     if (typeof(eventKey) === "string") {
-      let { allFieldData, fieldId, field_data } = this.props;
+      let { allFieldData, fieldId, field_data, groupFieldData } = this.props;
       let cropTypes = this.state.cropTypes;
       if (cropTypes.includes(eventKey)) {
         this.setState({
-          dataset: fieldId === "" ?
+          dataset: fieldId === "" && !Object.keys(groupFieldData).length ?
            allFieldData[this.state.selectedIndicator][eventKey]
+            :fieldId === "" && Object.keys(groupFieldData).length ?
+            groupFieldData[this.state.selectedIndicator][eventKey]
             : field_data[this.state.selectedIndicator][eventKey],
           selectedCropType: eventKey
         })
@@ -114,6 +117,7 @@ class IndicatorsLineGraph extends React.Component {
       displayedIndicator, indicatorObj, allFieldsIndicatorArray,
       selectedCropType, FieldindicatorArray, dataset, cropTypes
      } = this.state
+     let { groupFieldIndicatorArray } = this.props;
 
     return (
       <React.Fragment>
@@ -163,11 +167,21 @@ class IndicatorsLineGraph extends React.Component {
         >
           {/* NOTE: this should remain as getting from redux state because actual
           croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
-          {this.props.fieldId === "" ? cropTypes.map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
-                  {type_}
-              </Dropdown.Item>
-          ) : ""}
+          {
+            this.props.fieldId === "" &&
+            Object.keys(this.props.groupFieldData).length ?
+            Object.keys(this.props.groupFieldData.field_rainfall).map(type_ => 
+                <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
+                    {type_}
+                </Dropdown.Item>
+            ) :
+              this.props.fieldId === "" &&
+              !Object.keys(this.props.groupFieldData).length ? cropTypes.map(type_ => 
+                <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
+                    {type_}
+                </Dropdown.Item>
+            ) : ""
+          }
         </DropdownButton>
         {' '}
         <Button id="indicator_download_button">
@@ -178,6 +192,8 @@ class IndicatorsLineGraph extends React.Component {
              this.props.fieldId ?
               FieldindicatorArray ? FieldindicatorArray : []
                :
+              Object.keys(this.props.groupFieldData).length ?
+              groupFieldIndicatorArray :
               allFieldsIndicatorArray
             }
            target="_blank"
@@ -241,6 +257,7 @@ class IndicatorsLineGraph extends React.Component {
 const mapStateToProps = state => ({
   FieldindicatorArray: state.graphs.FieldindicatorArray,
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
+  groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
   field_data: state.graphs.field_data,
   allFieldData: state.graphs.allFieldData,
   groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,

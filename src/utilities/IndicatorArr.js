@@ -27,9 +27,9 @@ export const getKatorsInCell = (gridCell, indicatorArr, fields) => {
     let layerLatLng = fieldLayer.getBounds().getCenter()
     if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
       let fieldId = fieldLayer.feature.properties.field_id
-      let katorInCell = originalRespObj.find(kator => kator.field_id === fieldId)
-      if (katorInCell) {
-        Kators.push(katorInCell)
+      let katorInCell = originalRespObj.filter(kator => kator.field_id === fieldId)
+      if (katorInCell.length) {
+        Kators.push(...katorInCell)
       }
     }
   })
@@ -69,17 +69,19 @@ export const newkatorArr = (
           }
           return false
         })
-        data_[kator][crop] = [];
-        months_.forEach(month_ => {
-          let sumKatorCrop = katorFields.reduce(
-            (accumulator, nextField) => accumulator + nextField[month_], 0
-          )
-          sumKatorCrop = sumKatorCrop / katorFields.length
-          if (kator === "field_temperature") {
-            sumKatorCrop = sumKatorCrop - 273.15
-          }
-          data_[kator][crop].push(parseFloat(sumKatorCrop.toFixed(2)))
-        })
+        if (katorFields.length) {
+          data_[kator][crop] = [];
+          months_.forEach(month_ => {
+            let sumKatorCrop = katorFields.reduce(
+              (accumulator, nextField) => accumulator + nextField[month_], 0
+            )
+            sumKatorCrop = sumKatorCrop / katorFields.length
+            if (kator === "field_temperature") {
+              sumKatorCrop = sumKatorCrop - 273.15
+            }
+            data_[kator][crop].push(parseFloat(sumKatorCrop.toFixed(2)))
+          })
+        }
       })
       resolve(data_[kator])
     })
