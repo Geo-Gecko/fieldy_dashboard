@@ -1,10 +1,9 @@
 import { inside } from './gridFns';
 import { months_ } from '../actions/graphActions';
 import {
-  GET_GROUP_FIELD_DATA, GET_ALL_FIELD_DATA_INITIATED
+  GET_ALL_FIELD_DATA_INITIATED
 } from '../actions/types';
 
-let storedindicatorArr;
 
 export const getKatorsInCell = (gridCell, indicatorArr, fields) => {
   let Kators = []
@@ -37,7 +36,7 @@ export const getKatorsInCell = (gridCell, indicatorArr, fields) => {
 }
 
 export const newkatorArr = (
-  katorArr, cropTypes, layers_
+  katorArr, cropTypes, layers_, caseType
 ) => async dispatch => {
   await dispatch({
       type: GET_ALL_FIELD_DATA_INITIATED,
@@ -91,7 +90,7 @@ export const newkatorArr = (
     fillDataObj("field_rainfall"), fillDataObj("field_temperature")
   ])
   dispatch({
-    type: GET_GROUP_FIELD_DATA,
+    type: caseType,
     payload: {
       data_, collapsed: false,
       allFieldsIndicatorArray: data_array

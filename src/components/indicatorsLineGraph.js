@@ -224,7 +224,14 @@ class IndicatorsLineGraph extends React.Component {
                 display: true,
                 position: "top",
                 fontSize: 18,
-                text: `${this.props.fieldId ? "Field Identifier: " + this.props.fieldId : "All fields"}`
+                text: `${
+                  this.props.fieldId ? "Field Identifier: " + this.props.fieldId :
+                  Object.keys(this.props.groupFieldData).length ?
+                  // division of 4 is because there are 4 indicators
+                   `Indicator Chart for ${
+                    (this.props.groupFieldIndicatorArray.length - 1) / 4
+                   } fields` : "All fields"
+                }`
             },
               legend: {
                   display: true,

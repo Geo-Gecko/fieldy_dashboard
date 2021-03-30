@@ -12,7 +12,9 @@ import {
   postPointLayer, postPolygonLayer, getPolygonLayers,
   deletePolygonLayer, updatePolygonLayer
 } from '../../actions/layerActions';
-import { GET_ALL_FIELD_DATA_INITIATED } from '../../actions/types';
+import {
+  GET_ALL_FIELD_DATA_INITIATED, GET_GROUP_FIELD_DATA
+} from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData from '../../actions/graphActions';
 import { getGridData } from '../../actions/gridActions';
@@ -176,7 +178,8 @@ class MapView extends Component {
               new L.GeoJSON(this.props.LayersPayload)
             )
             this.props.dispatch(newkatorArr(
-              indicatorsInCell, this.props.cropTypes, this.props.LayersPayload
+              indicatorsInCell, this.props.cropTypes,
+              this.props.LayersPayload, GET_GROUP_FIELD_DATA
             ))
           })
 
