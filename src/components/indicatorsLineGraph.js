@@ -50,30 +50,35 @@ class IndicatorsLineGraph extends React.Component {
     if (
       this.props.fieldId !== "" && prevProps.fieldId !== this.props.fieldId
     ) {
+      // block to display one field's data by uncollapsing sidepanel
       this.setState({
         ...this.state,
         dataset: this.props.field_data["field_rainfall"][this.props.cropType],
         FieldindicatorArray: this.props.FieldindicatorArray,
         selectedCropType: this.props.cropType,
-        selectedIndicator: "field_rainfall"
+        selectedIndicator: "field_rainfall",
+        displayedIndicator: "Rainfall"
       })
     } else if (
       (this.props.fieldId === "" && !Object.keys(this.props.groupFieldData).length ) &&
        prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
     ) {
-      let cropTypes = this.props.cropTypes
+      // block to display all fields data by uncollapsing sidepanel
+      let { cropTypes, allFieldData } = this.props
       this.setState({
         ...this.state,
         cropTypes,
-        dataset: this.props.allFieldData["field_rainfall"] ?
-         this.props.allFieldData["field_rainfall"][cropTypes[0]] : [],
+        dataset: allFieldData["field_rainfall"] ?
+         allFieldData["field_rainfall"][cropTypes[0]] : [],
         selectedCropType: cropTypes[0],
-        selectedIndicator: "field_rainfall"
+        selectedIndicator: "field_rainfall",
+        displayedIndicator: "Rainfall"
       })
     } else if (
       Object.keys(this.props.groupFieldData).length &&
        prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
     ) {
+      // block to display group field data and uncollapse sidepanel
       let { groupFieldData } = this.props
       let groupCrops = Object.keys(groupFieldData.field_rainfall)
       this.setState({
@@ -82,7 +87,24 @@ class IndicatorsLineGraph extends React.Component {
          this.props.groupFieldData["field_rainfall"][groupCrops[0]] : [],
          FieldindicatorArray: this.props.FieldindicatorArray,
         selectedCropType: groupCrops[0],
-        selectedIndicator: "field_rainfall"
+        selectedIndicator: "field_rainfall",
+        displayedIndicator: "Rainfall"
+      })
+    } else if (
+      (prevProps.fieldId !== this.props.fieldId && this.props.fieldId === "") ||
+      (Object.keys(prevProps.groupFieldData).length &&
+        !Object.keys(this.props.groupFieldData).length)
+    ) {
+      // block to display allFieldData when sidepanel ain't collapsed
+      let { cropTypes, allFieldData } = this.props
+      this.setState({
+        ...this.state,
+        cropTypes,
+        dataset: allFieldData["field_rainfall"] ?
+         allFieldData["field_rainfall"][cropTypes[0]] : [],
+        selectedCropType: cropTypes[0],
+        selectedIndicator: "field_rainfall",
+        displayedIndicator: "Rainfall"
       })
     }
   }
