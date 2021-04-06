@@ -50,37 +50,75 @@ class IndicatorsLineGraph extends React.Component {
     if (
       this.props.fieldId !== "" && prevProps.fieldId !== this.props.fieldId
     ) {
+      // block to display one field's data by uncollapsing sidepanel
       this.setState({
         ...this.state,
         dataset: this.props.field_data["field_rainfall"][this.props.cropType],
         FieldindicatorArray: this.props.FieldindicatorArray,
         selectedCropType: this.props.cropType,
-        selectedIndicator: "field_rainfall"
+        selectedIndicator: "field_rainfall",
+        displayedIndicator: "Rainfall"
       })
     } else if (
-      this.props.fieldId === "" &&
+      (this.props.fieldId === "" && !Object.keys(this.props.groupFieldData).length ) &&
        prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
     ) {
-      let cropTypes = this.props.cropTypes
+      // block to display all fields data by uncollapsing sidepanel
+      let { cropTypes, allFieldData } = this.props
       this.setState({
         ...this.state,
         cropTypes,
-        dataset: this.props.allFieldData["field_rainfall"] ?
-         this.props.allFieldData["field_rainfall"][cropTypes[0]] : [],
+        dataset: allFieldData["field_rainfall"] ?
+         allFieldData["field_rainfall"][cropTypes[0]] : [],
         selectedCropType: cropTypes[0],
-        selectedIndicator: "field_rainfall"
+        selectedIndicator: "field_rainfall",
+        displayedIndicator: "Rainfall"
+      })
+    } else if (
+      Object.keys(this.props.groupFieldData).length &&
+       prevProps.SidePanelCollapsed !== this.props.SidePanelCollapsed
+    ) {
+      // block to display group field data and uncollapse sidepanel
+      let { groupFieldData } = this.props
+      let groupCrops = Object.keys(groupFieldData.field_rainfall)
+      this.setState({
+        ...this.state,
+        dataset: this.props.groupFieldData["field_rainfall"] ?
+         this.props.groupFieldData["field_rainfall"][groupCrops[0]] : [],
+         FieldindicatorArray: this.props.FieldindicatorArray,
+        selectedCropType: groupCrops[0],
+        selectedIndicator: "field_rainfall",
+        displayedIndicator: "Rainfall"
+      })
+    } else if (
+      (prevProps.fieldId !== this.props.fieldId && this.props.fieldId === "") ||
+      (Object.keys(prevProps.groupFieldData).length &&
+        !Object.keys(this.props.groupFieldData).length)
+    ) {
+      // block to display allFieldData when sidepanel ain't collapsed
+      let { cropTypes, allFieldData } = this.props
+      this.setState({
+        ...this.state,
+        cropTypes,
+        dataset: allFieldData["field_rainfall"] ?
+         allFieldData["field_rainfall"][cropTypes[0]] : [],
+        selectedCropType: cropTypes[0],
+        selectedIndicator: "field_rainfall",
+        displayedIndicator: "Rainfall"
       })
     }
   }
 
   getEvent = eventKey => {
     if (typeof(eventKey) === "string") {
-      let { allFieldData, fieldId, field_data } = this.props;
+      let { allFieldData, fieldId, field_data, groupFieldData } = this.props;
       let cropTypes = this.state.cropTypes;
       if (cropTypes.includes(eventKey)) {
         this.setState({
-          dataset: fieldId === "" ?
+          dataset: fieldId === "" && !Object.keys(groupFieldData).length ?
            allFieldData[this.state.selectedIndicator][eventKey]
+            :fieldId === "" && Object.keys(groupFieldData).length ?
+            groupFieldData[this.state.selectedIndicator][eventKey]
             : field_data[this.state.selectedIndicator][eventKey],
           selectedCropType: eventKey
         })
@@ -101,6 +139,7 @@ class IndicatorsLineGraph extends React.Component {
       displayedIndicator, indicatorObj, allFieldsIndicatorArray,
       selectedCropType, FieldindicatorArray, dataset, cropTypes
      } = this.state
+     let { groupFieldIndicatorArray } = this.props;
 
     return (
       <React.Fragment>
@@ -150,11 +189,21 @@ class IndicatorsLineGraph extends React.Component {
         >
           {/* NOTE: this should remain as getting from redux state because actual
           croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
-          {this.props.fieldId === "" ? cropTypes.map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
-                  {type_}
-              </Dropdown.Item>
-          ) : ""}
+          {
+            this.props.fieldId === "" &&
+            Object.keys(this.props.groupFieldData).length ?
+            Object.keys(this.props.groupFieldData.field_rainfall).map(type_ => 
+                <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
+                    {type_}
+                </Dropdown.Item>
+            ) :
+              this.props.fieldId === "" &&
+              !Object.keys(this.props.groupFieldData).length ? cropTypes.map(type_ => 
+                <Dropdown.Item key={type_} eventKey={type_} onSelect={this.getEvent}>
+                    {type_}
+                </Dropdown.Item>
+            ) : ""
+          }
         </DropdownButton>
         {' '}
         <Button id="indicator_download_button">
@@ -165,6 +214,8 @@ class IndicatorsLineGraph extends React.Component {
              this.props.fieldId ?
               FieldindicatorArray ? FieldindicatorArray : []
                :
+              Object.keys(this.props.groupFieldData).length ?
+              groupFieldIndicatorArray :
               allFieldsIndicatorArray
             }
            target="_blank"
@@ -195,7 +246,14 @@ class IndicatorsLineGraph extends React.Component {
                 display: true,
                 position: "top",
                 fontSize: 18,
-                text: `${this.props.fieldId ? "Field Identifier: " + this.props.fieldId : "All fields"}`
+                text: `${
+                  this.props.fieldId ? "Field Identifier: " + this.props.fieldId :
+                  Object.keys(this.props.groupFieldData).length ?
+                  // division of 4 is because there are 4 indicators
+                   `Indicator Chart for ${
+                    (this.props.groupFieldIndicatorArray.length - 1) / 4
+                   } fields` : "All fields"
+                }`
             },
               legend: {
                   display: true,
@@ -228,8 +286,11 @@ class IndicatorsLineGraph extends React.Component {
 const mapStateToProps = state => ({
   FieldindicatorArray: state.graphs.FieldindicatorArray,
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
+  groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
   field_data: state.graphs.field_data,
   allFieldData: state.graphs.allFieldData,
+  groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
+  groupFieldData: state.graphs.groupFieldData,
   fieldId: state.graphs.fieldId,
   cropType: state.graphs.cropType,
   cropTypes: state.layers.cropTypes,

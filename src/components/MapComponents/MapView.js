@@ -12,12 +12,15 @@ import {
   postPointLayer, postPolygonLayer, getPolygonLayers,
   deletePolygonLayer, updatePolygonLayer
 } from '../../actions/layerActions';
-import { GET_ALL_FIELD_DATA_INITIATED } from '../../actions/types';
+import {
+  GET_ALL_FIELD_DATA_INITIATED, GET_GROUP_FIELD_DATA
+} from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData from '../../actions/graphActions';
 import { getGridData } from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
+import { getKatorsInCell, newkatorArr } from '../../utilities/IndicatorArr';
 import ShMap from './shMap';
 import createGrid from './shGrid';
 
@@ -169,6 +172,16 @@ class MapView extends Component {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
           let grid = createGrid(this)
+          grid.on("contextmenu", e => {
+            let indicatorsInCell = getKatorsInCell(
+              e.layer, this.props.allFieldsIndicatorArray,
+              new L.GeoJSON(this.props.LayersPayload)
+            )
+            this.props.dispatch(newkatorArr(
+              indicatorsInCell, this.props.cropTypes,
+              this.props.LayersPayload, GET_GROUP_FIELD_DATA
+            ))
+          })
 
           // SCRIPT FOR SAVING GRIDS GOES HERE
           await this.setState({...this.state, grid})

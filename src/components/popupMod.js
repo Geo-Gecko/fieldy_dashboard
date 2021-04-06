@@ -132,7 +132,6 @@ L.Popup.include({
          leafletGeoJSON.eachLayer(fieldLayer => {
             let layerLatLng = fieldLayer.getBounds().getCenter()
             if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
-               console.log("passed thru here")
                // this should be added to the FeatureGroup. -- bb_ron
                deleted_layer._map.eachLayer(mapLayer => {
                   // get featuregroup instance below
