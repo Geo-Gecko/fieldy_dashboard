@@ -40,24 +40,26 @@ class MapView extends Component {
   }
 
   async componentDidMount() {
-    const tokenValue = localStorage.getItem('x-token')
-    const secret_ = process.env.REACT_APP_SECRET || ""
-    const user = jwt.verify(tokenValue, secret_);
+    
+
+    let user_details = await this.props.getcreateputUserDetail({}, 'GET')
+    // https://stackoverflow.com/a/48433029
+    let { current_center, user_detail } = { ...user_details }
+    localStorage.setItem('user', JSON.stringify(user_detail))
+
     this.setState({
       ...this.state,
-      userType: user.userType
+      userType: user_detail.userType
     })
     ReactGA.initialize(
       process.env.REACT_APP_ANALYTIC || "", {
       gaOptions: {
-        userId: user.uid
+        userId: user_detail.uid
       }
     }
     );
     ReactGA.pageview(window.location.pathname + window.location.search);
-    
 
-    let current_center  = await this.props.getcreateputUserDetail({}, 'GET')
     if (current_center) {
       let currentView = current_center.geometry.coordinates
       this.setState({
@@ -100,9 +102,7 @@ class MapView extends Component {
     geo_layer.properties.field_id = uuidv4()
     geo_layer.properties.field_attributes = {}
 
-    const tokenValue = localStorage.getItem('x-token')
-    const secret_ = process.env.REACT_APP_SECRET || ""
-    const user = jwt.verify(tokenValue, secret_);
+    const user = JSON.parse(localStorage.getItem('user'))
     geo_layer.properties.user_id = user.uid
 
     this.props.postPolygonLayer(geo_layer)

@@ -35,9 +35,7 @@ class ShSideBar extends Component {
     }
 
     componentDidMount() {
-      const tokenValue = localStorage.getItem('x-token')
-      const secret_ = process.env.REACT_APP_SECRET || ""
-      const user = jwt.verify(tokenValue, secret_);
+      const user = JSON.parse(localStorage.getItem('user'))
       this.setState({ ...this.state, user })
 
     }
@@ -92,7 +90,7 @@ class ShSideBar extends Component {
 
     handleshowLogout() {
       localStorage.removeItem('x-token')
-      localStorage.removeItem('featuregroup')
+      localStorage.removeItem('user')
       window.location.reload()
     }
 
