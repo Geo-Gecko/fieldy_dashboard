@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Map, TileLayer, FeatureGroup, ZoomControl, LayersControl } from 'react-leaflet';
 import L from 'leaflet';
+// https://github.com/alex3165/react-leaflet-draw/issues/100
+// react-leaflet-draw has been pinned to 0.19.0 coz of above
 import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';

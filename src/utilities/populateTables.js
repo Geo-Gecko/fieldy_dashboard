@@ -5,9 +5,7 @@ import jwt from 'jsonwebtoken';
 
 
 export function populateIndicators(leafletGeoJSON) {
-    const tokenValue = localStorage.getItem('x-token')
-    const secret_ = process.env.REACT_APP_SECRET || ""
-    const user = jwt.verify(tokenValue, secret_);
+    const user = JSON.parse(localStorage.getItem('user'))
     let field_data = [];
 
       axiosInstance.get('/layers/fieldindicators/')
