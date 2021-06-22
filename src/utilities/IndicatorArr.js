@@ -43,16 +43,22 @@ export const newkatorArr = (
       payload: true
   })
   let data_ = {}
+  // let storeData = {}
   let data_array = (() => {
     // response.data is now katorArr
-    let fieldCsvData = [[...Object.keys(katorArr[0])]]
-    katorArr.forEach(row_ => {
-      fieldCsvData.push([...Object.values(row_)])
-    })
-    return fieldCsvData
+      let fieldCsvData = [[...Object.keys(katorArr[0]).slice(0,2), ...months_]]
+      katorArr.forEach(row_ => {
+          let rowData = [...Object.values(row_).slice(0, 2)]
+          months_.forEach(month_ => {
+              rowData.push(row_[month_])
+          })
+          fieldCsvData.push([...rowData])
+      })
+      return fieldCsvData
   })()
   // this is done to ensure process below runs in parallel
   let fillDataObj = kator => {
+    // storeData[kator] = {}
     return new Promise(resolve => {
       // kator stands for indi_Kator
       data_[kator] = {}
@@ -70,6 +76,7 @@ export const newkatorArr = (
         })
         if (katorFields.length) {
           data_[kator][crop] = [];
+          // storeData[kator][crop] = {}
           months_.forEach(month_ => {
             let sumKatorCrop = katorFields.reduce(
               (accumulator, nextField) => accumulator + nextField[month_], 0
@@ -79,6 +86,7 @@ export const newkatorArr = (
               sumKatorCrop = sumKatorCrop - 273.15
             }
             data_[kator][crop].push(parseFloat(sumKatorCrop.toFixed(2)))
+            // storeData[kator][crop][month_] = parseFloat(sumKatorCrop.toFixed(2))
           })
         }
       })

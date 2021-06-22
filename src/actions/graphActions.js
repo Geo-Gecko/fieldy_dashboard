@@ -58,9 +58,13 @@ const getcreateputGraphData = (
                 })
                 // data array for downloading data
                 let data_array = (() => {
-                    let fieldCsvData = [[...Object.keys(response.data[0])]]
+                    let fieldCsvData = [[...Object.keys(response.data[0]).slice(0,2), ...months_]]
                     response.data.forEach(row_ => {
-                        fieldCsvData.push([...Object.values(row_)])
+                        let rowData = [...Object.values(row_).slice(0, 2)]
+                        months_.forEach(month_ => {
+                            rowData.push(row_[month_])
+                        })
+                        fieldCsvData.push([...rowData])
                     })
                     return fieldCsvData
                 })()
@@ -79,9 +83,13 @@ const getcreateputGraphData = (
                 })
                 let data_ = {}
                 let data_array = (() => {
-                    let fieldCsvData = [[...Object.keys(response.data[0])]]
+                    let fieldCsvData = [[...Object.keys(response.data[0]).slice(0,2), ...months_]]
                     response.data.forEach(row_ => {
-                        fieldCsvData.push([...Object.values(row_)])
+                        let rowData = [...Object.values(row_).slice(0, 2)]
+                        months_.forEach(month_ => {
+                            rowData.push(row_[month_])
+                        })
+                        fieldCsvData.push([...rowData])
                     })
                     return fieldCsvData
                 })()
