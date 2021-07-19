@@ -35,7 +35,8 @@ const getcreateputGraphData = (
     })
         .then(async response => {
             let indicators_ = [
-                "field_ndvi", "field_ndwi","field_rainfall", "field_temperature"
+                "field_ndvi", "field_ndwi","field_rainfall",
+                "field_temperature", "field_evapotranspiration"
             ]
             // dispatch two, one for all data and one for a specific field
             if (method_ === "GET" && field_id !== "") {
@@ -94,6 +95,7 @@ const getcreateputGraphData = (
                     return fieldCsvData
                 })()
                 if (!katorPayload.length) {
+                    console.log(response.data)
                     dispatch(newkatorArr(
                         response.data, cropTypes, layers_, GET_ALL_FIELD_DATA
                     ))

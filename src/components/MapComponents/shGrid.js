@@ -116,7 +116,8 @@ let createGrid = mapViewInst => {
       "field_ndvi": [0, 0, 0],
       "field_ndwi": [0, 0, 0],
       "field_rainfall": [0, 0, 0],
-      "field_temperature": [0, 0, 0]
+      "field_temperature": [0, 0, 0],
+      "field_evapotranspiration": [0, 0, 0]
     }
 
     LayersPayload.eachLayer(fieldLayer => {

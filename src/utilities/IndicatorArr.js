@@ -94,8 +94,8 @@ export const newkatorArr = (
     })
   }
   Promise.all([
-    fillDataObj("field_ndvi"), fillDataObj("field_ndwi"),
-    fillDataObj("field_rainfall"), fillDataObj("field_temperature")
+    fillDataObj("field_rainfall"), fillDataObj("field_temperature"),
+    fillDataObj("field_ndvi"), fillDataObj("field_ndwi"), fillDataObj("field_evapotranspiration")
   ])
   dispatch({
     type: caseType,

@@ -62,6 +62,7 @@ export const bindGridPopup = (
     <strong>Avg Soil Moisture: </strong><small> ${grid_summary["field_ndwi"][0].toFixed(2)} </small> <br/>
     <strong>Avg Precipitation: </strong><small> ${grid_summary["field_rainfall"][0].toFixed(2)} </small> <br/>
     <strong>Avg Ground Temperature: </strong><small> ${grid_summary["field_temperature"][0].toFixed(2)} </small>
+    <strong>Avg Evapotranspiration: </strong><small> ${grid_summary["field_evapotranspiration"][0].toFixed(2)} </small>
     
     ${fieldCount > 1 ?
       `<br/><br/><strong>Min, Max Crop Health: </strong><small> ${grid_summary["field_ndvi"][1].toFixed(2)}, ${grid_summary["field_ndvi"][2].toFixed(2)} </small> <br/>
