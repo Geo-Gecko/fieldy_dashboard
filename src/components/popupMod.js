@@ -167,7 +167,6 @@ L.Popup.include({
    _onSaveButtonClick: function (e) {
       let changed_layer = this._source.toGeoJSON()
       let field_id = changed_layer.properties.field_id
-      let area = changed_layer.properties.field_attributes.Area
       let call_toast = (message_, glanceTime) => toast(message_, {
         position: "bottom-center",
         draggable: false,
@@ -207,7 +206,7 @@ L.Popup.include({
             dataCollectedTime: dataCollectedTime.value,
             CropType: cropTypeSelection
          }
-         changed_layer.properties.field_attributes = content_obj
+         changed_layer.properties = {...changed_layer.properties, ...content_obj}
          axiosInstance
             .put(`/layers/getupdatedeletelayer/${changed_layer.properties.field_id}/`, changed_layer)
             .then(response => {

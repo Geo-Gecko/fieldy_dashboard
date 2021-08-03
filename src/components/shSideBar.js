@@ -147,8 +147,8 @@ class ShSideBar extends Component {
               // line graph --- 24/03/2021
               feature_.geometry.coordinates[0].map(x => new L.latLng([...x].reverse()))
              ).toFixed(2)
-             if (feature_.properties.field_attributes.CropType) {
-               cropType = feature_.properties.field_attributes.CropType
+             if (feature_.properties.CropType) {
+               cropType = feature_.properties.CropType
                if (!(cropType in areas)) {
                  areas[cropType] = 0;
                  counts[cropType] = 0;
