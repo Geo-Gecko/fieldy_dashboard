@@ -20,7 +20,7 @@ class IndicatorsLineGraph extends React.Component {
             "Vegetation Health": ["field_ndvi", "Vegetation Health Index (-1, 1)"],
             "Soil Moisture": ["field_ndwi", "Soil Moisture Index (-1, 1)"],
             "Ground Temperature": ["field_temperature", "Ground Temperature (°Celcius)"],
-            "Evapotranspiration": ["field_evapotranspiration", "Evapotranspiration (Kg/m^2/8day)"]
+            "Evapotranspiration": ["field_evapotranspiration", "Evapotranspiration (mm)"]
         },
         displayedIndicator: "Rainfall",
         selectedCropType: "Crop Type",

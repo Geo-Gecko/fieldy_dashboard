@@ -138,7 +138,7 @@ class ShSideBar extends Component {
         let areas = {}, counts = {}, results = [], cropType, colours = {};
         // stop random color coming up on pressing button each time using if below
         if (this.state.layer_data.length === 0) {
-          leafletGeoJSON.features.forEach(feature_ => {
+          leafletGeoJSON.forEach(feature_ => {
             let totalArea =
              L.GeometryUtil.geodesicArea(
               //  [...x] returns a copy of x otherwise the corrdinates in 

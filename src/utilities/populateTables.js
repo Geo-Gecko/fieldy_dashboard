@@ -12,7 +12,7 @@ export function populateIndicators(leafletGeoJSON) {
       .then(
         response => {
           response.data.forEach(field_ => field_data.push(field_.field_id)); 
-        leafletGeoJSON.features.forEach(feature_ => {
+        leafletGeoJSON.forEach(feature_ => {
           let field_ndvi = {}, field_ndwi = {}, field_evapotranspiration = {},
            field_rainfall = {}, field_temperature = {}
           months_.forEach(mth_ => {
