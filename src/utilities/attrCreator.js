@@ -6,7 +6,7 @@ export let attrCreator = (layer, cropTypes, userType) => {
   let attr_list = ""
   if (userType === "EDITOR") {
     let cropOptions = cropTypes.map((type_, index) => {
-      if (type_ !== feature_.properties.field_attributes.CropType) {
+      if (type_ !== feature_.properties.CropType) {
         return `<option value='${index}'>${type_}</option>`
       } else {
         return `<option value='${index}' selected>${type_}</option>`
@@ -27,18 +27,18 @@ export let attrCreator = (layer, cropTypes, userType) => {
         type="month" id=data_collected_${feature_.properties.field_id}
         name=dataCollectedTime
         value=${
-          feature_.properties.field_attributes.DataCollected ?
-           feature_.properties.field_attributes.DataCollected : ""
+          feature_.properties.DataCollected ?
+           feature_.properties.DataCollected : ""
         }
       >`
   } else {
     attr_list += `
       <strong>Field Identifier: </strong><small> ${feature_.properties.field_id} </small> <br/>
-      <strong>CropType:</strong> ${feature_.properties.field_attributes.CropType}<br/>`
+      <strong>CropType:</strong> ${feature_.properties.CropType}<br/>`
     attr_list += `
       <strong>Date Collected:</strong> ${
-        feature_.properties.field_attributes.DataCollected ?
-         feature_.properties.field_attributes.DataCollected : ""
+        feature_.properties.DataCollected ?
+         feature_.properties.DataCollected : ""
       }`
   }
   

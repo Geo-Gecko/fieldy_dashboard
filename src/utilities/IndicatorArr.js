@@ -64,12 +64,12 @@ export const newkatorArr = (
       data_[kator] = {}
       cropTypes.forEach(crop => {
         let katorFields = katorArr.filter(katorArr => {
-          let correspLayer = layers_.features.find(
+          let correspLayer = layers_.find(
             field_ =>
               field_.properties.field_id === katorArr.field_id
           )
           if (correspLayer) {
-            return correspLayer.properties.field_attributes.CropType === crop
+            return correspLayer.properties.CropType === crop
               && katorArr.indicator === kator
           }
           return false

@@ -95,7 +95,6 @@ const getcreateputGraphData = (
                     return fieldCsvData
                 })()
                 if (!katorPayload.length) {
-                    console.log(response.data)
                     dispatch(newkatorArr(
                         response.data, cropTypes, layers_, GET_ALL_FIELD_DATA
                     ))

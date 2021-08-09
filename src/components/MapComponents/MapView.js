@@ -100,7 +100,6 @@ class MapView extends Component {
     }
     let geo_layer = e.layer.toGeoJSON()
     geo_layer.properties.field_id = uuidv4()
-    geo_layer.properties.field_attributes = {}
 
     const user = JSON.parse(localStorage.getItem('user'))
     geo_layer.properties.user_id = user.uid
@@ -149,7 +148,7 @@ class MapView extends Component {
       let leafletGeoJSON = this.props.LayersPayload
 
       leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
-      if (!this.props.gridLayer.features.length) {
+      if (!this.props.gridLayer.length) {
         leafletGeoJSON.eachLayer( layer => {
           let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
           layer.bindPopup(
@@ -177,10 +176,14 @@ class MapView extends Component {
               e.layer, this.props.allFieldsIndicatorArray,
               new L.GeoJSON(this.props.LayersPayload)
             )
-            this.props.dispatch(newkatorArr(
-              indicatorsInCell, this.props.cropTypes,
-              this.props.LayersPayload, GET_GROUP_FIELD_DATA
-            ))
+            // grid context is stil caught when cell is removed, hence the check
+            // this is for accunts with more than 1000 fields
+            if (indicatorsInCell.length) {
+              this.props.dispatch(newkatorArr(
+                indicatorsInCell, this.props.cropTypes,
+                this.props.LayersPayload, GET_GROUP_FIELD_DATA
+              ))
+            }
           })
 
           // SCRIPT FOR SAVING GRIDS GOES HERE
@@ -224,7 +227,7 @@ class MapView extends Component {
     })
     this.props.dispatch(getcreateputGraphData(
       {}, 'GET', e.layer.feature.properties.field_id,
-      e.layer.feature.properties.field_attributes.CropType,
+      e.layer.feature.properties.CropType,
       this.props.cropTypes, this.props.LayersPayload
     ))
   }

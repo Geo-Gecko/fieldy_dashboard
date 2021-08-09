@@ -10,9 +10,9 @@ let createGrid = mapViewInst => {
   let { LayersPayload, allFieldsIndicatorArray, cropTypes } = mapViewInst.props
   let savedGrid = mapViewInst.props.gridLayer
 
-  if (savedGrid.features.length) {
+  if (savedGrid.length) {
 
-    savedGrid.features.forEach(gridLayer => {
+    savedGrid.forEach(gridLayer => {
       try{
         gridLayer.properties.field_attributes.grid_summary =
           JSON.parse(
