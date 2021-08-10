@@ -35,7 +35,8 @@ class MapView extends Component {
       zoom: 7,
       userType: "",
       showCookiePolicy: false,
-      grid: undefined
+      grid: undefined,
+      gridCellArea: ""
     }
   }
 
@@ -170,7 +171,7 @@ class MapView extends Component {
     if (this._editableFG && !this.state.grid) {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
-          let grid = createGrid(this)
+          let { grid, gridCellArea } = createGrid(this)
           grid.on("contextmenu", e => {
             let indicatorsInCell = getKatorsInCell(
               e.layer, this.props.allFieldsIndicatorArray,
@@ -187,7 +188,7 @@ class MapView extends Component {
           })
 
           // SCRIPT FOR SAVING GRIDS GOES HERE
-          await this.setState({...this.state, grid})
+          await this.setState({...this.state, grid, gridCellArea})
           this.myMap.current.leafletElement.addLayer(this.state.grid)
         }
       }

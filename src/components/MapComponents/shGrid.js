@@ -25,6 +25,10 @@ let createGrid = mapViewInst => {
       }
     })
     let grid = new L.GeoJSON(savedGrid);
+    let gridCellArea = L.GeometryUtil.geodesicArea(
+      savedGrid[0].geometry.coordinates[0].map(x => new L.latLng([...x].reverse()))
+    ) / 1000000
+    gridCellArea = gridCellArea.toFixed(2)
     
     grid.eachLayer(layer => {
       let fieldCount = layer.feature.properties.count
@@ -38,7 +42,7 @@ let createGrid = mapViewInst => {
     })
     colorGrid(grid)
 
-    return grid;
+    return {grid, gridCellArea };
 
   } else {
 
@@ -95,6 +99,10 @@ let createGrid = mapViewInst => {
     type: 'FeatureCollection',
     features: features
   };
+  let gridCellArea = L.GeometryUtil.geodesicArea(
+    grid.features[0].geometry.coordinates[0].map(x => new L.latLng([...x].reverse()))
+  ) / 1000000
+  gridCellArea = gridCellArea.toFixed(2)
 
   grid = new L.GeoJSON(grid);
 
@@ -178,7 +186,7 @@ let createGrid = mapViewInst => {
       }
     })
   }
-  return grid;
+  return { grid, gridCellArea };
   }
 }
 

@@ -28,6 +28,7 @@ const ContactFormRequest = ({ showContactForm, hideContactForm }) => {
           toast("We'll get in touch with you shortly", {
             position: "top-center",
             autoClose: 3500,
+            hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
           })
@@ -37,6 +38,7 @@ const ContactFormRequest = ({ showContactForm, hideContactForm }) => {
           toast("An error occurred on ourside :( Try again in an hour.", {
             position: "top-center",
             autoClose: 3500,
+            hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
           })
