@@ -169,6 +169,7 @@ L.Popup.include({
       let field_id = changed_layer.properties.field_id
       let call_toast = (message_, glanceTime) => toast(message_, {
         position: "bottom-center",
+        hideProgressBar: true,
         draggable: false,
         closeOnClick: false,
         autoClose: glanceTime,
@@ -182,7 +183,7 @@ L.Popup.include({
       let dataCollectedTime = document.getElementById(`data_collected_${field_id}`)
       if (dataCollectedTime.value === "") {
          call_toast(
-            `Please ensure that
+            `Ensure that
             Data Collected is selected before saving.`,
             5000
          )

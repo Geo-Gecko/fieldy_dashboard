@@ -78,6 +78,7 @@ class ShSideBar extends Component {
         toast("This field has no indicators data attached yet.", {
           position: "top-center",
           autoClose: 3500,
+          hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: true,
           })
@@ -189,9 +190,10 @@ class ShSideBar extends Component {
             selected: id
           })
         } else {
-          toast("Please right click on a field to show this chart", {
+          toast("Right click on a field to show this chart", {
             position: "top-center",
             autoClose: 3500,
+            hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
             })

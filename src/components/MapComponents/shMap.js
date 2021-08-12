@@ -1,6 +1,9 @@
 import React from 'react';
 
-import { Map, TileLayer, FeatureGroup, ZoomControl, LayersControl } from 'react-leaflet';
+import {
+  Map, TileLayer, FeatureGroup, MapControl,
+  ZoomControl, LayersControl
+} from 'react-leaflet';
 import L from 'leaflet';
 // https://github.com/alex3165/react-leaflet-draw/issues/100
 // react-leaflet-draw has been pinned to 0.19.0 coz of above
@@ -28,13 +31,49 @@ L.Icon.Default.mergeOptions({
 });
 
 const { BaseLayer } = LayersControl
+let commafy = (value) => {
+  value += '';
+  let x = value.split('.');
+  let x1 = x[0];
+  let x2 = x.length > 1 ? '.' + x[1] : '';
+  let rgx = /(\d+)(\d{3})/;
+  while (rgx.test(x1)) {
+      x1 = x1.replace(rgx, '$1' + ',' + '$2');
+  }
+  return `${x1 + x2} sq m`;
+}
+
+class Legend extends MapControl {
+  createLeafletElement(props) {}
+  
+  legend = L.control({ position: "bottomright" });
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.gridCellArea !== prevProps.gridCellArea) {
+      const { map, gridCellArea } = this.props;
+      this.legend._container.innerHTML =
+        `Grid cell area - <span style="color: #e15b26">${commafy(gridCellArea)}</span>`
+    }
+  }
+
+  componentDidMount() {
+
+    const { map } = this.props;
+    this.legend.onAdd = () => {
+      const div = L.DomUtil.create("div", "info legend");
+      return div;
+    };
+    this.legend.addTo(map.current.leafletElement);
+  }
+}
+
 
 let ShMap = ({
   state, myMap, mapInstance
 }) => {
   
   let {
-    currentLocation, zoom, userType
+    currentLocation, zoom, userType, gridCellArea
   } = state;
   let {
     _saveCurrentView, addGridLayers, removeGridLayers, _onFeatureGroupReady,
@@ -53,6 +92,7 @@ let ShMap = ({
       minZoom={5}
     >
       <CookiesPolicy mapInstance={mapInstance} state={state} />
+      <Legend map={myMap} gridCellArea={gridCellArea} />
       {!localStorage.getItem("cookieusagedisplayed") ?
       <Control 
         position="bottomright"
@@ -94,19 +134,19 @@ let ShMap = ({
         <BaseLayer name="Google Satellite">
           <TileLayer
             url="https://mt0.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
-            attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Please note this imagery isn't necessarily up to date `}
+            attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
           />
         </BaseLayer>
         <BaseLayer checked name="OpenStreetMap.BlackAndWhite">
           <TileLayer
-            attribution={`&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors | &copy; ${new Date().getFullYear()} GeckosUnited  <br/> Please note this imagery isn't necessarily up to date `}
+            attribution={`&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors | &copy; ${new Date().getFullYear()} GeckosUnited  <br/> Note that this imagery isn't necessarily up to date `}
             url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
           />
         </BaseLayer>
         <BaseLayer name="OpenStreetMap.Mapnik">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution={`&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Please note this imagery isn't necessarily up to date `}
+            attribution={`&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
           />
         </BaseLayer>
       </LayersControl>

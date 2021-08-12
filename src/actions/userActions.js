@@ -15,6 +15,7 @@ export const getcreateputUserDetail = (postData, method_) => {
                 toast(message_, {
                     position: "top-center",
                     autoClose: 2500,
+                    hideProgressBar: true,
                     closeOnClick: true,
                     pauseOnHover: true,
                     })
