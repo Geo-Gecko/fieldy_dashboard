@@ -5,6 +5,8 @@ import * as d3Array from 'd3-array';
 
 import { months_ } from '../actions/graphActions';
 
+let clickedGrid;
+
 export function inside(point, vs) {
   // ray-casting algorithm based on
   // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
@@ -53,7 +55,7 @@ export const colorGrid = grid => {
 export const bindGridPopup = (
   layer, fieldCount, grid_summary, cropTypes=[], userType="", LayersPayload={}
 ) => {
-  layer.bindPopup(
+  let gridInfo =
     `
     <strong>Field Count: </strong><small> ${fieldCount} </small> <br/><br/>
 
@@ -74,6 +76,14 @@ export const bindGridPopup = (
     <strong>Min, Max Precipitation: </strong><small> ${grid_summary["field_rainfall"][1].toFixed(2)}, ${grid_summary["field_rainfall"][2].toFixed(2)} </small> <br/>`
       : `<br/>`}
     
-    `, {removable: Object.keys(LayersPayload).length ? true : false, cropTypes, userType, LayersPayload}
-  )
+    `
+  layer.on('click', function (e) {
+    if (clickedGrid) {
+      clickedGrid.setStyle({ weight: 0.5, color: "#3388ff" });
+    }
+
+    document.getElementById("grid-info").innerHTML = gridInfo;
+    layer.setStyle({ weight: 4, color: "#e15b26" });
+    clickedGrid = layer
+  });
 }

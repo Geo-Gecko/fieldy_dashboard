@@ -238,6 +238,7 @@ class MapView extends Component {
   }
   removeGridLayers = () => {
     this.myMap.current.leafletElement.removeLayer(this.state.grid);
+    document.getElementById("grid-info").innerHTML = "Click on grid or field for info";
   }
 
   render() {

@@ -40,7 +40,7 @@ let commafy = (value) => {
   while (rgx.test(x1)) {
       x1 = x1.replace(rgx, '$1' + ',' + '$2');
   }
-  return `${x1 + x2} sq m`;
+  return `${x1 + x2} sq km`;
 }
 
 class Legend extends MapControl {
@@ -223,6 +223,23 @@ let ShMap = ({
             Download fields
               </a>
         </button>
+      </Control>
+      <Control
+        position="topright"
+      >
+        <style type="text/css">
+          {`
+              #grid-info {
+                box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+                border-radius: 4px;
+                border: none;
+                background: #ecebeb;
+                padding-right: 2px;
+                padding-left: 2px;
+              }
+              `}
+        </style>
+        <div id="grid-info">Click on grid or field for info</div>
       </Control>
     </Map>
   </React.Fragment>
