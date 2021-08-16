@@ -183,6 +183,7 @@ let createGrid = mapViewInst => {
     myMap.current.leafletElement.on('moveend', () => {
       if (myMap.current.leafletElement.getZoom() > 10) {
         myMap.current.leafletElement.removeLayer(grid)
+        document.getElementById("grid-info").innerHTML = "Click on grid or field for info";
       }
     })
   }

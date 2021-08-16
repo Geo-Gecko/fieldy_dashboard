@@ -24,6 +24,7 @@ import { getKatorsInCell, newkatorArr } from '../../utilities/IndicatorArr';
 import ShMap from './shMap';
 import createGrid from './shGrid';
 
+let clickedLayer;
 
 class MapView extends Component {
   constructor() {
@@ -36,7 +37,7 @@ class MapView extends Component {
       userType: "",
       showCookiePolicy: false,
       grid: undefined,
-      gridCellArea: ""
+      gridCellArea: "",
     }
   }
 
@@ -114,7 +115,21 @@ class MapView extends Component {
     let attributed_layer = new L.GeoJSON(geoLayerClln)
     attributed_layer.eachLayer( layer_ => {
       let attr_list = attrCreator(layer_, this.props.cropTypes, this.state.userType)
-      layer_.bindPopup(attr_list, {editable: true, removable: true})
+      layer_.on('click', function (e) {
+        if (clickedLayer) {
+          clickedLayer.setStyle({ weight: 0.5, color: "#3388ff" });
+        }
+    
+        document.getElementById("grid-info").innerHTML = attr_list;
+        layer_.setStyle({ weight: 4, color: "#e15b26" });
+        clickedLayer = layer_
+      });
+      if (this.state.userType === "EDITOR") {
+        layer_.bindPopup(
+          null,
+          {editable: true, removable: true}
+        );
+      }
       this._editableFG.leafletElement.addLayer(layer_)
       layer_.openPopup();
     })
@@ -152,11 +167,21 @@ class MapView extends Component {
       if (!this.props.gridLayer.length) {
         leafletGeoJSON.eachLayer( layer => {
           let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
-          layer.bindPopup(
-            attr_list,
-            this.state.userType === "EDITOR" ?
-            {editable: true, removable: true} : {}
-          );
+          layer.on('click', function (e) {
+            if (clickedLayer) {
+              clickedLayer.setStyle({ weight: 0.5, color: "#3388ff" });
+            }
+        
+            document.getElementById("grid-info").innerHTML = attr_list;
+            layer.setStyle({ weight: 4, color: "#e15b26" });
+            clickedLayer = layer
+          });
+          if (this.state.userType === "EDITOR") {
+            layer.bindPopup(
+              null,
+              {editable: true, removable: true}
+            );
+          }
           leafletFG.addLayer(layer);
         });
       }
@@ -234,10 +259,16 @@ class MapView extends Component {
   }
 
   addGridLayers = () => {
+    this.state.grid.eachLayer(layer_ => {
+      if (layer_.feature.properties.count) {
+        layer_.setStyle({ weight: 0.5, color: "#3388ff" });
+      }
+    })
     this.myMap.current.leafletElement.addLayer(this.state.grid);
   }
   removeGridLayers = () => {
     this.myMap.current.leafletElement.removeLayer(this.state.grid);
+    document.getElementById("grid-info").innerHTML = "Click on grid or field for info";
   }
 
   render() {
