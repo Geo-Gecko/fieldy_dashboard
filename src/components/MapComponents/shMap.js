@@ -124,7 +124,15 @@ let ShMap = ({
   }
   
   let _showCards = e => {
-    console.log(e.currentTarget.textContent)
+    Array.from(
+      document.getElementsByClassName("catBtn")
+    ).forEach(el => {
+      if (el.textContent === e.currentTarget.textContent) {
+        el.className = "current-view catBtn clicked_topleft_btn"
+      } else {
+        el.className = "current-view catBtn"
+      };
+    })
   }
 
   return (
@@ -140,19 +148,19 @@ let ShMap = ({
     >
       <Control position="topleft" >
         <button
-          className="current-view"
+          className="current-view catBtn clicked_topleft_btn"
           onClick={_showCards}
         >
           Overview
             </button>&nbsp;&nbsp;&nbsp;
         <button
-          className="current-view"
+          className="current-view catBtn"
           onClick={_showCards}
         >
           Indicators
             </button>&nbsp;&nbsp;&nbsp;
         <button
-          className="current-view"
+          className="current-view catBtn"
           onClick={_showCards}
         >
           Forecast
@@ -160,12 +168,20 @@ let ShMap = ({
       </Control>
       {
       results.length ?
-        <Control
-          position="topleft"
-          className="current-view donut_css"
-        >
-          <OverViewDonutGraph graphData={results} />
-        </Control>
+        <React.Fragment>
+          <Control
+            position="topleft"
+            className="current-view donut_css"
+          >
+            <OverViewDonutGraph graphData={results} />
+          </Control>
+          <Control
+            position="topleft"
+            className="current-view donut_css"
+          >
+            <OverViewBarGraph graphData={results} />
+          </Control>
+        </React.Fragment>
         : null
       }
       <CookiesPolicy mapInstance={mapInstance} state={state} />

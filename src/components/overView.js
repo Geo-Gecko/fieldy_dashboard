@@ -46,6 +46,7 @@ export const OverViewDonutGraph = graphData => {
                     }
                   },
             }}
+            height={140}    
         />
     )
 
@@ -55,7 +56,7 @@ export const OverViewDonutGraph = graphData => {
 export const OverViewBarGraph = graphData => {
 
     let labels = [...new Set(graphData.graphData.map(it => it.cropType))];
-    let area = [...new Set(graphData.graphData.map(it => it.area))];
+    let area = [...new Set(graphData.graphData.map(it => (it.area/1000000).toFixed(2)))];
     let colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
 
     return (
@@ -65,7 +66,7 @@ export const OverViewBarGraph = graphData => {
                     "labels": labels,
                     "datasets": [
                         {
-                            "label": "Total Area",
+                            "label": "Total Areas",
                             "data": area,
                             "backgroundColor": colours,
                             "borderColor": "rgb(75, 192, 192)",
@@ -76,12 +77,20 @@ export const OverViewBarGraph = graphData => {
             }
             options={{
                 legend: {
-                    display: true,
+                    display: false,
                     position: "bottom",
+                },
+                title: {
+                    display: true,
+                    text: 'Crop Area Coverage'
                 },
                 scales: {
                     yAxes: [
                       {
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Area (sq km)'
+                        },
                         ticks: {
                           callback: function(value) {
                             value += '';
@@ -92,14 +101,14 @@ export const OverViewBarGraph = graphData => {
                             while (rgx.test(x1)) {
                                 x1 = x1.replace(rgx, '$1' + ',' + '$2');
                             }
-                            return `${x1 + x2} sq m`;
+                            return `${(x1 + x2)}`;
                           }
                         }
                       }
                     ]
                   }
             }}
-            height={60}
+            height={140}
         />
     )
 

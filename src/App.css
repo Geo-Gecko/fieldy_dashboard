@@ -34,13 +34,13 @@
 }
 
 .donut_css {
-  background-color: #e8eaec;
-  height: 30vh;
-  width: 30vw;
+  background-color: white;
+  padding-bottom: 20px;
+  height: 40vh;
+  width: 40vw;
 }
 
 .clicked_topleft_btn::before {
-  position: absolute;
   left: .4rem;
   content: '✓';
   font-weight: 600;
