@@ -122,6 +122,10 @@ let ShMap = ({
       });
     }
   }
+  
+  let _showCards = e => {
+    console.log(e.currentTarget.textContent)
+  }
 
   return (
     <React.Fragment>
@@ -134,21 +138,32 @@ let ShMap = ({
       zoom={zoom}
       minZoom={5}
     >
+      <Control position="topleft" >
+        <button
+          className="current-view"
+          onClick={_showCards}
+        >
+          Overview
+            </button>&nbsp;&nbsp;&nbsp;
+        <button
+          className="current-view"
+          onClick={_showCards}
+        >
+          Indicators
+            </button>&nbsp;&nbsp;&nbsp;
+        <button
+          className="current-view"
+          onClick={_showCards}
+        >
+          Forecast
+            </button>
+      </Control>
       {
       results.length ?
         <Control
           position="topleft"
           className="current-view donut_css"
         >
-          <style type="text/css">
-            {`
-                .donut_css {
-                  background-color: #e8eaec;
-                  height: 30vh;
-                  width: 30vw;
-                }
-                `}
-          </style>
           <OverViewDonutGraph graphData={results} />
         </Control>
         : null
@@ -214,15 +229,6 @@ let ShMap = ({
       </LayersControl>
       <ZoomControl position="bottomright" />
       <Control position="topright" >
-        <style type="text/css">
-          {`
-              .current-view {
-                box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                border-radius: 4px;
-                border: none;
-              }
-              `}
-        </style>
         <button
           className="current-view"
           onClick={_saveCurrentView}
