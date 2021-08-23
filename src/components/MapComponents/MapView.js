@@ -38,6 +38,7 @@ class MapView extends Component {
       showCookiePolicy: false,
       grid: undefined,
       gridCellArea: "",
+      layer_data: []
     }
   }
 

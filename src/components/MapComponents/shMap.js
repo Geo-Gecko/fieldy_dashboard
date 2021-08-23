@@ -20,6 +20,7 @@ import '../popupMod.css'
 
 // local components
 import ShSideBar from '../shSideBar';
+import { OverViewDonutGraph, OverViewBarGraph } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
 
 
@@ -31,6 +32,16 @@ L.Icon.Default.mergeOptions({
 });
 
 const { BaseLayer } = LayersControl
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF'.split('');
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 let commafy = (value) => {
   value += '';
   let x = value.split('.');
@@ -80,9 +91,41 @@ let ShMap = ({
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref
   } = mapInstance;
 
+  let results = []
+  if (props.LayersPayload.length) {
+    let areas = {}, counts = {}, cropType, colours = {};
+    props.LayersPayload.forEach(feature_ => {
+      let totalArea =
+       L.GeometryUtil.geodesicArea(
+        //  [...x] returns a copy of x otherwise the corrdinates in 
+        // this.props.LayersPayload are reversed in place. This affected the
+        // function for right clicking a graph cell to pull up the indicator
+        // line graph --- 24/03/2021
+        feature_.geometry.coordinates[0].map(x => new L.latLng([...x].reverse()))
+       ).toFixed(2)
+       if (feature_.properties.CropType) {
+         cropType = feature_.properties.CropType
+         if (!(cropType in areas)) {
+           areas[cropType] = 0;
+           counts[cropType] = 0;
+           colours[cropType] = "";
+         }
+         areas[cropType] += parseFloat(totalArea);
+         counts[cropType]++;
+         colours[cropType] = getRandomColor();
+       }
+    });
+    for (cropType in areas) {
+      results.push({
+        cropType: cropType, area: areas[cropType].toFixed(2),
+        count: counts[cropType], colours: colours[cropType]
+      });
+    }
+  }
+
   return (
     <React.Fragment>
-    <ShSideBar />
+    {/* <ShSideBar /> */}
     <ToastContainer />
     <Map
       ref={myMap}
@@ -91,6 +134,25 @@ let ShMap = ({
       zoom={zoom}
       minZoom={5}
     >
+      {
+      results.length ?
+        <Control
+          position="topleft"
+          className="current-view donut_css"
+        >
+          <style type="text/css">
+            {`
+                .donut_css {
+                  background-color: #e8eaec;
+                  height: 30vh;
+                  width: 30vw;
+                }
+                `}
+          </style>
+          <OverViewDonutGraph graphData={results} />
+        </Control>
+        : null
+      }
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       <Legend map={myMap} gridCellArea={gridCellArea} />
       {!localStorage.getItem("cookieusagedisplayed") ?

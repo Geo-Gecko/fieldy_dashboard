@@ -26,6 +26,10 @@ export const OverViewDonutGraph = graphData => {
                     display: true,
                     position: "bottom",
                 },
+                title: {
+                    display: true,
+                    text: 'Crop Type Representation'
+                },
                 tooltips: {
                     callbacks: {
                       label: function(tooltipItem, data) {
@@ -42,7 +46,6 @@ export const OverViewDonutGraph = graphData => {
                     }
                   },
             }}
-            height={60}
         />
     )
 
