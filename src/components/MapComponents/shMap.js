@@ -19,7 +19,7 @@ import '../popupMod.css'
 
 
 // local components
-import ShSideBar from '../shSideBar';
+import IndicatorsLineGraph from '../indicatorsLineGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
 
@@ -166,24 +166,45 @@ let ShMap = ({
           Forecast
             </button>
       </Control>
-      {
+      {/* {
       results.length ?
         <React.Fragment>
           <Control
             position="topleft"
-            className="current-view donut_css"
+            className="current-view donut_css card_visibility"
           >
             <OverViewDonutGraph graphData={results} />
           </Control>
           <Control
             position="topleft"
-            className="current-view donut_css"
+            className="current-view donut_css card_visibility"
           >
             <OverViewBarGraph graphData={results} />
           </Control>
         </React.Fragment>
         : null
-      }
+      } */}
+      <br/>
+      {props.cropTypes.length > 0 ?
+      <React.Fragment>
+        <style type="text/css">
+              {`
+                .katorline {
+                  height: 51vh;
+                }
+              `}
+        </style>
+        <Control
+          position="topleft"
+          className="current-view donut_css katorline"
+          id="katorlineId"
+        >
+          <IndicatorsLineGraph
+            SidePanelCollapsed={false}
+          />
+        </Control>
+      </React.Fragment>
+       : <React.Fragment />}
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       <Legend map={myMap} gridCellArea={gridCellArea} />
       {!localStorage.getItem("cookieusagedisplayed") ?

@@ -114,6 +114,9 @@ class IndicatorsLineGraph extends React.Component {
     if (typeof(eventKey) === "string") {
       let { allFieldData, fieldId, field_data, groupFieldData } = this.props;
       let cropTypes = this.state.cropTypes;
+      let selectedCropType = this.state.selectedCropType === "Crop Type" ?
+        cropTypes[0] : this.state.selectedCropType;
+
       if (cropTypes.includes(eventKey)) {
         this.setState({
           dataset: fieldId === "" && !Object.keys(groupFieldData).length ?
@@ -126,8 +129,8 @@ class IndicatorsLineGraph extends React.Component {
       } else {
         this.setState({
           dataset: fieldId === "" ?
-           allFieldData[this.state.indicatorObj[eventKey][0]][this.state.selectedCropType]
-            : field_data[this.state.indicatorObj[eventKey][0]][this.state.selectedCropType],
+           allFieldData[this.state.indicatorObj[eventKey][0]][selectedCropType]
+            : field_data[this.state.indicatorObj[eventKey][0]][selectedCropType],
           selectedIndicator: this.state.indicatorObj[eventKey][0],
           displayedIndicator: eventKey
         })
@@ -150,6 +153,9 @@ class IndicatorsLineGraph extends React.Component {
             background-color: #e15b26;
             color: white;
         }
+        .dropdown-item {
+          color: inherit !important;
+        }
         .dropdown-item.active, .dropdown-item:active {
             color: #fff;
             text-decoration: none;
@@ -167,9 +173,17 @@ class IndicatorsLineGraph extends React.Component {
           color: black;
           text-decoration: none;
         }
+        .btn:focus,.btn:active {
+          outline: none !important;
+          box-shadow: none;
+        }
+        #indicator_download_button_words {
+          color: white;
+        }
         `}
         </style>
-        <DropdownButton
+        <br />&nbsp;<DropdownButton
+        size="sm"
         variant={"dropdown"}
         className="mr-1"
         id="dropdown-basic-button"
@@ -183,6 +197,7 @@ class IndicatorsLineGraph extends React.Component {
           )}
         </DropdownButton>
         <DropdownButton
+        size="sm"
         variant={"dropdown"}
         id="dropdown-basic-button"
         title={this.props.fieldId === "" ? selectedCropType : this.props.cropType}
@@ -207,7 +222,7 @@ class IndicatorsLineGraph extends React.Component {
           }
         </DropdownButton>
         {' '}
-        <Button id="indicator_download_button">
+        <Button id="indicator_download_button" size="sm">
           <CSVLink
           // if indicatorsArray is undefined will return an error,
           // so need to check for it
@@ -220,6 +235,7 @@ class IndicatorsLineGraph extends React.Component {
               allFieldsIndicatorArray
             }
            target="_blank"
+           id="indicator_download_button_words"
            filename={
              this.props.fieldId ?
               `${this.props.fieldId}_indicators_data.csv` : "indicators_data.csv"
@@ -232,7 +248,9 @@ class IndicatorsLineGraph extends React.Component {
         <Line
           data={
               {
-                  "labels": months_,
+                  "labels": months_.map(
+                    mth => mth[0].toUpperCase() + mth.slice(1,3)
+                  ),
                   "datasets": [{
                       "label": indicatorObj[displayedIndicator][1],
                       "data": dataset,
@@ -269,13 +287,12 @@ class IndicatorsLineGraph extends React.Component {
                   }],
                   xAxes: [{
                     scaleLabel: {
-                      display: true,
+                      display: false,
                       labelString: "months"
                     }
                   }],
                 }
           }}
-          height={120}
           ref={this.chartReference}
         />
       </React.Fragment>
