@@ -88,8 +88,14 @@ let ShMap = ({
   } = state;
   let {
     _saveCurrentView, addGridLayers, removeGridLayers, _onFeatureGroupReady,
-    handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref
+    handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
+    overviewDonutRef, overviewBarRef, indicatorLineRef
   } = mapInstance;
+  let cards_ = {
+    Overview: [overviewDonutRef, overviewBarRef],
+    // add forecast to same buttons
+    Indicators: [indicatorLineRef]
+  }
 
   let results = []
   if (props.LayersPayload.length) {
@@ -122,8 +128,13 @@ let ShMap = ({
       });
     }
   }
-  
+
+  if (myMap.current && indicatorLineRef.current) {
+    indicatorLineRef.current.leafletElement.remove()
+  }
+
   let _showCards = e => {
+    // switch selected button
     Array.from(
       document.getElementsByClassName("catBtn")
     ).forEach(el => {
@@ -132,6 +143,20 @@ let ShMap = ({
       } else {
         el.className = "current-view catBtn"
       };
+    })
+    // switch cards
+    Object.keys(cards_).forEach(cardGrp => {
+      if (cardGrp !== e.currentTarget.textContent) {
+        cards_[cardGrp].forEach(card_ => {
+          console.log(card_)
+          card_.current.leafletElement.remove()
+        })
+      } 
+      else {
+        cards_[cardGrp].forEach(card_ => {
+          card_.current.leafletElement.addTo(myMap.current.leafletElement)
+        })
+      }
     })
   }
 
@@ -166,24 +191,26 @@ let ShMap = ({
           Forecast
             </button>
       </Control>
-      {/* {
+      {
       results.length ?
         <React.Fragment>
           <Control
             position="topleft"
-            className="current-view donut_css card_visibility"
+            className="current-view donut_css"
+            ref={overviewDonutRef}
           >
             <OverViewDonutGraph graphData={results} />
           </Control>
           <Control
             position="topleft"
-            className="current-view donut_css card_visibility"
+            className="current-view donut_css"
+            ref={overviewBarRef}
           >
             <OverViewBarGraph graphData={results} />
           </Control>
         </React.Fragment>
         : null
-      } */}
+      }
       <br/>
       {props.cropTypes.length > 0 ?
       <React.Fragment>
@@ -198,6 +225,7 @@ let ShMap = ({
           position="topleft"
           className="current-view donut_css katorline"
           id="katorlineId"
+          ref={indicatorLineRef}
         >
           <IndicatorsLineGraph
             SidePanelCollapsed={false}
