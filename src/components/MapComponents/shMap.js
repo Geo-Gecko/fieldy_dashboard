@@ -1,5 +1,8 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 
+import store from '../../store';
 import {
   Map, TileLayer, FeatureGroup, MapControl,
   ZoomControl, LayersControl
@@ -32,6 +35,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const { BaseLayer } = LayersControl
+let calledOnce = false;
 
 function getRandomColor() {
   var letters = '0123456789ABCDEF'.split('');
@@ -97,7 +101,7 @@ let ShMap = ({
     Indicators: [indicatorLineRef]
   }
 
-  let results = []
+  let results = [];
   if (props.LayersPayload.length) {
     let areas = {}, counts = {}, cropType, colours = {};
     props.LayersPayload.forEach(feature_ => {
@@ -129,7 +133,7 @@ let ShMap = ({
     }
   }
 
-  if (myMap.current && indicatorLineRef.current) {
+  if (myMap.current && indicatorLineRef.current && !calledOnce) {
     indicatorLineRef.current.leafletElement.remove()
   }
 
@@ -148,13 +152,26 @@ let ShMap = ({
     Object.keys(cards_).forEach(cardGrp => {
       if (cardGrp !== e.currentTarget.textContent) {
         cards_[cardGrp].forEach(card_ => {
-          console.log(card_)
           card_.current.leafletElement.remove()
         })
       } 
       else {
         cards_[cardGrp].forEach(card_ => {
           card_.current.leafletElement.addTo(myMap.current.leafletElement)
+          let ReactChild;
+          console.log("how many times is this called")
+          if (cardGrp === "Indicators") {
+            ReactChild = 
+            <Provider store={store}>
+              {card_.current.props.children}
+            </Provider>;
+            calledOnce = true
+          } else {
+            ReactChild = card_.current.props.children
+          }
+          ReactDOM.render(
+            ReactChild, card_.current.leafletElement._container
+          )
         })
       }
     })
