@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
-import jwt from 'jsonwebtoken';
 import { connect } from 'react-redux';
 import L from 'leaflet';
 import ReactGA from 'react-ga';
@@ -34,6 +33,7 @@ class MapView extends Component {
     this.overviewDonutRef = React.createRef();
     this.overviewBarRef = React.createRef();
     this.indicatorLineRef = React.createRef();
+    this.ForecastBarRef = React.createRef;
     this.state = {
       currentLocation: { lat: 1.46, lng: 32.40 },
       zoom: 7,
@@ -292,8 +292,10 @@ const mapStateToProps = state => ({
   createLayersPayload: state.layers.createLayersPayload,
   LayersPayload: state.layers.LayersPayload,
   cropTypes: state.layers.cropTypes,
+  forecastData: state.forecast.foreCastPayload,
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
-  gridLayer: state.grid.gridPayload
+  gridLayer: state.grid.gridPayload,
+  fieldId: state.graphs.fieldId,
 });
 
 const matchDispatchToProps = dispatch => ({

@@ -23,6 +23,7 @@ import '../popupMod.css'
 
 // local components
 import IndicatorsLineGraph from '../indicatorsLineGraph';
+import ForecastBarGraph from '../forecastBarGraph';
 import { OverViewDonutGraph, OverViewBarGraph } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
 
@@ -65,7 +66,7 @@ class Legend extends MapControl {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.gridCellArea !== prevProps.gridCellArea) {
-      const { map, gridCellArea } = this.props;
+      const { gridCellArea } = this.props;
       this.legend._container.innerHTML =
         `Grid cell area - <span style="color: #e15b26">${commafy(gridCellArea)}</span>`
     }
@@ -93,12 +94,13 @@ let ShMap = ({
   let {
     _saveCurrentView, addGridLayers, removeGridLayers, _onFeatureGroupReady,
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
-    overviewDonutRef, overviewBarRef, indicatorLineRef
+    overviewDonutRef, overviewBarRef, indicatorLineRef, ForecastBarRef
   } = mapInstance;
   let cards_ = {
     Overview: [overviewDonutRef, overviewBarRef],
     // add forecast to same buttons
-    Indicators: [indicatorLineRef]
+    Indicators: [indicatorLineRef],
+    Forecast: [ForecastBarRef]
   }
 
   let results = [];
@@ -134,7 +136,10 @@ let ShMap = ({
   }
 
   if (myMap.current && indicatorLineRef.current && !calledOnce) {
-    indicatorLineRef.current.leafletElement.remove()
+    indicatorLineRef.current.leafletElement.remove();
+  }
+  if (myMap.current && ForecastBarRef.current) {
+    ForecastBarRef.current.leafletElement.remove();
   }
 
   let _showCards = e => {
@@ -152,26 +157,29 @@ let ShMap = ({
     Object.keys(cards_).forEach(cardGrp => {
       if (cardGrp !== e.currentTarget.textContent) {
         cards_[cardGrp].forEach(card_ => {
-          card_.current.leafletElement.remove()
+          if (card_.current) {
+            card_.current.leafletElement.remove()
+          }
         })
       } 
       else {
         cards_[cardGrp].forEach(card_ => {
-          card_.current.leafletElement.addTo(myMap.current.leafletElement)
-          let ReactChild;
-          console.log("how many times is this called")
-          if (cardGrp === "Indicators") {
-            ReactChild = 
-            <Provider store={store}>
-              {card_.current.props.children}
-            </Provider>;
-            calledOnce = true
-          } else {
-            ReactChild = card_.current.props.children
+          if (card_.current) {
+            card_.current.leafletElement.addTo(myMap.current.leafletElement)
+            let ReactChild;
+            if (cardGrp === "Indicators" || cardGrp === "Forecast") {
+              ReactChild = 
+              <Provider store={store}>
+                {card_.current.props.children}
+              </Provider>;
+              calledOnce = true
+            } else {
+              ReactChild = card_.current.props.children
+            }
+            ReactDOM.render(
+              ReactChild, card_.current.leafletElement._container
+            )
           }
-          ReactDOM.render(
-            ReactChild, card_.current.leafletElement._container
-          )
         })
       }
     })
@@ -244,10 +252,19 @@ let ShMap = ({
           id="katorlineId"
           ref={indicatorLineRef}
         >
-          <IndicatorsLineGraph
+          <IndicatorsLineGraph SidePanelCollapsed={false} />
+        </Control>
+        {props.forecastData.length && props.fieldId !== "" ?
+        <Control
+          position="topleft"
+          className="current-view donut_css katorline"
+          id="katorlineId"
+          ref={ForecastBarRef}
+        >
+          <ForecastBarGraph
             SidePanelCollapsed={false}
           />
-        </Control>
+        </Control> : <React.Fragment />}
       </React.Fragment>
        : <React.Fragment />}
       <CookiesPolicy mapInstance={mapInstance} state={state} />
