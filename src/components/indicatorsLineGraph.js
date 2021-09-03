@@ -41,13 +41,6 @@ function IndicatorsLineGraph (props) {
   const prevgroupFieldData = usePrevious(props.groupFieldData)
 
   useEffect(() => {
-    (async () => {
-      await dispatch(getIndicatorData())
-      await dispatch(getcreateputGraphData(
-        {}, 'GET', "", "", props.cropTypes,
-        props.LayersPayload, props.katorPayload
-      ))
-    })();
     let cropTypes = props.cropTypes
     // this isn't setting croptypes for admins
     setLocalState({

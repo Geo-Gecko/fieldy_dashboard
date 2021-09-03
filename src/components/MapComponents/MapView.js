@@ -16,7 +16,7 @@ import {
 } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData from '../../actions/graphActions';
-import { getGridData } from '../../actions/gridActions';
+import { getGridData, getIndicatorData } from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
 import { getKatorsInCell, newkatorArr } from '../../utilities/IndicatorArr';
@@ -76,6 +76,11 @@ class MapView extends Component {
     this.props.dispatch(getGridData());
     this.props.dispatch(getFCastData())
     await this.props.dispatch(getPolygonLayers());
+    await this.props.dispatch(getIndicatorData());
+    await this.props.dispatch(getcreateputGraphData(
+      {}, 'GET', "", "", this.props.cropTypes,
+      this.props.LayersPayload, this.props.katorPayload
+    ));
   }
 
   _onEdited = (e) => {
@@ -291,11 +296,12 @@ const mapStateToProps = state => ({
   forecastData: state.forecast.foreCastPayload,
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
   gridLayer: state.grid.gridPayload,
+  katorPayload: state.grid.katorPayload,
   fieldId: state.graphs.fieldId,
 });
 
 const matchDispatchToProps = dispatch => ({
-  postPointLayer, postPolygonLayer,
+  postPointLayer, postPolygonLayer, getIndicatorData, getcreateputGraphData,
   deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail,
   dispatch
 });
