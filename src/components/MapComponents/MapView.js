@@ -30,10 +30,6 @@ class MapView extends Component {
     super();
     this.myMap = React.createRef();
     this.myCookiePref = React.createRef();
-    this.overviewDonutRef = React.createRef();
-    this.overviewBarRef = React.createRef();
-    this.indicatorLineRef = React.createRef();
-    this.ForecastBarRef = React.createRef;
     this.state = {
       currentLocation: { lat: 1.46, lng: 32.40 },
       zoom: 7,

@@ -1,8 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import React, { useState } from 'react';
 
-import store from '../../store';
 import {
   Map, TileLayer, FeatureGroup, MapControl,
   ZoomControl, LayersControl
@@ -36,7 +33,6 @@ L.Icon.Default.mergeOptions({
 });
 
 const { BaseLayer } = LayersControl
-let calledOnce = false;
 
 function getRandomColor() {
   var letters = '0123456789ABCDEF'.split('');
@@ -94,14 +90,13 @@ let ShMap = ({
   let {
     _saveCurrentView, addGridLayers, removeGridLayers, _onFeatureGroupReady,
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
-    overviewDonutRef, overviewBarRef, indicatorLineRef, ForecastBarRef
   } = mapInstance;
-  let cards_ = {
-    Overview: [overviewDonutRef, overviewBarRef],
-    // add forecast to same buttons
-    Indicators: [indicatorLineRef],
-    Forecast: [ForecastBarRef]
-  }
+
+  const [localState, setLocalState] = useState({
+    Overview: true,
+    Indicators: false,
+    Forecast: false
+  })
 
   let results = [];
   if (props.LayersPayload.length) {
@@ -135,12 +130,6 @@ let ShMap = ({
     }
   }
 
-  if (myMap.current && indicatorLineRef.current && !calledOnce) {
-    indicatorLineRef.current.leafletElement.remove();
-  }
-  if (myMap.current && ForecastBarRef.current) {
-    ForecastBarRef.current.leafletElement.remove();
-  }
 
   let _showCards = e => {
     // switch selected button
@@ -154,40 +143,16 @@ let ShMap = ({
       };
     })
     // switch cards
-    Object.keys(cards_).forEach(cardGrp => {
-      if (cardGrp !== e.currentTarget.textContent) {
-        cards_[cardGrp].forEach(card_ => {
-          if (card_.current) {
-            card_.current.leafletElement.remove()
-          }
-        })
-      } 
-      else {
-        cards_[cardGrp].forEach(card_ => {
-          if (card_.current) {
-            card_.current.leafletElement.addTo(myMap.current.leafletElement)
-            let ReactChild;
-            if (cardGrp === "Indicators" || cardGrp === "Forecast") {
-              ReactChild = 
-              <Provider store={store}>
-                {card_.current.props.children}
-              </Provider>;
-              calledOnce = true
-            } else {
-              ReactChild = card_.current.props.children
-            }
-            ReactDOM.render(
-              ReactChild, card_.current.leafletElement._container
-            )
-          }
-        })
-      }
-    })
+    setLocalState({
+      ...Object.fromEntries(
+        Object.keys(localState).map(key_ => [localState[key_], false])
+      ),
+      [e.currentTarget.textContent]: true
+    });
   }
 
   return (
     <React.Fragment>
-    {/* <ShSideBar /> */}
     <ToastContainer />
     <Map
       ref={myMap}
@@ -202,34 +167,34 @@ let ShMap = ({
           onClick={_showCards}
         >
           Overview
-            </button>&nbsp;&nbsp;&nbsp;
+        </button>&nbsp;&nbsp;&nbsp;
         <button
           className="current-view catBtn"
           onClick={_showCards}
         >
           Indicators
-            </button>&nbsp;&nbsp;&nbsp;
-        <button
-          className="current-view catBtn"
-          onClick={_showCards}
-        >
-          Forecast
-            </button>
+        </button>&nbsp;&nbsp;&nbsp;
+        {props.forecastData.length ? 
+          <button
+            className="current-view catBtn"
+            onClick={_showCards}
+          >
+            Forecast
+          </button>
+        : null}
       </Control>
       {
-      results.length ?
+      localState.Overview && results.length ?
         <React.Fragment>
           <Control
             position="topleft"
             className="current-view donut_css"
-            ref={overviewDonutRef}
           >
             <OverViewDonutGraph graphData={results} />
           </Control>
           <Control
             position="topleft"
             className="current-view donut_css"
-            ref={overviewBarRef}
           >
             <OverViewBarGraph graphData={results} />
           </Control>
@@ -237,36 +202,34 @@ let ShMap = ({
         : null
       }
       <br/>
-      {props.cropTypes.length > 0 ?
-      <React.Fragment>
-        <style type="text/css">
-              {`
-                .katorline {
-                  height: 51vh;
-                }
-              `}
-        </style>
+      {localState.Indicators && props.cropTypes.length > 0 ?
+        <React.Fragment>
+          <style type="text/css">
+                {`
+                  .katorline {
+                    height: 51vh;
+                  }
+                `}
+          </style>
+          <Control
+            position="topleft"
+            className="current-view donut_css katorline"
+            id="katorlineId"
+          >
+            <IndicatorsLineGraph SidePanelCollapsed={false} />
+          </Control>
+        </React.Fragment>
+       : <React.Fragment />}
+      {localState.Forecast && props.forecastData.length && props.fieldId !== "" ?
         <Control
           position="topleft"
           className="current-view donut_css katorline"
           id="katorlineId"
-          ref={indicatorLineRef}
-        >
-          <IndicatorsLineGraph SidePanelCollapsed={false} />
-        </Control>
-        {props.forecastData.length && props.fieldId !== "" ?
-        <Control
-          position="topleft"
-          className="current-view donut_css katorline"
-          id="katorlineId"
-          ref={ForecastBarRef}
         >
           <ForecastBarGraph
             SidePanelCollapsed={false}
           />
         </Control> : <React.Fragment />}
-      </React.Fragment>
-       : <React.Fragment />}
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       <Legend map={myMap} gridCellArea={gridCellArea} />
       {!localStorage.getItem("cookieusagedisplayed") ?

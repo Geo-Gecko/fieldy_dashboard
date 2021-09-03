@@ -47,8 +47,7 @@ function IndicatorsLineGraph (props) {
         {}, 'GET', "", "", props.cropTypes,
         props.LayersPayload, props.katorPayload
       ))
-    })()
-    console.log(props.cropTypes, "we are here")
+    })();
     let cropTypes = props.cropTypes
     // this isn't setting croptypes for admins
     setLocalState({
