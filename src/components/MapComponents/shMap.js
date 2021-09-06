@@ -10,6 +10,7 @@ import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
+import Spinner from 'react-bootstrap/Spinner';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -85,7 +86,7 @@ let ShMap = ({
 }) => {
   
   let {
-    currentLocation, zoom, userType, gridCellArea
+    currentLocation, zoom, userType, gridCellArea, initiateGetData
   } = state;
   let {
     _saveCurrentView, addGridLayers, removeGridLayers, _onFeatureGroupReady,
@@ -154,6 +155,12 @@ let ShMap = ({
   return (
     <React.Fragment>
     <ToastContainer />
+    {
+      initiateGetData ?
+        <div className="map-loading">
+          <Spinner animation="border" variant="danger" />
+        </div> : null
+    }
     <Map
       ref={myMap}
       zoomControl={false}

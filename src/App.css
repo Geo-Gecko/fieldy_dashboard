@@ -49,3 +49,15 @@
 .katorline{
   height: 51vh;
 }
+
+.map-loading {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  text-align: center;
+  z-index: 999;
+}

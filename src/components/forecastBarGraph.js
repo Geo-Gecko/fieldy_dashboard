@@ -107,7 +107,7 @@ class ForecastBarGraph extends React.Component {
                 yAxes
               }
             }}
-            height={120}
+            height={140}
           />
         )
 

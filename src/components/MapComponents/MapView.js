@@ -32,6 +32,7 @@ class MapView extends Component {
     this.myCookiePref = React.createRef();
     this.state = {
       currentLocation: { lat: 1.46, lng: 32.40 },
+      initiateGetData: true,
       zoom: 7,
       userType: "",
       showCookiePolicy: false,
@@ -81,6 +82,10 @@ class MapView extends Component {
       {}, 'GET', "", "", this.props.cropTypes,
       this.props.LayersPayload, this.props.katorPayload
     ));
+    this.setState({
+      ...this.state,
+      initiateGetData: false,
+    })
   }
 
   _onEdited = (e) => {
