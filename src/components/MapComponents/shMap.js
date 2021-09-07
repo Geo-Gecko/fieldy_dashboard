@@ -10,8 +10,10 @@ import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
+import {Button, Modal} from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
 
+import 'font-awesome/css/font-awesome.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import '../popupMod'
@@ -93,6 +95,7 @@ let ShMap = ({
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
   } = mapInstance;
 
+  const [showLogout, setshowLogout] = useState(false)
   const [localState, setLocalState] = useState({
     Overview: true,
     Indicators: false,
@@ -150,6 +153,12 @@ let ShMap = ({
       ),
       [e.currentTarget.textContent]: true
     });
+  }
+
+  function handleshowLogout() {
+    localStorage.removeItem('x-token')
+    localStorage.removeItem('user')
+    window.location.reload()
   }
 
   return (
@@ -377,6 +386,58 @@ let ShMap = ({
               `}
         </style>
         <div id="grid-info">Click on grid or field for info</div>
+      </Control>
+      <Control
+        position="bottomleft"
+      >
+        <style type="text/css">
+          {`
+            .logoutbtn {
+              border-color: #e15b26;
+            }
+            .btn-outline-primary:hover, .btn-outline-primary:active {
+              color: white !important;
+              border-color: #e15b26 !important;
+              background-color: #e15b26 !important;
+            }
+            .btn-outline-primary:focus {
+              box-shadow: 0 0 0 .1rem #e15b26 !important;
+            }
+          `}
+        </style>
+        <Button
+          variant="outline-primary"
+          className="rounded-circle btn-md fa fa-power-off logoutbtn"
+          onClick={() => setshowLogout(true)}
+        >
+          <Modal
+            show={showLogout}
+            onHide={() => setshowLogout(false)}
+            // FIGURE OUT HOW TO CLOSE ON OUTSIDE CLICK
+            // onRequestClose={(e) => {e.stopPropogation(); setshowLogout(false);}} 
+            // shouldCloseOnOverlayClick={true}
+            backdrop="false"
+            aria-labelledby="contained-modal-title-vcenter"
+            size="sm"
+            centered
+          >
+            <Modal.Body className="text-center">
+            Would you Like to logout?
+            </Modal.Body>
+            <Modal.Footer>
+              <style type="text/css">
+                {`
+                .btn-logout {
+                  background-color: #e15b26;
+                }
+                `}
+              </style>
+              <Button variant="logout" onClick={handleshowLogout}>
+                Yes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Button>
       </Control>
     </Map>
   </React.Fragment>
