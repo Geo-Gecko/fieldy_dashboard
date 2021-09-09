@@ -7,8 +7,8 @@ import { Line } from 'react-chartjs-2';
 import { CSVLink } from "react-csv";
 import {Dropdown, DropdownButton, ButtonGroup, Button} from 'react-bootstrap';
 
-import getcreateputGraphData, { months_ } from '../actions/graphActions';
-import { getIndicatorData } from '../actions/gridActions';
+import { months_ } from '../actions/graphActions';
+import { GET_ALL_FIELD_DATA } from '../actions/types';
 
 function IndicatorsLineGraph (props) {
 
@@ -254,6 +254,25 @@ function IndicatorsLineGraph (props) {
         Download Data
         </CSVLink>
       </Button>
+      {' '}
+      {
+        props.fieldId || props.grid_id ?
+        <Button
+          size="sm" variant="outline-primary"
+          style={{color: "black"}}
+          onClick={
+            () => dispatch({
+                type: GET_ALL_FIELD_DATA,
+                payload: {
+                  data_: props.allFieldData, collapsed: false,
+                  allFieldsIndicatorArray: props.allFieldsIndicatorArray
+                }
+            })
+          }
+        >
+          All fields
+        </Button> : null
+      }
       <br/><br/>
       <Line
         data={
@@ -275,6 +294,7 @@ function IndicatorsLineGraph (props) {
               display: true,
               position: "top",
               fontSize: 18,
+              fontStyle: "normal",
               text: `${
                 props.fieldId ? "Field Identifier: " + props.fieldId :
                 Object.keys(props.groupFieldData).length ?
@@ -310,6 +330,7 @@ function IndicatorsLineGraph (props) {
 
 const mapStateToProps = state => ({
   FieldindicatorArray: state.graphs.FieldindicatorArray,
+  allFieldData: state.graphs.allFieldData,
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
   groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
   field_data: state.graphs.field_data,
