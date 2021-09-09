@@ -1,11 +1,14 @@
 import React from 'react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 
+let colours;
 export const OverViewDonutGraph = graphData => {
 
     let labels = [...new Set(graphData.graphData.map(data_ => data_.cropType))];
     let count = [...new Set(graphData.graphData.map(data_ => data_.count))];
-    let colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+    if (!colours) {
+        colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+    }
 
     return (
         <Doughnut
@@ -57,7 +60,9 @@ export const OverViewBarGraph = graphData => {
 
     let labels = [...new Set(graphData.graphData.map(it => it.cropType))];
     let area = [...new Set(graphData.graphData.map(it => (it.area/1000000).toFixed(2)))];
-    let colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+    if (!colours) {
+        colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+    }
 
     return (
         <Bar
