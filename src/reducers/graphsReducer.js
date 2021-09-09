@@ -68,11 +68,11 @@ const graphsReducer = (state = initialState, action) => {
                 noFieldData: action.payload,
                 initiateGetAllFieldData: false
             };
-            case FORECAST_FIELD_ID:
-                return {
-                    ...state,
-                    forecastFieldId: action.payload,
-                };
+        case FORECAST_FIELD_ID:
+            return {
+                ...state,
+                forecastFieldId: action.payload,
+            };
         default:
             return state;
     }

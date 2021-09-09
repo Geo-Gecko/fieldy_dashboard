@@ -10,6 +10,7 @@ import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import {Button, Modal} from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
 
@@ -136,23 +137,34 @@ let ShMap = ({
 
 
   let _showCards = e => {
-    // switch selected button
-    Array.from(
-      document.getElementsByClassName("catBtn")
-    ).forEach(el => {
-      if (el.textContent === e.currentTarget.textContent) {
-        el.className = "current-view catBtn clicked_topleft_btn"
-      } else {
-        el.className = "current-view catBtn"
-      };
-    })
-    // switch cards
-    setLocalState({
-      ...Object.fromEntries(
-        Object.keys(localState).map(key_ => [localState[key_], false])
-      ),
-      [e.currentTarget.textContent]: true
-    });
+    console.log(props.forecastFieldId)
+    if (e.currentTarget.textContent === "Forecast" && !props.forecastFieldId) {
+      toast("Right click on a field to show this chart", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        })
+    } else {
+      // switch selected button
+      Array.from(
+        document.getElementsByClassName("catBtn")
+      ).forEach(el => {
+        if (el.textContent === e.currentTarget.textContent) {
+          el.className = "current-view catBtn clicked_topleft_btn"
+        } else {
+          el.className = "current-view catBtn"
+        };
+      })
+      // switch cards
+      setLocalState({
+        ...Object.fromEntries(
+          Object.keys(localState).map(key_ => [localState[key_], false])
+        ),
+        [e.currentTarget.textContent]: true
+      });
+    }
   }
 
   function handleshowLogout() {

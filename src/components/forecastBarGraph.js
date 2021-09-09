@@ -32,7 +32,7 @@ class ForecastBarGraph extends React.Component {
       let isValid = false
 
       this.props.forecastData.forEach(element => {
-        if (element.field_id === selectedfield) {
+        if (element.field_id === this.props.fieldId) {
           isValid = true;
           labels.push(element.day.substring(6, 10));
           temperature.push(element.avg_temperature)
@@ -91,7 +91,7 @@ class ForecastBarGraph extends React.Component {
                 display: true,
                 position: "top",
                 fontSize: 18,
-                text: `Field Identifier: ${this.state.fieldId}`
+                text: `Field Identifier: ${this.props.fieldId}`
               },
               legend: {
                 display: true,
@@ -107,7 +107,7 @@ class ForecastBarGraph extends React.Component {
                 yAxes
               }
             }}
-            height={140}
+            height={180}
           />
         )
 
