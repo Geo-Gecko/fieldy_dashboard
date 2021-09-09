@@ -162,6 +162,9 @@ function IndicatorsLineGraph (props) {
           background-color: #e15b26;
           color: white;
       }
+      .btn-sm {
+        border-color: #e15b26;
+      }
       .dropdown-item {
         color: inherit !important;
       }
@@ -171,8 +174,6 @@ function IndicatorsLineGraph (props) {
           background-color: #e15b26;
       }
       #indicator_download_button {
-        
-        background-color: #e15b26;
         border-color: #e15b26;
       }
       a {
@@ -187,13 +188,13 @@ function IndicatorsLineGraph (props) {
         box-shadow: none;
       }
       #indicator_download_button_words {
-        color: white;
+        color: black;
       }
       `}
       </style>
       <br />&nbsp;<DropdownButton
       size="sm"
-      variant={"dropdown"}
+      variant="outline-dropdown"
       className="mr-1"
       id="dropdown-basic-button"
       title={displayedIndicator}
@@ -207,7 +208,7 @@ function IndicatorsLineGraph (props) {
       </DropdownButton>
       <DropdownButton
       size="sm"
-      variant={"dropdown"}
+      variant="outline-dropdown"
       id="dropdown-basic-button"
       title={props.fieldId === "" ? selectedCropType : props.cropType}
       as={ButtonGroup}
@@ -231,7 +232,7 @@ function IndicatorsLineGraph (props) {
         }
       </DropdownButton>
       {' '}
-      <Button id="indicator_download_button" size="sm">
+      <Button id="indicator_download_button" size="sm" variant="outline-primary">
         <CSVLink
         // if indicatorsArray is undefined will return an error,
         // so need to check for it

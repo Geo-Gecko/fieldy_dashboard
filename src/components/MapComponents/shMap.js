@@ -137,7 +137,6 @@ let ShMap = ({
 
 
   let _showCards = e => {
-    console.log(props.forecastFieldId)
     if (e.currentTarget.textContent === "Forecast" && !props.forecastFieldId) {
       toast("Right click on a field to show this chart", {
         position: "top-center",
