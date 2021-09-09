@@ -9,6 +9,7 @@ import {
 
 const initialState = {
     fieldId: "",
+    grid_id: "",
     cropType: "",
     field_data: {},
     allFieldData: {},
@@ -48,6 +49,7 @@ const graphsReducer = (state = initialState, action) => {
                 allFieldData: action.payload.data_,
                 groupFieldData: {},
                 fieldId: "",
+                grid_id: "",
                 SidePanelCollapsed: action.payload.collapsed,
                 noFieldData: false,
                 initiateGetAllFieldData: false
@@ -58,6 +60,7 @@ const graphsReducer = (state = initialState, action) => {
                     groupFieldIndicatorArray: action.payload.allFieldsIndicatorArray,
                     groupFieldData: action.payload.data_,
                     fieldId: "",
+                    grid_id: action.payload.grid_id,
                     SidePanelCollapsed: action.payload.collapsed,
                     noFieldData: false,
                     initiateGetAllFieldData: false

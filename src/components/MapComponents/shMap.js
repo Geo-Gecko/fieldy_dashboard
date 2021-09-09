@@ -427,7 +427,6 @@ let ShMap = ({
             // FIGURE OUT HOW TO CLOSE ON OUTSIDE CLICK
             // onRequestClose={(e) => {e.stopPropogation(); setshowLogout(false);}} 
             // shouldCloseOnOverlayClick={true}
-            backdrop="false"
             aria-labelledby="contained-modal-title-vcenter"
             size="sm"
             centered

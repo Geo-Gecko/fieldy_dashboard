@@ -96,7 +96,7 @@ const getcreateputGraphData = (
                 })()
                 if (!katorPayload.length) {
                     dispatch(newkatorArr(
-                        response.data, cropTypes, layers_, GET_ALL_FIELD_DATA
+                        response.data, cropTypes, layers_, GET_ALL_FIELD_DATA, ""
                     ))
                     // saving of calculations is made from here
                     // let storeData = {}_ln79, storeData[kator] = {}_ln92,

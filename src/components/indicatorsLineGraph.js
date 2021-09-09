@@ -38,7 +38,8 @@ function IndicatorsLineGraph (props) {
   }
   const prevfieldId = usePrevious(props.fieldId);
   const prevSidePanelCollapsed = usePrevious(props.SidePanelCollapsed);
-  const prevgroupFieldData = usePrevious(props.groupFieldData)
+  const prevgroupFieldData = usePrevious(props.groupFieldData);
+  const prevgrid_id = usePrevious(props.grid_id);
 
   useEffect(() => {
     let cropTypes = props.cropTypes
@@ -81,8 +82,7 @@ function IndicatorsLineGraph (props) {
         displayedIndicator: "Rainfall"
       })
     } else if (
-      Object.keys(props.groupFieldData).length &&
-       prevSidePanelCollapsed !== props.SidePanelCollapsed
+      props.grid_id !== "" && prevgrid_id !== props.grid_id
     ) {
       // block to display group field data and uncollapse sidepanel
       let { groupFieldData } = props
@@ -317,6 +317,7 @@ const mapStateToProps = state => ({
   groupFieldData: state.graphs.groupFieldData,
   fieldId: state.graphs.fieldId,
   cropType: state.graphs.cropType,
+  grid_id: state.graphs.grid_id,
   cropTypes: state.layers.cropTypes,
   LayersPayload: state.layers.LayersPayload,
   katorPayload: state.grid.katorPayload

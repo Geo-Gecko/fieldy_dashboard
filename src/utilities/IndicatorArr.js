@@ -36,7 +36,7 @@ export const getKatorsInCell = (gridCell, indicatorArr, fields) => {
 }
 
 export const newkatorArr = (
-  katorArr, cropTypes, layers_, caseType
+  katorArr, cropTypes, layers_, caseType, grid_id
 ) => async dispatch => {
   await dispatch({
       type: GET_ALL_FIELD_DATA_INITIATED,
@@ -100,7 +100,7 @@ export const newkatorArr = (
   dispatch({
     type: caseType,
     payload: {
-      data_, collapsed: false,
+      data_, collapsed: false, grid_id,
       allFieldsIndicatorArray: data_array
     }
   })

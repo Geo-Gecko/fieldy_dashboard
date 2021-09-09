@@ -217,7 +217,8 @@ class MapView extends Component {
             if (indicatorsInCell.length) {
               this.props.dispatch(newkatorArr(
                 indicatorsInCell, this.props.cropTypes,
-                this.props.LayersPayload, GET_GROUP_FIELD_DATA
+                this.props.LayersPayload, GET_GROUP_FIELD_DATA,
+                e.layer.feature.properties.grid_id
               ))
             }
           })

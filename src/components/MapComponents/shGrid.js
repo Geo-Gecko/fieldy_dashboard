@@ -1,5 +1,7 @@
 import L from 'leaflet';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import { months_ } from '../../actions/graphActions';
 import { inside, colorGrid, bindGridPopup } from '../../utilities/gridFns';
 
@@ -13,6 +15,7 @@ let createGrid = mapViewInst => {
   if (savedGrid.length) {
 
     savedGrid.forEach(gridLayer => {
+      gridLayer.properties.grid_id = uuidv4();
       try{
         gridLayer.properties.field_attributes.grid_summary =
           JSON.parse(
@@ -85,6 +88,7 @@ let createGrid = mapViewInst => {
         },
         properties: {
           count: 0,
+          grid_id: uuidv4()
         }
       });
       // refresh cusror for cell
