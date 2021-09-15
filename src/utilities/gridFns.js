@@ -86,4 +86,10 @@ export const bindGridPopup = (
     layer.setStyle({ weight: 4, color: "#e15b26" });
     clickedGrid = layer
   });
+  if (Object.keys(LayersPayload).length) {
+    layer.bindPopup(
+      "",
+      {removable: true, cropTypes, userType, LayersPayload}
+    )
+  }
 }

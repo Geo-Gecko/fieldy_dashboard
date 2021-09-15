@@ -1,11 +1,14 @@
 import React from 'react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 
+let colours;
 export const OverViewDonutGraph = graphData => {
 
     let labels = [...new Set(graphData.graphData.map(data_ => data_.cropType))];
     let count = [...new Set(graphData.graphData.map(data_ => data_.count))];
-    let colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+    if (!colours) {
+        colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+    }
 
     return (
         <Doughnut
@@ -26,6 +29,10 @@ export const OverViewDonutGraph = graphData => {
                     display: true,
                     position: "bottom",
                 },
+                title: {
+                    display: true,
+                    text: 'Crop Type Representation'
+                },
                 tooltips: {
                     callbacks: {
                       label: function(tooltipItem, data) {
@@ -42,7 +49,7 @@ export const OverViewDonutGraph = graphData => {
                     }
                   },
             }}
-            height={60}
+            height={140}    
         />
     )
 
@@ -52,8 +59,10 @@ export const OverViewDonutGraph = graphData => {
 export const OverViewBarGraph = graphData => {
 
     let labels = [...new Set(graphData.graphData.map(it => it.cropType))];
-    let area = [...new Set(graphData.graphData.map(it => it.area))];
-    let colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+    let area = [...new Set(graphData.graphData.map(it => (it.area/1000000).toFixed(2)))];
+    if (!colours) {
+        colours = [...new Set(graphData.graphData.map(data_ => data_.colours))];
+    }
 
     return (
         <Bar
@@ -62,7 +71,7 @@ export const OverViewBarGraph = graphData => {
                     "labels": labels,
                     "datasets": [
                         {
-                            "label": "Total Area",
+                            "label": "Total Areas",
                             "data": area,
                             "backgroundColor": colours,
                             "borderColor": "rgb(75, 192, 192)",
@@ -73,12 +82,20 @@ export const OverViewBarGraph = graphData => {
             }
             options={{
                 legend: {
-                    display: true,
+                    display: false,
                     position: "bottom",
+                },
+                title: {
+                    display: true,
+                    text: 'Crop Area Coverage'
                 },
                 scales: {
                     yAxes: [
                       {
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Area (sq km)'
+                        },
                         ticks: {
                           callback: function(value) {
                             value += '';
@@ -89,14 +106,14 @@ export const OverViewBarGraph = graphData => {
                             while (rgx.test(x1)) {
                                 x1 = x1.replace(rgx, '$1' + ',' + '$2');
                             }
-                            return `${x1 + x2} sq m`;
+                            return `${(x1 + x2)}`;
                           }
                         }
                       }
                     ]
                   }
             }}
-            height={60}
+            height={140}
         />
     )
 

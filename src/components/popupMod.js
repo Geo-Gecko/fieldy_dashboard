@@ -78,7 +78,7 @@ L.Popup.include({
          let removeButton = this._removeButton = L.DomUtil.create('a', prefix + '-remove-button', userActionButtons);
          removeButton.href = '#close';
          if (this._source.feature.properties.count) {
-            removeButton.innerHTML = `Show fields in this cell`;
+            removeButton.innerHTML = `Show fields`;
          } else {
             removeButton.innerHTML = `Remove this ${nametag}`;
          }

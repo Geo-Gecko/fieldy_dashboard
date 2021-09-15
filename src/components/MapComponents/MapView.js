@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
-import jwt from 'jsonwebtoken';
 import { connect } from 'react-redux';
 import L from 'leaflet';
 import ReactGA from 'react-ga';
@@ -13,11 +12,11 @@ import {
   deletePolygonLayer, updatePolygonLayer
 } from '../../actions/layerActions';
 import {
-  GET_ALL_FIELD_DATA_INITIATED, GET_GROUP_FIELD_DATA
+  GET_ALL_FIELD_DATA_INITIATED, GET_GROUP_FIELD_DATA, FORECAST_FIELD_ID
 } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData from '../../actions/graphActions';
-import { getGridData } from '../../actions/gridActions';
+import { getGridData, getIndicatorData } from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
 import { getKatorsInCell, newkatorArr } from '../../utilities/IndicatorArr';
@@ -33,11 +32,13 @@ class MapView extends Component {
     this.myCookiePref = React.createRef();
     this.state = {
       currentLocation: { lat: 1.46, lng: 32.40 },
+      initiateGetData: true,
       zoom: 7,
       userType: "",
       showCookiePolicy: false,
       grid: undefined,
       gridCellArea: "",
+      layer_data: []
     }
   }
 
@@ -76,6 +77,15 @@ class MapView extends Component {
     this.props.dispatch(getGridData());
     this.props.dispatch(getFCastData())
     await this.props.dispatch(getPolygonLayers());
+    await this.props.dispatch(getIndicatorData());
+    await this.props.dispatch(getcreateputGraphData(
+      {}, 'GET', "", "", this.props.cropTypes,
+      this.props.LayersPayload, this.props.katorPayload
+    ));
+    this.setState({
+      ...this.state,
+      initiateGetData: false,
+    })
   }
 
   _onEdited = (e) => {
@@ -207,7 +217,8 @@ class MapView extends Component {
             if (indicatorsInCell.length) {
               this.props.dispatch(newkatorArr(
                 indicatorsInCell, this.props.cropTypes,
-                this.props.LayersPayload, GET_GROUP_FIELD_DATA
+                this.props.LayersPayload, GET_GROUP_FIELD_DATA,
+                e.layer.feature.properties.grid_id
               ))
             }
           })
@@ -250,12 +261,16 @@ class MapView extends Component {
     await this.props.dispatch({
         type: GET_ALL_FIELD_DATA_INITIATED,
         payload: true
-    })
+    });
     this.props.dispatch(getcreateputGraphData(
       {}, 'GET', e.layer.feature.properties.field_id,
       e.layer.feature.properties.CropType,
       this.props.cropTypes, this.props.LayersPayload
-    ))
+    ));
+    this.props.dispatch({
+      type: FORECAST_FIELD_ID,
+      payload: e.layer.feature.properties.field_id
+  })
   }
 
   addGridLayers = () => {
@@ -288,12 +303,16 @@ const mapStateToProps = state => ({
   createLayersPayload: state.layers.createLayersPayload,
   LayersPayload: state.layers.LayersPayload,
   cropTypes: state.layers.cropTypes,
+  forecastData: state.forecast.foreCastPayload,
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
-  gridLayer: state.grid.gridPayload
+  gridLayer: state.grid.gridPayload,
+  katorPayload: state.grid.katorPayload,
+  fieldId: state.graphs.fieldId,
+  forecastFieldId: state.graphs.forecastFieldId,
 });
 
 const matchDispatchToProps = dispatch => ({
-  postPointLayer, postPolygonLayer,
+  postPointLayer, postPolygonLayer, getIndicatorData, getcreateputGraphData,
   deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail,
   dispatch
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Map, TileLayer, FeatureGroup, MapControl,
@@ -10,7 +10,11 @@ import L from 'leaflet';
 import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
+import {Button, Modal} from 'react-bootstrap';
+import Spinner from 'react-bootstrap/Spinner';
 
+import 'font-awesome/css/font-awesome.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import '../popupMod'
@@ -19,7 +23,9 @@ import '../popupMod.css'
 
 
 // local components
-import ShSideBar from '../shSideBar';
+import IndicatorsLineGraph from '../indicatorsLineGraph';
+import ForecastBarGraph from '../forecastBarGraph';
+import { OverViewDonutGraph, OverViewBarGraph } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
 
 
@@ -31,6 +37,16 @@ L.Icon.Default.mergeOptions({
 });
 
 const { BaseLayer } = LayersControl
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF'.split('');
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 let commafy = (value) => {
   value += '';
   let x = value.split('.');
@@ -50,7 +66,7 @@ class Legend extends MapControl {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.gridCellArea !== prevProps.gridCellArea) {
-      const { map, gridCellArea } = this.props;
+      const { gridCellArea } = this.props;
       this.legend._container.innerHTML =
         `Grid cell area - <span style="color: #e15b26">${commafy(gridCellArea)}</span>`
     }
@@ -73,17 +89,98 @@ let ShMap = ({
 }) => {
   
   let {
-    currentLocation, zoom, userType, gridCellArea
+    currentLocation, zoom, userType, gridCellArea, initiateGetData
   } = state;
   let {
     _saveCurrentView, addGridLayers, removeGridLayers, _onFeatureGroupReady,
-    handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref
+    handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
   } = mapInstance;
+
+  const [showLogout, setshowLogout] = useState(false)
+  const [localState, setLocalState] = useState({
+    Overview: true,
+    Indicators: false,
+    Forecast: false
+  })
+
+  let results = [];
+  if (props.LayersPayload.length) {
+    let areas = {}, counts = {}, cropType, colours = {};
+    props.LayersPayload.forEach(feature_ => {
+      let totalArea =
+       L.GeometryUtil.geodesicArea(
+        //  [...x] returns a copy of x otherwise the corrdinates in 
+        // this.props.LayersPayload are reversed in place. This affected the
+        // function for right clicking a graph cell to pull up the indicator
+        // line graph --- 24/03/2021
+        feature_.geometry.coordinates[0].map(x => new L.latLng([...x].reverse()))
+       ).toFixed(2)
+       if (feature_.properties.CropType) {
+         cropType = feature_.properties.CropType
+         if (!(cropType in areas)) {
+           areas[cropType] = 0;
+           counts[cropType] = 0;
+           colours[cropType] = "";
+         }
+         areas[cropType] += parseFloat(totalArea);
+         counts[cropType]++;
+         colours[cropType] = getRandomColor();
+       }
+    });
+    for (cropType in areas) {
+      results.push({
+        cropType: cropType, area: areas[cropType].toFixed(2),
+        count: counts[cropType], colours: colours[cropType]
+      });
+    }
+  }
+
+
+  let _showCards = e => {
+    if (e.currentTarget.textContent === "Forecast" && !props.forecastFieldId) {
+      toast("Right click on a field to show this chart", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        })
+    } else {
+      // switch selected button
+      Array.from(
+        document.getElementsByClassName("catBtn")
+      ).forEach(el => {
+        if (el.textContent === e.currentTarget.textContent) {
+          el.className = "current-view catBtn clicked_topleft_btn"
+        } else {
+          el.className = "current-view catBtn"
+        };
+      })
+      // switch cards
+      setLocalState({
+        ...Object.fromEntries(
+          Object.keys(localState).map(key_ => [localState[key_], false])
+        ),
+        [e.currentTarget.textContent]: true
+      });
+    }
+  }
+
+  function handleshowLogout() {
+    localStorage.removeItem('x-token')
+    localStorage.removeItem('user')
+    window.location.reload()
+  }
 
   return (
     <React.Fragment>
-    <ShSideBar />
     <ToastContainer />
+    {
+      initiateGetData ?
+        <div className="map-loading">
+          <Spinner animation="border" variant="danger" />
+        </div> : null
+    }
     <Map
       ref={myMap}
       zoomControl={false}
@@ -91,6 +188,75 @@ let ShMap = ({
       zoom={zoom}
       minZoom={5}
     >
+      <Control position="topleft" >
+        <button
+          className="current-view catBtn clicked_topleft_btn"
+          onClick={_showCards}
+        >
+          Overview
+        </button>&nbsp;&nbsp;&nbsp;
+        <button
+          className="current-view catBtn"
+          onClick={_showCards}
+        >
+          Indicators
+        </button>&nbsp;&nbsp;&nbsp;
+        {props.forecastData.length ? 
+          <button
+            className="current-view catBtn"
+            onClick={_showCards}
+          >
+            Forecast
+          </button>
+        : null}
+      </Control>
+      {
+      localState.Overview && results.length ?
+        <React.Fragment>
+          <Control
+            position="topleft"
+            className="current-view donut_css"
+          >
+            <OverViewDonutGraph graphData={results} />
+          </Control>
+          <Control
+            position="topleft"
+            className="current-view donut_css"
+          >
+            <OverViewBarGraph graphData={results} />
+          </Control>
+        </React.Fragment>
+        : null
+      }
+      <br/>
+      {localState.Indicators && props.cropTypes.length > 0 ?
+        <React.Fragment>
+          <style type="text/css">
+                {`
+                  .katorline {
+                    height: 51vh;
+                  }
+                `}
+          </style>
+          <Control
+            position="topleft"
+            className="current-view donut_css katorline"
+            id="katorlineId"
+          >
+            <IndicatorsLineGraph SidePanelCollapsed={false} />
+          </Control>
+        </React.Fragment>
+       : <React.Fragment />}
+      {localState.Forecast && props.forecastData.length && props.fieldId !== "" ?
+        <Control
+          position="topleft"
+          className="current-view donut_css katorline"
+          id="katorlineId"
+        >
+          <ForecastBarGraph
+            SidePanelCollapsed={false}
+          />
+        </Control> : <React.Fragment />}
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       <Legend map={myMap} gridCellArea={gridCellArea} />
       {!localStorage.getItem("cookieusagedisplayed") ?
@@ -152,15 +318,6 @@ let ShMap = ({
       </LayersControl>
       <ZoomControl position="bottomright" />
       <Control position="topright" >
-        <style type="text/css">
-          {`
-              .current-view {
-                box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                border-radius: 4px;
-                border: none;
-              }
-              `}
-        </style>
         <button
           className="current-view"
           onClick={_saveCurrentView}
@@ -240,6 +397,57 @@ let ShMap = ({
               `}
         </style>
         <div id="grid-info">Click on grid or field for info</div>
+      </Control>
+      <Control
+        position="bottomleft"
+      >
+        <style type="text/css">
+          {`
+            .logoutbtn {
+              border-color: #e15b26;
+            }
+            .btn-outline-primary:hover, .btn-outline-primary:active {
+              color: white !important;
+              border-color: #e15b26 !important;
+              background-color: #e15b26 !important;
+            }
+            .btn-outline-primary:focus {
+              box-shadow: 0 0 0 .1rem #e15b26 !important;
+            }
+          `}
+        </style>
+        <Button
+          variant="outline-primary"
+          className="rounded-circle btn-md fa fa-power-off logoutbtn"
+          onClick={() => setshowLogout(true)}
+        >
+          <Modal
+            show={showLogout}
+            onHide={() => setshowLogout(false)}
+            // FIGURE OUT HOW TO CLOSE ON OUTSIDE CLICK
+            // onRequestClose={(e) => {e.stopPropogation(); setshowLogout(false);}} 
+            // shouldCloseOnOverlayClick={true}
+            aria-labelledby="contained-modal-title-vcenter"
+            size="sm"
+            centered
+          >
+            <Modal.Body className="text-center">
+            Would you Like to logout?
+            </Modal.Body>
+            <Modal.Footer>
+              <style type="text/css">
+                {`
+                .btn-logout {
+                  background-color: #e15b26;
+                }
+                `}
+              </style>
+              <Button variant="logout" onClick={handleshowLogout}>
+                Yes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Button>
       </Control>
     </Map>
   </React.Fragment>
