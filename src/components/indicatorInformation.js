@@ -3,15 +3,13 @@ import React from 'react';
 import { Modal } from 'react-bootstrap';
 import ndvi_image from '../ndvi_image.png';
 
-export const IndicatorInformation = ({ sideBarInstance }) => {
+export const IndicatorInformation = ({ showKatorInfo, setShowKatorInfo }) => {
 
 
   return (
     <Modal
-      show={sideBarInstance.state.showIndicatorInfo}
-      onHide={() => sideBarInstance.setState({
-        ...sideBarInstance.state, showIndicatorInfo: false, collapsed: true, selected: "overview"
-      })}
+      show={showKatorInfo}
+      onHide={() => setShowKatorInfo(false)}
       aria-labelledby="contained-modal-title-vcenter"
       size="lg"
       centered

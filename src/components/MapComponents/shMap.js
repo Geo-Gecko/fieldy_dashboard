@@ -25,6 +25,7 @@ import '../popupMod.css'
 // local components
 import IndicatorsLineGraph from '../indicatorsLineGraph';
 import ForecastBarGraph from '../forecastBarGraph';
+import { IndicatorInformation } from '../indicatorInformation';
 import { OverViewDonutGraph, OverViewBarGraph } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
 
@@ -96,7 +97,9 @@ let ShMap = ({
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
   } = mapInstance;
 
-  const [showLogout, setshowLogout] = useState(false)
+  const [showLogout, setShowLogout] = useState(false);
+  const [showKatorInfo, setShowKatorInfo] = useState(false);
+
   const [localState, setLocalState] = useState({
     Overview: true,
     Indicators: false,
@@ -418,15 +421,21 @@ let ShMap = ({
         </style>
         <Button
           variant="outline-primary"
+          className="rounded-circle btn-md fa fa-info logoutbtn"
+          style={{width: "2.8vw"}}
+          onClick={() => setShowKatorInfo(true)}
+        ></Button>
+        <IndicatorInformation
+          setShowKatorInfo={setShowKatorInfo} showKatorInfo={showKatorInfo}
+        />{' '}
+        <Button
+          variant="outline-primary"
           className="rounded-circle btn-md fa fa-power-off logoutbtn"
-          onClick={() => setshowLogout(true)}
-        >
+          onClick={() => setShowLogout(true)}
+        ></Button>
           <Modal
             show={showLogout}
-            onHide={() => setshowLogout(false)}
-            // FIGURE OUT HOW TO CLOSE ON OUTSIDE CLICK
-            // onRequestClose={(e) => {e.stopPropogation(); setshowLogout(false);}} 
-            // shouldCloseOnOverlayClick={true}
+            onHide={() => setShowLogout(false)}
             aria-labelledby="contained-modal-title-vcenter"
             size="sm"
             centered
@@ -447,7 +456,6 @@ let ShMap = ({
               </Button>
             </Modal.Footer>
           </Modal>
-        </Button>
       </Control>
     </Map>
   </React.Fragment>
