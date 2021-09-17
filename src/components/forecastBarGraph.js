@@ -23,7 +23,6 @@ class ForecastBarGraph extends React.Component {
     }
 
     render() {
-      let selectedfield = this.state.fieldId;
 
       let labels = [];
       let temperature = [];

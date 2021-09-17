@@ -334,7 +334,6 @@ const mapStateToProps = state => ({
   allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
   groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
   field_data: state.graphs.field_data,
-  allFieldData: state.graphs.allFieldData,
   groupFieldData: state.graphs.groupFieldData,
   fieldId: state.graphs.fieldId,
   cropType: state.graphs.cropType,
