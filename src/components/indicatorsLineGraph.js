@@ -118,31 +118,31 @@ function IndicatorsLineGraph (props) {
     prevSidePanelCollapsed, prevfieldId, prevgroupFieldData
   ])
 
-  let getEvent = eventKey => {
-    if (typeof(eventKey) === "string") {
+  let getEvent = e => {
+    if (typeof(e.currentTarget.text) === "string") {
       let { allFieldData, fieldId, field_data, groupFieldData } = props;
       let cropTypes = localState.cropTypes;
       let selectedCropType = localState.selectedCropType === "Crop Type" ?
         cropTypes[0] : localState.selectedCropType;
 
-      if (cropTypes.includes(eventKey)) {
+      if (cropTypes.includes(e.currentTarget.text)) {
         setLocalState({
           ...localState,
           dataset: fieldId === "" && !Object.keys(groupFieldData).length ?
-           allFieldData[localState.selectedIndicator][eventKey]
+           allFieldData[localState.selectedIndicator][e.currentTarget.text]
             :fieldId === "" && Object.keys(groupFieldData).length ?
-            groupFieldData[localState.selectedIndicator][eventKey]
-            : field_data[localState.selectedIndicator][eventKey],
-          selectedCropType: eventKey
+            groupFieldData[localState.selectedIndicator][e.currentTarget.text]
+            : field_data[localState.selectedIndicator][e.currentTarget.text],
+          selectedCropType: e.currentTarget.text
         })
       } else {
         setLocalState({
           ...localState,
           dataset: fieldId === "" ?
-           allFieldData[localState.indicatorObj[eventKey][0]][selectedCropType]
-            : field_data[localState.indicatorObj[eventKey][0]][selectedCropType],
-          selectedIndicator: localState.indicatorObj[eventKey][0],
-          displayedIndicator: eventKey
+           allFieldData[localState.indicatorObj[e.currentTarget.text][0]][selectedCropType]
+            : field_data[localState.indicatorObj[e.currentTarget.text][0]][selectedCropType],
+          selectedIndicator: localState.indicatorObj[e.currentTarget.text][0],
+          displayedIndicator: e.currentTarget.text
         })
       }
     }
@@ -201,11 +201,12 @@ function IndicatorsLineGraph (props) {
       as={ButtonGroup}
       >
         {Object.keys(indicatorObj).map(obj_ => 
-            <Dropdown.Item key={obj_} eventKey={obj_} onSelect={getEvent}>
+            <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
                 {obj_}
             </Dropdown.Item>
         )}
       </DropdownButton>
+      {' '}
       <DropdownButton
       size="sm"
       variant="outline-dropdown"
@@ -219,13 +220,13 @@ function IndicatorsLineGraph (props) {
           props.fieldId === "" &&
           Object.keys(props.groupFieldData).length ?
           Object.keys(props.groupFieldData.field_rainfall).map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onSelect={getEvent}>
+              <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
                   {type_}
               </Dropdown.Item>
           ) :
             props.fieldId === "" &&
             !Object.keys(props.groupFieldData).length ? cropTypes.map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onSelect={getEvent}>
+              <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
                   {type_}
               </Dropdown.Item>
           ) : ""
@@ -246,6 +247,7 @@ function IndicatorsLineGraph (props) {
           }
           target="_blank"
           id="indicator_download_button_words"
+          style={{"text-decoration": "none"}}
           filename={
             props.fieldId ?
             `${props.fieldId}_indicators_data.csv` : "indicators_data.csv"
