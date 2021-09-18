@@ -218,13 +218,19 @@ let ShMap = ({
         <React.Fragment>
           <Control
             position="topleft"
-            className="current-view donut_css"
+            className={
+              localState.Overview ? "current-view donut_css slide-in" :
+              "current-view donut_css slide-out"
+            }
           >
             <OverViewDonutGraph graphData={results} />
           </Control>
           <Control
             position="topleft"
-            className="current-view donut_css"
+            className={
+              localState.Overview ? "current-view donut_css slide-in" :
+              "current-view donut_css slide-out"
+            }
           >
             <OverViewBarGraph graphData={results} />
           </Control>
@@ -243,7 +249,10 @@ let ShMap = ({
           </style>
           <Control
             position="topleft"
-            className="current-view donut_css katorline"
+            className={
+              localState.Indicators ? "current-view donut_css katorline slide-in" :
+              "current-view donut_css katorline slide-out"
+            }
             id="katorlineId"
           >
             <IndicatorsLineGraph SidePanelCollapsed={false} />
@@ -253,7 +262,10 @@ let ShMap = ({
       {localState.Forecast && props.forecastData.length && props.fieldId !== "" ?
         <Control
           position="topleft"
-          className="current-view donut_css katorline"
+          className={
+            localState.Forecast ? "current-view donut_css katorline slide-in" :
+            "current-view donut_css katorline slide-out"
+          }
           id="katorlineId"
         >
           <ForecastBarGraph
