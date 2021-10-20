@@ -38,6 +38,7 @@ const getcreateputGraphData = (
                 "field_ndvi", "field_ndwi","field_rainfall",
                 "field_temperature", "field_evapotranspiration"
             ]
+            // response.data.results is when results are paginated. otherwise response.data for per field
             // dispatch two, one for all data and one for a specific field
             if (method_ === "GET" && field_id !== "") {
                 let data_ = {}
@@ -84,8 +85,8 @@ const getcreateputGraphData = (
                 })
                 let data_ = {}
                 let data_array = (() => {
-                    let fieldCsvData = [[...Object.keys(response.data[0]).slice(0,2), ...months_]]
-                    response.data.forEach(row_ => {
+                    let fieldCsvData = [[...Object.keys(response.data.results[0]).slice(0,2), ...months_]]
+                    response.data.results.forEach(row_ => {
                         let rowData = [...Object.values(row_).slice(0, 2)]
                         months_.forEach(month_ => {
                             rowData.push(row_[month_])
@@ -96,7 +97,7 @@ const getcreateputGraphData = (
                 })()
                 if (!katorPayload.length) {
                     dispatch(newkatorArr(
-                        response.data, cropTypes, layers_, GET_ALL_FIELD_DATA, ""
+                        response.data.results, cropTypes, layers_, GET_ALL_FIELD_DATA, ""
                     ))
                     // saving of calculations is made from here
                     // let storeData = {}_ln79, storeData[kator] = {}_ln92,
@@ -126,7 +127,7 @@ const getcreateputGraphData = (
                     })
                 }
             }
-            return response.data
+            return field_id !== "" ? response.data : response.data.results
         })
         .catch(error => {
             dispatch({
