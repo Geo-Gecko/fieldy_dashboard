@@ -148,12 +148,13 @@ function IndicatorsLineGraph (props) {
     }
   }
 
-  let { 
-    displayedIndicator, indicatorObj, allFieldsIndicatorArray,
+  let {
+    displayedIndicator, indicatorObj,
     selectedCropType, FieldindicatorArray, dataset, cropTypes
     } = localState;
-    let { groupFieldIndicatorArray } = props;
-
+    let { 
+      groupFieldIndicatorArray, allFieldsIndicatorArray
+     } = props;
   return (
     <React.Fragment>
       <style type="text/css">
@@ -247,7 +248,7 @@ function IndicatorsLineGraph (props) {
           }
           target="_blank"
           id="indicator_download_button_words"
-          style={{"text-decoration": "none"}}
+          style={{"textDecoration": "none"}}
           filename={
             props.fieldId ?
             `${props.fieldId}_indicators_data.csv` : "indicators_data.csv"
