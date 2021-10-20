@@ -31,7 +31,7 @@ export const getPolygonLayers = () => dispatch => {
       .get('/layers/listcreatepolygonlayer/')
       .then(response => {
           let cropTypes = new Set()
-          response.data.forEach(feature_ => {
+          response.data.results.forEach(feature_ => {
             if(feature_.properties.CropType){
               cropTypes.add(feature_.properties.CropType)
             }
@@ -39,7 +39,7 @@ export const getPolygonLayers = () => dispatch => {
           dispatch({
             type: GET_LAYERS_SUCCESS,
             payload: {
-              LayersPayload: response.data,
+              LayersPayload: response.data.results,
               cropTypes: Array.from(cropTypes)
             }
           })
