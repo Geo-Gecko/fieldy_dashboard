@@ -11,7 +11,9 @@ import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
-import {Button, Modal} from 'react-bootstrap';
+import {
+  Dropdown, DropdownButton, ButtonGroup, Button, Modal
+} from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
 
 import 'font-awesome/css/font-awesome.css';
@@ -173,6 +175,10 @@ let ShMap = ({
     localStorage.removeItem('x-token')
     localStorage.removeItem('user')
     window.location.reload()
+  }
+
+  let getEvent = e => {
+    console.log(e.currentTarget.text)
   }
 
   return (
@@ -361,18 +367,42 @@ let ShMap = ({
         {
           props.gridLayer && props.gridLayer.length ? null :
           <React.Fragment>
-            <style type="text/css">
-              {`
-                  .grid-view {
-                    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                    border-radius: 4px;
-                    border: none;
-                  }
-                  `}
-            </style>
-            <button className="grid-view" onClick={toggleGridLayers}>Toggle Grid</button>
+            <button className="current-view" onClick={toggleGridLayers}>
+              Toggle Grid
+            </button>&nbsp;&nbsp;&nbsp;
           </React.Fragment>
         }
+
+        <style type="text/css">
+          {`
+            .grid-color-view {
+              background-color: #ecebeb;
+              width: 10vw;
+              height: 3vh;
+            }
+            .grid-color-view button {
+              padding: 0;
+            }
+          `}
+        </style>
+        <DropdownButton
+          size="sm"
+          variant="outline-dropdown"
+          className="mr-1 current-view grid-color-view"
+          id="dropdown-basic-button"
+          title={"Grid Indicator"}
+          as={ButtonGroup}
+        >
+          <Dropdown.Item key={"1"} eventKey={"1"} onClick={getEvent}>Rainfall</Dropdown.Item>
+          <Dropdown.Item key={"2"} eventKey={"2"} onClick={getEvent}>Soil M</Dropdown.Item>
+          {/* {
+            Object.keys(indicatorObj).map(obj_ => 
+              <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
+                  {obj_}
+              </Dropdown.Item>
+            )
+          } */}
+        </DropdownButton>
       </Control>
       <FeatureGroup
         ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
@@ -392,8 +422,16 @@ let ShMap = ({
           }}
         /> : null}
       </FeatureGroup>
+      <style type="text/css">
+        {
+          `.grid-polygon-info {
+              z-index: 700;
+          }`
+        }
+      </style>
       <Control
         position="topright"
+        className="grid-polygon-info"
       >
         <style type="text/css">
           {`
