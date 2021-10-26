@@ -93,7 +93,7 @@ let ShMap = ({
     currentLocation, zoom, userType, gridCellArea, initiateGetData
   } = state;
   let {
-    _saveCurrentView, addGridLayers, removeGridLayers, _onFeatureGroupReady,
+    _saveCurrentView, toggleGridLayers, _onFeatureGroupReady,
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
   } = mapInstance;
 
@@ -341,7 +341,7 @@ let ShMap = ({
             </button>
       </Control>
       {
-        props.gridLayer.features && props.gridLayer.features.length ? null :
+        props.gridLayer && props.gridLayer.length ? null :
         <Control position="topright" >
           <style type="text/css">
             {`
@@ -352,9 +352,7 @@ let ShMap = ({
                 }
                 `}
           </style>
-          <button className="grid-view" onClick={addGridLayers}>Add Grid</button>
-          {' '}
-          <button className="grid-view" onClick={removeGridLayers}>Remove Grid</button>
+          <button className="grid-view" onClick={toggleGridLayers}>Toggle Grid</button>
         </Control>
       }
       <FeatureGroup

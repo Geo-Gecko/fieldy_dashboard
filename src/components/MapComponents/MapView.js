@@ -273,17 +273,18 @@ class MapView extends Component {
   })
   }
 
-  addGridLayers = () => {
-    this.state.grid.eachLayer(layer_ => {
-      if (layer_.feature.properties.count) {
-        layer_.setStyle({ weight: 0.5, color: "#3388ff" });
-      }
-    })
-    this.myMap.current.leafletElement.addLayer(this.state.grid);
-  }
-  removeGridLayers = () => {
-    this.myMap.current.leafletElement.removeLayer(this.state.grid);
-    document.getElementById("grid-info").innerHTML = "Click on grid or field for info";
+  toggleGridLayers = () => {
+    if (this.state.grid._map) {
+      this.myMap.current.leafletElement.removeLayer(this.state.grid);
+      document.getElementById("grid-info").innerHTML = "Click on grid or field for info";
+    } else if (!this.state.grid._map) {
+      this.state.grid.eachLayer(layer_ => {
+        if (layer_.feature.properties.count) {
+          layer_.setStyle({ weight: 0.5, color: "#3388ff" });
+        }
+      })
+      this.myMap.current.leafletElement.addLayer(this.state.grid);
+    }
   }
 
   render() {
