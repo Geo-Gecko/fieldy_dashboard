@@ -338,42 +338,7 @@ let ShMap = ({
           onClick={_saveCurrentView}
         >
           Save current view
-            </button>
-      </Control>
-      {
-        props.gridLayer && props.gridLayer.length ? null :
-        <Control position="topright" >
-          <style type="text/css">
-            {`
-                .grid-view {
-                  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                  border-radius: 4px;
-                  border: none;
-                }
-                `}
-          </style>
-          <button className="grid-view" onClick={toggleGridLayers}>Toggle Grid</button>
-        </Control>
-      }
-      <FeatureGroup
-        ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
-        onContextmenu={handleRightClick}
-      >
-        {userType === "EDITOR" ? <EditControl
-          position='topright'
-          onEdited={_onEdited}
-          onCreated={_onCreated}
-          onDeleted={_onDeleted}
-          draw={{
-            rectangle: false,
-            circle: false,
-            marker: false,
-            circlemarker: false,
-            polyline: false,
-          }}
-        /> : null}
-      </FeatureGroup>
-      <Control position="topright" >
+        </button>&nbsp;&nbsp;&nbsp;
         <style type="text/css">
           {`
                 #field_download_link, field_download_link:hover {
@@ -392,8 +357,41 @@ let ShMap = ({
           >
             Download fields
               </a>
-        </button>
+        </button>&nbsp;&nbsp;&nbsp;
+        {
+          props.gridLayer && props.gridLayer.length ? null :
+          <React.Fragment>
+            <style type="text/css">
+              {`
+                  .grid-view {
+                    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+                    border-radius: 4px;
+                    border: none;
+                  }
+                  `}
+            </style>
+            <button className="grid-view" onClick={toggleGridLayers}>Toggle Grid</button>
+          </React.Fragment>
+        }
       </Control>
+      <FeatureGroup
+        ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
+        onContextmenu={handleRightClick}
+      >
+        {userType === "EDITOR" ? <EditControl
+          position='topright'
+          onEdited={_onEdited}
+          onCreated={_onCreated}
+          onDeleted={_onDeleted}
+          draw={{
+            rectangle: false,
+            circle: false,
+            marker: false,
+            circlemarker: false,
+            polyline: false,
+          }}
+        /> : null}
+      </FeatureGroup>
       <Control
         position="topright"
       >
