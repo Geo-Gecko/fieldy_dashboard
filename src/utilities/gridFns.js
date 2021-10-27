@@ -26,7 +26,7 @@ export function inside(point, vs) {
   return inside;
 };
 
-export const colorGrid = grid => {
+export const colorGrid = (grid, gridIndicator) => {
 
   const thresholds = d3Array
     .range(0, 10)
@@ -40,7 +40,10 @@ export const colorGrid = grid => {
     //grid style per gridcell depending on factors, for now just visibility of a cell.
     layer.setStyle({
       // the fillColor is adapted from a property which can be changed by the user (segment)
-      fillColor: color(layer.feature.properties.count),
+      fillColor: color(
+        gridIndicator === "count" ? layer.feature.properties[gridIndicator] :
+          layer.feature.properties.field_attributes.grid_summary[gridIndicator][0]
+      ),
       weight: 0.3,
       //stroke-width: to have a constant width on the screen need to adapt with scale
       opacity: layer.feature.properties.count > 0 ? 1 : 0,

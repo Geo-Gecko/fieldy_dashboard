@@ -30,6 +30,7 @@ import ForecastBarGraph from '../forecastBarGraph';
 import { IndicatorInformation } from '../indicatorInformation';
 import { OverViewDonutGraph, OverViewBarGraph } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
+import { colorGrid } from '../../utilities/gridFns';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -92,7 +93,7 @@ let ShMap = ({
 }) => {
   
   let {
-    currentLocation, zoom, userType, gridCellArea, initiateGetData
+    currentLocation, zoom, userType, gridCellArea, initiateGetData, grid
   } = state;
   let {
     _saveCurrentView, toggleGridLayers, _onFeatureGroupReady,
@@ -107,6 +108,12 @@ let ShMap = ({
     Indicators: false,
     Forecast: false
   })
+
+  let indicatorObj = {
+    "Rainfall": "field_rainfall", "Vegetation Health": "field_ndvi",
+    "Soil Moisture": "field_ndwi", "Ground Temperature": "field_temperature",
+    "Evapotranspiration": "field_evapotranspiration", "Field Count": "count"
+  }
 
   let results = [];
   if (props.LayersPayload.length) {
@@ -178,7 +185,8 @@ let ShMap = ({
   }
 
   let getEvent = e => {
-    console.log(e.currentTarget.text)
+    let gridIndicator = indicatorObj[e.currentTarget.text]
+    colorGrid(grid, gridIndicator)
   }
 
   return (
@@ -377,11 +385,19 @@ let ShMap = ({
           {`
             .grid-color-view {
               background-color: #ecebeb;
-              width: 10vw;
+              width: 7vw;
               height: 3vh;
             }
             .grid-color-view button {
               padding: 0;
+              font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+            }
+            .grid-color-view div a {
+              color: inherit !important;
+            }
+            .grid-color-view div a.active, .grid-color-view div a:active {
+                color: #fff;
+                text-decoration: none;
             }
           `}
         </style>
@@ -393,15 +409,13 @@ let ShMap = ({
           title={"Grid Indicator"}
           as={ButtonGroup}
         >
-          <Dropdown.Item key={"1"} eventKey={"1"} onClick={getEvent}>Rainfall</Dropdown.Item>
-          <Dropdown.Item key={"2"} eventKey={"2"} onClick={getEvent}>Soil M</Dropdown.Item>
-          {/* {
-            Object.keys(indicatorObj).map(obj_ => 
-              <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
-                  {obj_}
+          {
+            Object.keys(indicatorObj).map(key_ => 
+              <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
+                  {key_}
               </Dropdown.Item>
             )
-          } */}
+          }
         </DropdownButton>
       </Control>
       <FeatureGroup

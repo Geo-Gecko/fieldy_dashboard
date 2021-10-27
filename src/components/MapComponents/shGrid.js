@@ -43,7 +43,7 @@ let createGrid = mapViewInst => {
         )
       }
     })
-    colorGrid(grid)
+    colorGrid(grid, "count")
 
     return {grid, gridCellArea };
 
@@ -169,7 +169,7 @@ let createGrid = mapViewInst => {
     })
 
     layer.feature.properties.count = fieldCount;
-    layer.feature.properties.field_attributes = {grid_summary: JSON.stringify(grid_summary)}
+    layer.feature.properties.field_attributes = {grid_summary}
     //bind a popup for now just showing the count of the features per grid cell
     if (fieldCount > 0) {
       bindGridPopup(layer, fieldCount, grid_summary)
@@ -180,7 +180,7 @@ let createGrid = mapViewInst => {
 
   });
 
-  colorGrid(grid);
+  colorGrid(grid, "count");
 
   if (myMap.current && myMap.current.leafletElement) {
     //this removes the grid when the user zooms in past zoom level 11
