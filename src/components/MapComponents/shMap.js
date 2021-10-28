@@ -102,6 +102,7 @@ let ShMap = ({
 
   const [showLogout, setShowLogout] = useState(false);
   const [showKatorInfo, setShowKatorInfo] = useState(false);
+  const [disablegridKator, setdisablegridKator] = useState(false);
 
   const [localState, setLocalState] = useState({
     Overview: true,
@@ -188,7 +189,7 @@ let ShMap = ({
     let indicatorObj = localindicatorObj
     let gridIndicator = indicatorObj[e.currentTarget.text]
 
-    // create new obj with selected indicator key
+    // create new obj with selected indicator key. fromEntries is so key order is maintained
     indicatorObj = Object.fromEntries(
       Object.entries(indicatorObj).map(([key_, val_]) => {
         if (key_.includes("✓")) {
@@ -201,9 +202,7 @@ let ShMap = ({
       })
     )
 
-
     colorGrid(grid, gridIndicator)
-
     setLocalindicatorObj({...indicatorObj})
   }
 
@@ -393,7 +392,9 @@ let ShMap = ({
         {
           props.gridLayer && props.gridLayer.length ? null :
           <React.Fragment>
-            <button className="current-view" onClick={toggleGridLayers}>
+            <button className="current-view" onClick={
+              () => { setdisablegridKator(!disablegridKator); toggleGridLayers() }
+            }>
               Toggle Grid
             </button>&nbsp;&nbsp;&nbsp;
           </React.Fragment>
@@ -424,6 +425,7 @@ let ShMap = ({
         </style>
         <DropdownButton
           size="sm"
+          disabled={disablegridKator}
           variant="outline-dropdown"
           className="mr-1 current-view grid-color-view"
           id="dropdown-basic-button"
