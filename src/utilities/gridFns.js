@@ -26,11 +26,48 @@ export function inside(point, vs) {
   return inside;
 };
 
-export const colorGrid = grid => {
+export const colorGrid = (grid, gridIndicator) => {
 
-  const thresholds = d3Array
-    .range(0, 10)
-    .map(p => Math.pow(2, p));
+  let minMaxKators = {
+    "field_rainfall": [], "field_ndvi": [],
+    "field_ndwi": [], "field_temperature": [],
+    "field_evapotranspiration": [], "count": []
+  }
+  grid.eachLayer(layer => {
+    if (layer.feature.properties.count && gridIndicator !== "count") {
+      Object.entries(
+        layer.feature.properties.field_attributes.grid_summary
+      ).forEach(([attr_, attrArr]) => {
+        minMaxKators[attr_].push(
+          parseFloat(attrArr[0]) < 1 ? parseFloat(attrArr[0]) * 100 :
+          parseFloat(attrArr[0])
+        )
+      })
+    } else if ((layer.feature.properties.count && gridIndicator === "count")) {
+      minMaxKators["count"].push(layer.feature.properties.count)
+    }
+  })
+  Object.keys(minMaxKators).forEach(attr_ => {
+    minMaxKators[attr_].sort((el1, el2) => {
+      if (el1 < el2) {
+        return -1
+      }
+      if (el1 > el2) {
+        return 1
+      }
+      return 0
+    })
+  })
+
+
+  const thresholds = ((minScale, maxScale) => {
+    return d3Array
+      .range(minScale, maxScale)
+  })(
+    minMaxKators[gridIndicator][0],
+    minMaxKators[gridIndicator][minMaxKators[gridIndicator].length - 1]
+  )
+
   const color = d3Scale
     .scaleLog()
     .domain(d3Array.extent(thresholds))
@@ -38,9 +75,17 @@ export const colorGrid = grid => {
 
   grid.eachLayer(layer => {
     //grid style per gridcell depending on factors, for now just visibility of a cell.
+    let colorArg;
+    if (gridIndicator !== "count") {
+      colorArg = layer.feature.properties.field_attributes.grid_summary[gridIndicator][0]
+      colorArg = colorArg < 1 ? colorArg * 100 : colorArg
+    }
     layer.setStyle({
       // the fillColor is adapted from a property which can be changed by the user (segment)
-      fillColor: color(layer.feature.properties.count),
+      fillColor: color(
+        gridIndicator === "count" ?
+          layer.feature.properties[gridIndicator] : colorArg
+      ),
       weight: 0.3,
       //stroke-width: to have a constant width on the screen need to adapt with scale
       opacity: layer.feature.properties.count > 0 ? 1 : 0,

@@ -11,7 +11,9 @@ import { EditControl } from "react-leaflet-draw";
 import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
-import {Button, Modal} from 'react-bootstrap';
+import {
+  Dropdown, DropdownButton, ButtonGroup, Button, Modal
+} from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
 
 import 'font-awesome/css/font-awesome.css';
@@ -28,6 +30,7 @@ import ForecastBarGraph from '../forecastBarGraph';
 import { IndicatorInformation } from '../indicatorInformation';
 import { OverViewDonutGraph, OverViewBarGraph } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
+import { colorGrid } from '../../utilities/gridFns';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -90,20 +93,27 @@ let ShMap = ({
 }) => {
   
   let {
-    currentLocation, zoom, userType, gridCellArea, initiateGetData
+    currentLocation, zoom, userType, gridCellArea, initiateGetData, grid
   } = state;
   let {
-    _saveCurrentView, addGridLayers, removeGridLayers, _onFeatureGroupReady,
+    _saveCurrentView, toggleGridLayers, _onFeatureGroupReady,
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
   } = mapInstance;
 
   const [showLogout, setShowLogout] = useState(false);
   const [showKatorInfo, setShowKatorInfo] = useState(false);
+  const [disablegridKator, setdisablegridKator] = useState(false);
 
   const [localState, setLocalState] = useState({
     Overview: true,
     Indicators: false,
     Forecast: false
+  })
+
+  const [localindicatorObj, setLocalindicatorObj] = useState({
+    "Rainfall": "field_rainfall", "Crop Health": "field_ndvi",
+    "Soil Moisture": "field_ndwi", "Ground Temperature": "field_temperature",
+    "Evapotranspiration": "field_evapotranspiration", "✓ Field Count": "count"
   })
 
   let results = [];
@@ -173,6 +183,27 @@ let ShMap = ({
     localStorage.removeItem('x-token')
     localStorage.removeItem('user')
     window.location.reload()
+  }
+
+  let getEvent = e => {
+    let indicatorObj = localindicatorObj
+    let gridIndicator = indicatorObj[e.currentTarget.text]
+
+    // create new obj with selected indicator key. fromEntries is so key order is maintained
+    indicatorObj = Object.fromEntries(
+      Object.entries(indicatorObj).map(([key_, val_]) => {
+        if (key_.includes("✓")) {
+          key_ = key_.replace("✓ ", "")
+        }
+        if (key_ === e.currentTarget.text) {
+          key_ = e.currentTarget.text = "✓ " + e.currentTarget.text
+        }
+        return [key_, val_]
+      })
+    )
+
+    colorGrid(grid, gridIndicator)
+    setLocalindicatorObj({...indicatorObj})
   }
 
   return (
@@ -338,44 +369,7 @@ let ShMap = ({
           onClick={_saveCurrentView}
         >
           Save current view
-            </button>
-      </Control>
-      {
-        props.gridLayer.features && props.gridLayer.features.length ? null :
-        <Control position="topright" >
-          <style type="text/css">
-            {`
-                .grid-view {
-                  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
-                  border-radius: 4px;
-                  border: none;
-                }
-                `}
-          </style>
-          <button className="grid-view" onClick={addGridLayers}>Add Grid</button>
-          {' '}
-          <button className="grid-view" onClick={removeGridLayers}>Remove Grid</button>
-        </Control>
-      }
-      <FeatureGroup
-        ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
-        onContextmenu={handleRightClick}
-      >
-        {userType === "EDITOR" ? <EditControl
-          position='topright'
-          onEdited={_onEdited}
-          onCreated={_onCreated}
-          onDeleted={_onDeleted}
-          draw={{
-            rectangle: false,
-            circle: false,
-            marker: false,
-            circlemarker: false,
-            polyline: false,
-          }}
-        /> : null}
-      </FeatureGroup>
-      <Control position="topright" >
+        </button>&nbsp;&nbsp;&nbsp;
         <style type="text/css">
           {`
                 #field_download_link, field_download_link:hover {
@@ -394,10 +388,87 @@ let ShMap = ({
           >
             Download fields
               </a>
-        </button>
+        </button>&nbsp;&nbsp;&nbsp;
+        {
+          props.gridLayer && props.gridLayer.length ? null :
+          <React.Fragment>
+            <button className="current-view" onClick={
+              () => { setdisablegridKator(!disablegridKator); toggleGridLayers() }
+            }>
+              Toggle Grid
+            </button>&nbsp;&nbsp;&nbsp;
+          </React.Fragment>
+        }
+
+        <style type="text/css">
+          {`
+            .grid-color-view {
+              background-color: #ecebeb;
+              width: 7vw;
+              height: 3vh;
+            }
+            .grid-color-view button {
+              padding: 0;
+              font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+            }
+            .grid-color-view button:focus {
+              box-shadow: none;
+            }
+            .grid-color-view div a {
+              color: inherit !important;
+            }
+            .grid-color-view div a.active, .grid-color-view div a:active {
+                color: #fff;
+                text-decoration: none;
+            }
+          `}
+        </style>
+        <DropdownButton
+          size="sm"
+          disabled={disablegridKator}
+          variant="outline-dropdown"
+          className="mr-1 current-view grid-color-view"
+          id="dropdown-basic-button"
+          title={"Grid Indicator"}
+          as={ButtonGroup}
+        >
+          {
+            Object.keys(localindicatorObj).map(key_ => 
+              <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
+                  {key_}
+              </Dropdown.Item>
+            )
+          }
+        </DropdownButton>
       </Control>
+      <FeatureGroup
+        ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
+        onContextmenu={handleRightClick}
+      >
+        {userType === "EDITOR" ? <EditControl
+          position='topright'
+          onEdited={_onEdited}
+          onCreated={_onCreated}
+          onDeleted={_onDeleted}
+          draw={{
+            rectangle: false,
+            circle: false,
+            marker: false,
+            circlemarker: false,
+            polyline: false,
+          }}
+        /> : null}
+      </FeatureGroup>
+      <style type="text/css">
+        {
+          `.grid-polygon-info {
+              z-index: 700;
+          }`
+        }
+      </style>
       <Control
         position="topright"
+        className="grid-polygon-info"
       >
         <style type="text/css">
           {`
