@@ -109,11 +109,11 @@ let ShMap = ({
     Forecast: false
   })
 
-  let indicatorObj = {
+  const [localindicatorObj, setLocalindicatorObj] = useState({
     "Rainfall": "field_rainfall", "Crop Health": "field_ndvi",
     "Soil Moisture": "field_ndwi", "Ground Temperature": "field_temperature",
-    "Evapotranspiration": "field_evapotranspiration", "Field Count": "count"
-  }
+    "Evapotranspiration": "field_evapotranspiration", "✓ Field Count": "count"
+  })
 
   let results = [];
   if (props.LayersPayload.length) {
@@ -185,8 +185,26 @@ let ShMap = ({
   }
 
   let getEvent = e => {
+    let indicatorObj = localindicatorObj
     let gridIndicator = indicatorObj[e.currentTarget.text]
+
+    // create new obj with selected indicator key
+    indicatorObj = Object.fromEntries(
+      Object.entries(indicatorObj).map(([key_, val_]) => {
+        if (key_.includes("✓")) {
+          key_ = key_.replace("✓ ", "")
+        }
+        if (key_ === e.currentTarget.text) {
+          key_ = e.currentTarget.text = "✓ " + e.currentTarget.text
+        }
+        return [key_, val_]
+      })
+    )
+
+
     colorGrid(grid, gridIndicator)
+
+    setLocalindicatorObj({...indicatorObj})
   }
 
   return (
@@ -392,6 +410,9 @@ let ShMap = ({
               padding: 0;
               font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
             }
+            .grid-color-view button:focus {
+              box-shadow: none;
+            }
             .grid-color-view div a {
               color: inherit !important;
             }
@@ -410,7 +431,7 @@ let ShMap = ({
           as={ButtonGroup}
         >
           {
-            Object.keys(indicatorObj).map(key_ => 
+            Object.keys(localindicatorObj).map(key_ => 
               <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
                   {key_}
               </Dropdown.Item>
