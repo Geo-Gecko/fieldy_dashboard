@@ -110,7 +110,7 @@ let ShMap = ({
   })
 
   let indicatorObj = {
-    "Rainfall": "field_rainfall", "Vegetation Health": "field_ndvi",
+    "Rainfall": "field_rainfall", "Crop Health": "field_ndvi",
     "Soil Moisture": "field_ndwi", "Ground Temperature": "field_temperature",
     "Evapotranspiration": "field_evapotranspiration", "Field Count": "count"
   }
