@@ -57,6 +57,8 @@ export const colorGrid = (grid, gridIndicator) => {
       }
       return 0
     })
+    // negative values cause rgb(0,0,0)
+    minMaxKators[attr_] = minMaxKators[attr_].filter(el => el > 0)
   })
 
 
@@ -68,10 +70,18 @@ export const colorGrid = (grid, gridIndicator) => {
     minMaxKators[gridIndicator][minMaxKators[gridIndicator].length - 1]
   )
 
+  const colorShemes = {
+    "count": d3ScaleChromatic.interpolateYlGn,
+    "field_ndvi": d3ScaleChromatic.interpolateYlGn,
+    "field_ndwi": d3ScaleChromatic.interpolateBlues,
+    "field_rainfall": d3ScaleChromatic.interpolateBlues,
+    "field_temperature": d3ScaleChromatic.interpolateReds,
+    "field_evapotranspiration": d3ScaleChromatic.interpolateBlues
+  }
   const color = d3Scale
     .scaleLog()
     .domain(d3Array.extent(thresholds))
-    .interpolate(() => d3ScaleChromatic.interpolateYlGn);
+    .interpolate(() => colorShemes[gridIndicator]);
 
   grid.eachLayer(layer => {
     //grid style per gridcell depending on factors, for now just visibility of a cell.
@@ -89,8 +99,6 @@ export const colorGrid = (grid, gridIndicator) => {
       weight: 0.3,
       //stroke-width: to have a constant width on the screen need to adapt with scale
       opacity: layer.feature.properties.count > 0 ? 1 : 0,
-      // color: ,
-      // dashArray: '3',
       fillOpacity: layer.feature.properties.count > 0 ? 0.4 : 0
     })
 
