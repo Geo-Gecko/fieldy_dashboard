@@ -111,7 +111,7 @@ let ShMap = ({
   })
 
   const [localindicatorObj, setLocalindicatorObj] = useState({
-    "Rainfall": "field_rainfall", "Crop Health": "field_ndvi",
+    "Precipitation": "field_rainfall", "Crop Health": "field_ndvi",
     "Soil Moisture": "field_ndwi", "Ground Temperature": "field_temperature",
     "Evapotranspiration": "field_evapotranspiration", "✓ Field Count": "count"
   })
