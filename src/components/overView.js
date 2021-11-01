@@ -19,7 +19,30 @@ export const OverViewDonutGraph = graphData => {
                         {
                             "label": "Number of Fields",
                             "data": count,
-                            "backgroundColor": colours,
+                            backgroundColor: [
+                              '#63432b',
+                              '#784722',
+                              '#D95e00',
+                              '#7d3d0b',
+                              '#5e391d',
+                              '#db701f',
+                              '#96521e',
+                              '#bf7943',
+                              '#f79143',
+                              '#b05713'
+                            ],
+                            borderColor: [
+                              '#63432b',
+                              '#784722',
+                              '#D95e00',
+                              '#7d3d0b',
+                              '#5e391d',
+                              '#db701f',
+                              '#96521e',
+                              '#bf7943',
+                              '#f79143',
+                              '#b05713'
+                            ],
                         }
                     ]
                 }
@@ -73,8 +96,30 @@ export const OverViewBarGraph = graphData => {
                         {
                             "label": "Total Areas",
                             "data": area,
-                            "backgroundColor": colours,
-                            "borderColor": "rgb(75, 192, 192)",
+                            backgroundColor: [
+                              '#63432b',
+                              '#784722',
+                              '#D95e00',
+                              '#7d3d0b',
+                              '#5e391d',
+                              '#db701f',
+                              '#96521e',
+                              '#bf7943',
+                              '#f79143',
+                              '#b05713'
+                            ],
+                            borderColor: [
+                              '#63432b',
+                              '#784722',
+                              '#D95e00',
+                              '#7d3d0b',
+                              '#5e391d',
+                              '#db701f',
+                              '#96521e',
+                              '#bf7943',
+                              '#f79143',
+                              '#b05713'
+                            ],
                             "lineTension": 0.1
                         }
                     ]
