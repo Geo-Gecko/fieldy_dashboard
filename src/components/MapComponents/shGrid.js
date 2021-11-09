@@ -182,15 +182,6 @@ let createGrid = mapViewInst => {
 
   colorGrid(grid, "count");
 
-  if (myMap.current && myMap.current.leafletElement) {
-    //this removes the grid when the user zooms in past zoom level 11
-    myMap.current.leafletElement.on('moveend', () => {
-      if (myMap.current.leafletElement.getZoom() > 10) {
-        myMap.current.leafletElement.removeLayer(grid)
-        document.getElementById("grid-info").innerHTML = "Click on grid or field for info";
-      }
-    })
-  }
   return { grid, gridCellArea };
   }
 }
