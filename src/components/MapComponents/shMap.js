@@ -93,7 +93,8 @@ let ShMap = ({
 }) => {
   
   let {
-    currentLocation, zoom, userType, gridCellArea, initiateGetData, grid
+    currentLocation, zoom, userType, gridCellArea,
+    initiateGetData, grid, disablegridKator
   } = state;
   let {
     _saveCurrentView, toggleGridLayers, _onFeatureGroupReady,
@@ -102,7 +103,6 @@ let ShMap = ({
 
   const [showLogout, setShowLogout] = useState(false);
   const [showKatorInfo, setShowKatorInfo] = useState(false);
-  const [disablegridKator, setdisablegridKator] = useState(false);
 
   const [localState, setLocalState] = useState({
     Overview: true,
@@ -393,7 +393,10 @@ let ShMap = ({
           props.gridLayer && props.gridLayer.length ? null :
           <React.Fragment>
             <button className="current-view" onClick={
-              () => { setdisablegridKator(!disablegridKator); toggleGridLayers() }
+              () => {
+                toggleGridLayers();
+                mapInstance.setState({ ...state, disablegridKator: !disablegridKator });
+              }
             }>
               Toggle Grid
             </button>&nbsp;&nbsp;&nbsp;
