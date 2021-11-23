@@ -1,5 +1,4 @@
 import React from 'react';
-import { Bar, Doughnut } from 'react-chartjs-2';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 
@@ -29,7 +28,6 @@ export const OverViewTable = ({ graphData }) => {
   })
 
   graphData.forEach(row => {
-    console.log(row)
     if (Object.keys(row).length) {
       row.area = commafy(row.area.toString())
       row.count = commafy(row.count.toString())
