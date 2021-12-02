@@ -28,7 +28,7 @@ import '../popupMod.css'
 import IndicatorsLineGraph from '../indicatorsLineGraph';
 import ForecastBarGraph from '../forecastBarGraph';
 import { IndicatorInformation } from '../indicatorInformation';
-import { OverViewDonutGraph, OverViewBarGraph } from '../overView';
+import { OverViewTable } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
 import { colorGrid } from '../../utilities/gridFns';
 
@@ -254,16 +254,7 @@ let ShMap = ({
               "current-view donut_css slide-out"
             }
           >
-            <OverViewDonutGraph graphData={results} />
-          </Control>
-          <Control
-            position="topleft"
-            className={
-              localState.Overview ? "current-view donut_css slide-in" :
-              "current-view donut_css slide-out"
-            }
-          >
-            <OverViewBarGraph graphData={results} />
+            <OverViewTable graphData={results} />
           </Control>
         </React.Fragment>
         : null
