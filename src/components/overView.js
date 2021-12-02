@@ -39,16 +39,16 @@ export const OverViewTable = ({ graphData }) => {
     { dataField: 'area', text: 'Crop Area Coverage (sq m)' },
     { dataField: 'count', text: 'Total Number of fields'}
   ];
-  console.log(graphData)
 
   const options = {
     sizePerPage: 10,
     hideSizePerPage: true,
+    hidePageListOnlyOnePage: true,
   };
 
   return (
     <React.Fragment>
-      <BootstrapTable keyField='cropType' data={ graphData } columns={ columns } pagination={paginationFactory(options)}/>
+      <BootstrapTable keyField='cropType' data={ graphData } columns={ columns } pagination={paginationFactory(options) }/>
     </React.Fragment> 
   );
 

@@ -112,4 +112,8 @@
     background-color: #e15b26 !Important;
     border: solid 1px #e15b26;
 }
+
+.react-bootstrap-table-pagination-list-hidden {
+  display: none;
+}
 /* ##################################################### */
