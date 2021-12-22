@@ -26,6 +26,11 @@ export const getcreateputUserDetail = (postData, method_) => {
             return response.data
         })
         .catch(error => {
+            if (error.response.status == 403) {
+                localStorage.removeItem('x-token')
+                localStorage.removeItem('user')
+                window.location.reload()
+            }
             console.log(error)
         });
 };
