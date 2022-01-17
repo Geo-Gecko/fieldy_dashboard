@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@trendmicro/react-sidenav": "^0.5.0",
     "axios": "^0.21.1",
     "bootstrap": "^5.1.0",
     "chart.js": "^2.9.3",
@@ -33,7 +34,7 @@
     "uuid": "^8.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=3001 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

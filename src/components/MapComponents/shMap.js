@@ -26,6 +26,7 @@ import '../popupMod.css'
 
 // local components
 import IndicatorsLineGraph from '../indicatorsLineGraph';
+import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
 import ForecastBarGraph from '../forecastBarGraph';
 import { IndicatorInformation } from '../indicatorInformation';
 import { OverViewTable } from '../overView';
@@ -107,7 +108,11 @@ let ShMap = ({
   const [localState, setLocalState] = useState({
     Overview: true,
     Indicators: false,
-    Forecast: false
+    Forecast: false,
+    Performance: false,
+    "Indicator Thresholds": false,
+    "Wider Area Thresholds": false
+
   })
 
   const [localindicatorObj, setLocalindicatorObj] = useState({
@@ -164,9 +169,9 @@ let ShMap = ({
         document.getElementsByClassName("catBtn")
       ).forEach(el => {
         if (el.textContent === e.currentTarget.textContent) {
-          el.className = "current-view catBtn clicked_topleft_btn"
+          el.className = "current-view catBtn clicked_topleft_btn sidebarBtn"
         } else {
-          el.className = "current-view catBtn"
+          el.className = "current-view catBtn sidebarBtn"
         };
       })
       // switch cards
@@ -223,26 +228,47 @@ let ShMap = ({
       minZoom={5}
     >
       <Control position="topleft" >
-        <button
-          className="current-view catBtn clicked_topleft_btn"
-          onClick={_showCards}
-        >
-          Overview
-        </button>&nbsp;&nbsp;&nbsp;
-        <button
-          className="current-view catBtn"
-          onClick={_showCards}
-        >
-          Indicators
-        </button>&nbsp;&nbsp;&nbsp;
-        {props.forecastData.length ? 
+        <div className="div-sidebar">
           <button
-            className="current-view catBtn"
+            className="current-view catBtn clicked_topleft_btn sidebarBtn"
             onClick={_showCards}
           >
-            Forecast
-          </button>
-        : null}
+            Overview
+          </button>&nbsp;&nbsp;&nbsp;
+          <button
+            className="current-view catBtn sidebarBtn"
+            onClick={_showCards}
+          >
+            Indicators
+          </button>&nbsp;&nbsp;&nbsp;
+          <button
+            className="current-view catBtn sidebarBtn"
+            onClick={_showCards}
+          >
+            Performance
+          </button>&nbsp;&nbsp;&nbsp;
+          <button
+            className="current-view catBtn sidebarBtn"
+            onClick={_showCards}
+          >
+            Indicator Thresholds
+          </button>&nbsp;&nbsp;&nbsp;
+          <button
+            className="current-view catBtn sidebarBtn"
+            onClick={_showCards}
+          >
+            Wider Area Thresholds
+          </button>&nbsp;&nbsp;&nbsp;
+          {props.forecastData.length ? 
+            <button
+              className="current-view catBtn sidebarBtn"
+              onClick={_showCards}
+            >
+              Forecast
+            </button>
+          : null}
+
+        </div>
       </Control>
       {
       localState.Overview && results.length ?
@@ -281,6 +307,76 @@ let ShMap = ({
           </Control>
         </React.Fragment>
        : <React.Fragment />}
+      <br/>
+      {localState.Performance && props.cropTypes.length > 0 ?
+        <React.Fragment>
+          <style type="text/css">
+                {`
+                  .katorline {
+                    height: 98.5vh !important;
+                  }
+                `}
+          </style>
+          <Control
+            position="topleft"
+            className={
+              localState.Performance ? "current-view donut_css katorline slide-in" :
+              "current-view donut_css katorline slide-out"
+            }
+            id="katorlineId"
+          >
+            <NdviPerformanceLineGraph SidePanelCollapsed={false} />
+            <br/>
+            <h6 style={{"padding": "10px"}}>Field Performance</h6>
+            <h6 style={{"padding": "10px"}}>Top 5% Fields</h6>
+            <OverViewTable graphData={results} />
+            <br/>
+            <h6 style={{"padding": "10px"}}>Bottom 5% Fields</h6>
+            <OverViewTable graphData={results} />
+          </Control>
+        </React.Fragment>
+       : <React.Fragment />}
+      <br/>
+             {
+      localState['Indicator Thresholds'] && results.length ?
+        <React.Fragment>
+          <Control
+            position="topleft"
+            className={
+              localState['Indicator Thresholds'] ? "current-view donut_css slide-in" :
+              "current-view donut_css slide-out"
+            }
+          >
+          <h6 style={{"padding": "10px"}}>Indicator Values for all fields</h6>
+          <h6 style={{"padding-left": "7px"}}>January 2021 - December 2021</h6>
+          <Button id="thresholds_button" size="sm" variant="outline-primary">
+            Edit Thresholds
+          </Button>
+      <br/>
+            <OverViewTable graphData={results} />
+          </Control>
+        </React.Fragment>
+        : null
+      }
+      {
+      localState['Wider Area Thresholds'] && results.length ?
+        <React.Fragment>
+      <Control 
+      // position="topright" 
+      >
+        <button
+          // className="current-view"
+          // style={{"position": "absolute", "right": "73rem", "bottom": "3.5rem", "width": "7rem"}}
+          // position="topleft"
+          className="current-view"   
+        >
+          Edit Thresholds
+        </button>&nbsp;&nbsp;&nbsp;
+      </Control>
+        </React.Fragment>
+        : null
+      }
+      <br/>
       {localState.Forecast && props.forecastData.length && props.fieldId !== "" ?
         <Control
           position="topleft"
@@ -496,20 +592,23 @@ let ShMap = ({
             }
           `}
         </style>
-        <Button
-          variant="outline-primary"
-          className="rounded-circle btn-md fa fa-info logoutbtn"
-          style={{width: "2.8vw"}}
-          onClick={() => setShowKatorInfo(true)}
-        ></Button>
-        <IndicatorInformation
-          setShowKatorInfo={setShowKatorInfo} showKatorInfo={showKatorInfo}
-        />{' '}
-        <Button
-          variant="outline-primary"
-          className="rounded-circle btn-md fa fa-power-off logoutbtn"
-          onClick={() => setShowLogout(true)}
-        ></Button>
+        <div style={{"display": "flex", "flex-direction": "column", "padding": "20px"}}>
+          <Button
+            variant="outline-primary"
+            className="rounded-circle btn-md fa fa-info logoutbtn"
+            style={{width: "2.8vw"}}
+            onClick={() => setShowKatorInfo(true)}
+          ></Button>
+          <IndicatorInformation
+            setShowKatorInfo={setShowKatorInfo} showKatorInfo={showKatorInfo}
+          />{' '}
+          <br />&nbsp;
+          <Button
+            variant="outline-primary"
+            className="rounded-circle btn-md fa fa-power-off logoutbtn"
+            onClick={() => setShowLogout(true)}
+          ></Button>
+        </div>
           <Modal
             show={showLogout}
             onHide={() => setShowLogout(false)}

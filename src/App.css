@@ -40,12 +40,16 @@
   width: 40vw;
   transform: translateX(-100%);
   -webkit-transform: translateX(-100%);
+  position: absolute;
+  left: 7rem;
+  left: 7rem;
 }
 
 .clicked_topleft_btn::before {
-  left: .4rem;
+  left: .5rem;
   content: '✓';
   font-weight: 600;
+  color: #e15b26;
 }
 
 .katorline{
@@ -92,4 +96,37 @@
   0% { -webkit-transform: translateX(0%); }
   100% { -webkit-transform: translateX(-100%); }
 }
+
+/* sidebar css */
+.div-sidebar{
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  width: 6rem;
+  height: 98.5vh;
+  padding-top: 10px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+  border-radius: 4px;
+}
+
+.sidebarBtn{
+  box-shadow: 0 0px 0px rgba(0,0,0,0.65) !important;
+  border-radius: 0px !important;
+  padding: 10px;
+  background-color: white;
+}
+
+.btn-outline-primary {
+  color: #e15b26 !important;
+  border-color: #e15b26 !important;
+}
+
+#thresholds_button{
+  color: black !important;
+  position: absolute;
+  right: 1rem;
+  top: 3rem; 
+  border-color: #e15b26 !important;
+}
+
 /* ##################################################### */
