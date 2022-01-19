@@ -4,6 +4,8 @@ import L from 'leaflet';
 export let attrCreator = (layer, cropTypes, userType) => {
   let feature_ = layer.feature;
   let attr_list = ""
+  let user_ = localStorage.getItem('user')
+  let { memberOf } = JSON.parse(user_)
   if (userType === "EDITOR") {
     let cropOptions = cropTypes.map((type_, index) => {
       if (type_ !== feature_.properties.CropType) {
@@ -31,6 +33,12 @@ export let attrCreator = (layer, cropTypes, userType) => {
            feature_.properties.DataCollected : ""
         }
       >`
+  } else if (memberOf === "61c04ad2d9f9ae000a05e963") {
+    attr_list += `
+      <strong>Field Identifier: </strong><small> ${feature_.properties.field_id} </small> <br/>
+      <strong>Farmer Name:</strong> <br/>
+      <strong>Cotton Yield:</strong> ${feature_.properties["Raw Cotton"]}<br/>
+      <strong>Field Size:</strong> ${feature_.properties["Total Area"]}<br/>`
   } else {
     attr_list += `
       <strong>Field Identifier: </strong><small> ${feature_.properties.field_id} </small> <br/>
