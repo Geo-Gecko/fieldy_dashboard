@@ -49,8 +49,7 @@ class MapView extends Component {
     let user_details = await this.props.getcreateputUserDetail({}, 'GET')
     // https://stackoverflow.com/a/48433029
     let { current_center, user_detail } = { ...user_details }
-  // localStorage.setItem('user', JSON.stringify(user_detail))
-  user_detail = {"uid":"5f600b8bffc780000a7a2284","userType":"VIEWER","memberOf":"60ba28cd380dcc000a8774b3","iat":1637748195}
+  localStorage.setItem('user', JSON.stringify(user_detail))
 
     this.setState({
       ...this.state,

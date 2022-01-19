@@ -229,6 +229,106 @@ let ShMap = ({
     >
       <Control position="topleft" >
         <div className="div-sidebar">
+        <div className="map-btn">
+        <button className="map-btns"
+          onClick={_saveCurrentView}
+        >
+          <i class="fa fa-bookmark"></i>
+          <br/>
+          Save view
+        </button>&nbsp;&nbsp;&nbsp;
+        <style type="text/css">
+          {`
+                #field_download_link{
+                  color: #e15b26 !important;
+                  text-decoration: none;
+                }
+                #field_download_link:hover{
+                  color: #7d7171 !important;
+                  text-decoration: none;
+                }
+                `}
+        </style>
+        <button className="map-btns">
+        <i class="fa fa-download"></i>
+          <br/>
+          <a
+            href={`data:text/json;charset=utf-8,${encodeURIComponent(
+              JSON.stringify(props.LayersPayload)
+            )}`}
+            id="field_download_link"
+            download="field_poygons.json"
+          >
+            Download fields
+              </a>
+        </button>&nbsp;&nbsp;&nbsp;
+        {
+          props.gridLayer && props.gridLayer.length ? null :
+          <React.Fragment>
+            <button className="map-btns"
+              onClick={
+              () => {
+                toggleGridLayers();
+                mapInstance.setState({ ...state, disablegridKator: !disablegridKator });
+              }
+            }>
+          <i class="fa fa-toggle-on"></i>
+          <br/>
+              Toggle Grid
+            </button>&nbsp;&nbsp;&nbsp;
+          </React.Fragment>
+        }
+      </div>
+      <br/>
+      <div style={{"padding": "10px"}}>
+        <style type="text/css">
+          {`
+            .grid-color-view {
+              background-color: white !important;
+              width: 7vw;
+              height: 3vh;
+              border: 1px solid #e15b26;
+              border-radius: 10px;          
+            }
+            .grid-color-view button {
+              padding: 0;
+              font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+              color: #e15b26;  
+            }
+            .grid-color-view button:hover {
+              box-shadow: none;
+              background-color: #ecebeb;
+              border-radius: 10px;
+            }
+            .grid-color-view div a {
+              color: inherit !important;
+            }
+            .grid-color-view div a.active, .grid-color-view div a:active {
+                color: #fff;
+                text-decoration: none;
+            }
+          `}
+        </style>
+        <DropdownButton
+          size="sm"
+          disabled={disablegridKator}
+          variant="outline-dropdown"
+          className="mr-1 grid-color-view btn-md"
+          iconCss='ddb-icons e-message'
+          id="dropdown-basic-button"
+          title={"Grid Indicator"}
+          as={ButtonGroup}
+        >
+          {
+            Object.keys(localindicatorObj).map(key_ => 
+              <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
+                  {key_}
+              </Dropdown.Item>
+            )
+          }
+        </DropdownButton>
+      </div>
+      <hr></hr>
           <button
             className="current-view catBtn clicked_topleft_btn sidebarBtn"
             onClick={_showCards}
@@ -450,87 +550,6 @@ let ShMap = ({
         </BaseLayer>
       </LayersControl>
       <ZoomControl position="bottomright" />
-      <Control position="topright" >
-        <button
-          className="current-view"
-          onClick={_saveCurrentView}
-        >
-          Save current view
-        </button>&nbsp;&nbsp;&nbsp;
-        <style type="text/css">
-          {`
-                #field_download_link, field_download_link:hover {
-                  color: black;
-                  text-decoration: none;
-                }
-                `}
-        </style>
-        <button className="current-view">
-          <a
-            href={`data:text/json;charset=utf-8,${encodeURIComponent(
-              JSON.stringify(props.LayersPayload)
-            )}`}
-            id="field_download_link"
-            download="field_poygons.json"
-          >
-            Download fields
-              </a>
-        </button>&nbsp;&nbsp;&nbsp;
-        {
-          props.gridLayer && props.gridLayer.length ? null :
-          <React.Fragment>
-            <button className="current-view" onClick={
-              () => {
-                toggleGridLayers();
-                mapInstance.setState({ ...state, disablegridKator: !disablegridKator });
-              }
-            }>
-              Toggle Grid
-            </button>&nbsp;&nbsp;&nbsp;
-          </React.Fragment>
-        }
-
-        <style type="text/css">
-          {`
-            .grid-color-view {
-              background-color: #ecebeb;
-              width: 7vw;
-              height: 3vh;
-            }
-            .grid-color-view button {
-              padding: 0;
-              font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
-            }
-            .grid-color-view button:focus {
-              box-shadow: none;
-            }
-            .grid-color-view div a {
-              color: inherit !important;
-            }
-            .grid-color-view div a.active, .grid-color-view div a:active {
-                color: #fff;
-                text-decoration: none;
-            }
-          `}
-        </style>
-        <DropdownButton
-          size="sm"
-          disabled={disablegridKator}
-          variant="outline-dropdown"
-          className="mr-1 current-view grid-color-view"
-          id="dropdown-basic-button"
-          title={"Grid Indicator"}
-          as={ButtonGroup}
-        >
-          {
-            Object.keys(localindicatorObj).map(key_ => 
-              <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
-                  {key_}
-              </Dropdown.Item>
-            )
-          }
-        </DropdownButton>
-      </Control>
       <FeatureGroup
         ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
         onContextmenu={handleRightClick}
@@ -592,17 +611,16 @@ let ShMap = ({
             }
           `}
         </style>
-        <div style={{"display": "flex", "flex-direction": "column", "padding": "20px"}}>
+        <div style={{"padding-left": "3rem"}}>
           <Button
             variant="outline-primary"
             className="rounded-circle btn-md fa fa-info logoutbtn"
-            style={{width: "2.8vw"}}
+            style={{width: "2vw"}}
             onClick={() => setShowKatorInfo(true)}
           ></Button>
           <IndicatorInformation
             setShowKatorInfo={setShowKatorInfo} showKatorInfo={showKatorInfo}
           />{' '}
-          <br />&nbsp;
           <Button
             variant="outline-primary"
             className="rounded-circle btn-md fa fa-power-off logoutbtn"

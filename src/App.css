@@ -36,13 +36,13 @@
 .donut_css {
   background-color: white;
   padding-bottom: 20px;
-  max-height: 90vh;
+  /* max-height: 90vh; */
   width: 40vw;
   transform: translateX(-100%);
   -webkit-transform: translateX(-100%);
   position: absolute;
   left: 7rem;
-  left: 7rem;
+  left: 12rem;
 }
 
 .clicked_topleft_btn::before {
@@ -102,7 +102,7 @@
   background-color: white;
   display: flex;
   flex-direction: column;
-  width: 6rem;
+  width: 11.1rem;
   height: 98.5vh;
   padding-top: 10px;
   box-shadow: 0 1px 5px rgba(0,0,0,0.65);
@@ -114,6 +114,18 @@
   border-radius: 0px !important;
   padding: 10px;
   background-color: white;
+  text-align: left;
+  padding-left: 15px;
+}
+
+.sidebarBtn:hover{
+  box-shadow: 0 0px 0px rgba(0,0,0,0.65) !important;
+  border-radius: 0px !important;
+  padding: 10px;
+  background-color: white;
+  text-align: left;
+  padding-left: 15px;
+  color: #7d7171;
 }
 
 .btn-outline-primary {
@@ -129,4 +141,31 @@
   border-color: #e15b26 !important;
 }
 
+.map-btn{
+  display: flex;
+  line-height: 1rem;
+  padding: 10px;
+}
+
+.map-btns {
+  background-color: white;
+  border: none;
+  color: #e15b26;
+  cursor: pointer;
+}
+
+.map-btns:hover{
+color: #7d7171;
+border: none;
+}
+
+.map-btns i:hover {
+  color: #7d7171;
+}
+
+.map-btns i {
+  border-radius: 50%;
+  border: 1px solid #e15b26;
+  padding: 10px;
+}
 /* ##################################################### */
