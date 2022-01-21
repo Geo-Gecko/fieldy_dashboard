@@ -414,9 +414,19 @@ let ShMap = ({
                 {`
                   .katorline {
                     height: 98.5vh !important;
+                    overflow-y: scroll;
                   }
                 `}
           </style>
+          <React.Fragment>
+            <Control>
+              <button
+               className="current-view"   
+                >
+                  NDVI Drops Grid
+              </button>&nbsp;&nbsp;&nbsp;
+            </Control>
+        </React.Fragment>
           <Control
             position="topleft"
             className={
@@ -461,13 +471,8 @@ let ShMap = ({
       {
       localState['Wider Area Thresholds'] && results.length ?
         <React.Fragment>
-      <Control 
-      // position="topright" 
-      >
+      <Control>
         <button
-          // className="current-view"
-          // style={{"position": "absolute", "right": "73rem", "bottom": "3.5rem", "width": "7rem"}}
-          // position="topleft"
           className="current-view"   
         >
           Edit Thresholds
@@ -491,7 +496,6 @@ let ShMap = ({
           />
         </Control> : <React.Fragment />}
       <CookiesPolicy mapInstance={mapInstance} state={state} />
-      <Legend map={myMap} gridCellArea={gridCellArea} />
       {!localStorage.getItem("cookieusagedisplayed") ?
       <Control 
         position="bottomright"
@@ -529,6 +533,7 @@ let ShMap = ({
           </button>
         </h6>
       </Control> : null }
+      <Legend map={myMap} gridCellArea={gridCellArea} />
       <LayersControl position="bottomright">
         <BaseLayer name="Google Satellite">
           <TileLayer
@@ -615,7 +620,7 @@ let ShMap = ({
           <Button
             variant="outline-primary"
             className="rounded-circle btn-md fa fa-info logoutbtn"
-            style={{width: "2vw"}}
+            style={{width: "2.5vw"}}
             onClick={() => setShowKatorInfo(true)}
           ></Button>
           <IndicatorInformation
