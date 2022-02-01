@@ -1,7 +1,8 @@
 import axiosInstance from './axiosInstance';
 import {
     GET_FIELD_DATA, GET_FIELD_DATA_FAIL, GET_ALL_FIELD_DATA,
-    GET_ALL_FIELD_DATA_INITIATED
+    GET_ALL_FIELD_DATA_INITIATED, INITIATE_GET_NDVI_CHANGE,
+    GET_NDVI_CHANGE_SUCCESS, GET_NDVI_CHANGE_FAIL
 } from './types';
 
 import { newkatorArr } from '../utilities/IndicatorArr';
@@ -136,5 +137,26 @@ const getcreateputGraphData = (
             })
         });
 };
+
+export const getNdviChange = earliest_month => async dispatch =>  {
+    await dispatch({
+        type: INITIATE_GET_NDVI_CHANGE,
+        payload: true
+    })
+    return axiosInstance
+        .get(`/indicator-analytics/ndvi-change/?earliest_month=${earliest_month}`)
+        .then(async response => {
+            await dispatch({
+                type: GET_NDVI_CHANGE_SUCCESS,
+                payload: response.data.results
+            })
+        })
+        .catch(async error => {
+            await dispatch({
+                type: GET_NDVI_CHANGE_FAIL,
+                payload: error
+            })
+        });
+    };
 
 export default getcreateputGraphData;
