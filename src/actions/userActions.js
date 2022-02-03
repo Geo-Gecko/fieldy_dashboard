@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 export const getcreateputUserDetail = (postData, method_) => {
     return axiosInstance({
-        url: `/layers/getcreateupdateuserdetail/${
+        url: `/v1/layers/getcreateupdateuserdetail/${
             method_ === "POST"  ? "" : uuidv4()  + "/"
         }`,
         method: method_,
