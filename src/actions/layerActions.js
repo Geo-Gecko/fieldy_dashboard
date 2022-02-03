@@ -6,7 +6,7 @@ import {
 
 export const postPointLayer = postData => {
     return axiosInstance
-      .post('/layers/listcreatepointlayer/', postData)
+      .post('/v1/layers/listcreatepointlayer/', postData)
       .then(response => {
           console.log("Layer saved", response)
       })
@@ -17,7 +17,7 @@ export const postPointLayer = postData => {
 
 export const postPolygonLayer = postData => {
 return axiosInstance
-    .post('/layers/listcreatepolygonlayer/', postData)
+    .post('/v1/layers/listcreatepolygonlayer/', postData)
     .then(response => {
         console.log("Layer saved", response)
     })
@@ -28,7 +28,7 @@ return axiosInstance
 
 export const getPolygonLayers = () => dispatch => {
   return axiosInstance
-      .get('/layers/listcreatepolygonlayer/')
+      .get('/v1/layers/listcreatepolygonlayer/')
       .then(response => {
           let cropTypes = new Set()
           response.data.results.forEach(feature_ => {
@@ -53,7 +53,7 @@ export const getPolygonLayers = () => dispatch => {
 
 export const updatePolygonLayer = layer_ => {
   return axiosInstance
-      .put(`/layers/getupdatedeletelayer/${layer_.properties.field_id}/`, layer_)
+      .put(`/v1/layers/getupdatedeletelayer/${layer_.properties.field_id}/`, layer_)
       .then(response => {
           console.log("Layer has been edited", response.data)
       })
@@ -65,7 +65,7 @@ export const updatePolygonLayer = layer_ => {
 
 export const deletePolygonLayer = (field_id, layer_) => {
   return axiosInstance
-      .delete(`/layers/getupdatedeletelayer/${field_id}/`)
+      .delete(`/v1/layers/getupdatedeletelayer/${field_id}/`)
       .then(() => {
           console.log("Layer has been deleted")
       })

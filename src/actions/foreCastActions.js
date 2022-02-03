@@ -5,7 +5,7 @@ import {
 
 
  export const getFCastData = () => dispatch => {
-  return axiosInstance.get('/layers/forecastindicators/')
+  return axiosInstance.get('/v1/layers/forecast-indicators/')
     .then(async response => {
       dispatch({
         type: GET_ALL_FCAST_DATA,
