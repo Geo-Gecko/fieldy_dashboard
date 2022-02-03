@@ -5,9 +5,9 @@ const timeout = 60000;
 let token = localStorage.getItem('x-token');
 
 // this accounts for missing storage item on first login
-const urlParams = new URLSearchParams(window.location.search)
-let url_token = urlParams.get("x-token")
-token = url_token ? url_token : token
+// const urlParams = new URLSearchParams(window.location.search)
+// let url_token = urlParams.get("x-token")
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MTE2NDMxOGVhZWY5MTAwMGFkY2ZlYWMiLCJ1c2VyVHlwZSI6IlZJRVdFUiIsIm1lbWJlck9mIjoiNjExNjQyMDdlYWVmOTEwMDBhZGNmZWFiIiwiYXBpVXNlciI6ZmFsc2UsInBheW1lbnRMZXZlbHMiOiJTRUNPTkQgTEVWRUwiLCJpYXQiOjE2NDM4NzY1MTN9.hNXbdR6Nfl5m8d8LvtIjwJp_XTgMxMKOcG89wmmPiPs"
 const headers = token
   ? {
     'Content-Type': 'application/json',

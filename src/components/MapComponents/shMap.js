@@ -233,7 +233,7 @@ let ShMap = ({
         <button className="map-btns"
           onClick={_saveCurrentView}
         >
-          <i class="fa fa-bookmark"></i>
+          <i className="fa fa-bookmark"></i>
           <br/>
           Save view
         </button>&nbsp;&nbsp;&nbsp;
@@ -250,7 +250,7 @@ let ShMap = ({
                 `}
         </style>
         <button className="map-btns">
-        <i class="fa fa-download"></i>
+        <i className="fa fa-download"></i>
           <br/>
           <a
             href={`data:text/json;charset=utf-8,${encodeURIComponent(
@@ -272,7 +272,7 @@ let ShMap = ({
                 mapInstance.setState({ ...state, disablegridKator: !disablegridKator });
               }
             }>
-          <i class="fa fa-toggle-on"></i>
+          <i className="fa fa-toggle-on"></i>
           <br/>
               Toggle Grid
             </button>&nbsp;&nbsp;&nbsp;
@@ -314,7 +314,6 @@ let ShMap = ({
           disabled={disablegridKator}
           variant="outline-dropdown"
           className="mr-1 grid-color-view btn-md"
-          iconCss='ddb-icons e-message'
           id="dropdown-basic-button"
           title={"Grid Indicator"}
           as={ButtonGroup}
@@ -458,7 +457,7 @@ let ShMap = ({
             }
           >
           <h6 style={{"padding": "10px"}}>Indicator Values for all fields</h6>
-          <h6 style={{"padding-left": "7px"}}>January 2021 - December 2021</h6>
+          <h6 style={{"paddingLeft": "7px"}}>January 2021 - December 2021</h6>
           <Button id="thresholds_button" size="sm" variant="outline-primary">
             Edit Thresholds
           </Button>
@@ -541,13 +540,13 @@ let ShMap = ({
             attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
           />
         </BaseLayer>
-        <BaseLayer checked name="OpenStreetMap.BlackAndWhite">
+        {/* <BaseLayer name="OpenStreetMap.BlackAndWhite">
           <TileLayer
             attribution={`&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors | &copy; ${new Date().getFullYear()} GeckosUnited  <br/> Note that this imagery isn't necessarily up to date `}
             url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
           />
-        </BaseLayer>
-        <BaseLayer name="OpenStreetMap.Mapnik">
+        </BaseLayer> */}
+        <BaseLayer checked name="OpenStreetMap.Mapnik">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution={`&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
@@ -592,7 +591,7 @@ let ShMap = ({
                 border: none;
                 background: #ecebeb;
                 padding-right: 2px;
-                padding-left: 2px;
+                paddingLeft: 2px;
               }
               `}
         </style>
@@ -616,7 +615,7 @@ let ShMap = ({
             }
           `}
         </style>
-        <div style={{"padding-left": "3rem"}}>
+        <div style={{"paddingLeft": "3rem"}}>
           <Button
             variant="outline-primary"
             className="rounded-circle btn-md fa fa-info logoutbtn"
