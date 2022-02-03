@@ -6,7 +6,7 @@ import {
 
 
  export const getGridData = () => dispatch => {
-  return axiosInstance.get('/layers/gridlayers/')
+  return axiosInstance.get('/layers/grid-layers/')
     .then(async response => {
       dispatch({
         type: GET_ALL_GRID_DATA,
@@ -24,7 +24,7 @@ import {
 
 
 export const getIndicatorData = () => dispatch => {
-  return axiosInstance.get('/layers/indicatorcalculations/')
+  return axiosInstance.get('/layers/indicator-calculations/')
     .then(async response => {
       dispatch({
         type: GET_ALL_KATOR_DATA,

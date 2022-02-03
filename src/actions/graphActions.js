@@ -27,7 +27,7 @@ const getcreateputGraphData = (
     cropTypes=[], layers_ = {}, katorPayload={}
 ) => dispatch => {
     return axiosInstance({
-        url: `/layers/fieldindicators/${
+        url: `/layers/field-indicators/${
             method_ === "POST" || field_id === "" ? "" : field_id + "/"
         }`,
         method: method_,
