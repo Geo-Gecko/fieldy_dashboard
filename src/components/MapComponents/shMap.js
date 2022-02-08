@@ -106,13 +106,10 @@ let ShMap = ({
   const [showKatorInfo, setShowKatorInfo] = useState(false);
 
   const [localState, setLocalState] = useState({
-    Overview: true,
-    Indicators: false,
-    Forecast: false,
-    Performance: false,
-    "Indicator Thresholds": false,
-    "Wider Area Thresholds": false
-
+    "Field Data": false,
+    "Field Insight": false,
+    "Wider Area Insight": false,
+    "Wider Area Thresholds": false,
   })
 
   const [localindicatorObj, setLocalindicatorObj] = useState({
@@ -183,6 +180,46 @@ let ShMap = ({
       });
     }
   }
+
+  // let _showFieldBtns = e => {
+  //   if (e.currentTarget.textContent === "Forecast" && !props.forecastFieldId) {
+  //     toast("Right click on a field to show this chart", {
+  //       position: "top-center",
+  //       autoClose: 3000,
+  //       hideProgressBar: true,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       })
+  //   } else {
+  //     // switch selected button
+  //     Array.from(
+  //       document.getElementsByClassName("side-btns")
+  //     ).forEach(el => {
+  //       if (el.textContent === e.currentTarget.textContent) {
+  //         el.className = "field-btns"
+  //       } else {
+  //         el.className = "field-btns catBtn"
+  //       };
+  //     })
+  //     // switch cards
+  //     setLocalState({
+  //       ...Object.fromEntries(
+  //         Object.keys(localState).map(key_ => [localState[key_], false])
+  //       ),
+  //       [e.currentTarget.textContent]: true
+  //     });
+  //   }
+  // }
+
+  const targetDiv = document.getElementsByClassName("field-btns");
+  const btn = document.getElementsByClassName("side-btns");
+  btn.onclick = function () {
+    if (targetDiv.style.display !== "none") {
+      targetDiv.style.display = "none";
+    } else {
+      targetDiv.style.display = "grid";
+    }
+  };
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -280,135 +317,134 @@ let ShMap = ({
         }
       </div>
       <br/>
-      <div style={{"padding": "10px"}}>
-        <style type="text/css">
-          {`
-            .grid-color-view {
-              background-color: white !important;
-              width: 7vw;
-              height: 3vh;
-              border: 1px solid #e15b26;
-              border-radius: 10px;          
-            }
-            .grid-color-view button {
-              padding: 0;
-              font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
-              color: #e15b26;  
-            }
-            .grid-color-view button:hover {
-              box-shadow: none;
-              background-color: #ecebeb;
-              border-radius: 10px;
-            }
-            .grid-color-view div a {
-              color: inherit !important;
-            }
-            .grid-color-view div a.active, .grid-color-view div a:active {
-                color: #fff;
-                text-decoration: none;
-            }
-          `}
-        </style>
-        <DropdownButton
-          size="sm"
-          disabled={disablegridKator}
-          variant="outline-dropdown"
-          className="mr-1 grid-color-view btn-md"
-          iconCss='ddb-icons e-message'
-          id="dropdown-basic-button"
-          title={"Grid Indicator"}
-          as={ButtonGroup}
-        >
-          {
-            Object.keys(localindicatorObj).map(key_ => 
-              <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
-                  {key_}
-              </Dropdown.Item>
-            )
-          }
-        </DropdownButton>
-      </div>
       <hr></hr>
-          <button
-            className="current-view catBtn clicked_topleft_btn sidebarBtn"
-            onClick={_showCards}
-          >
-            Overview
-          </button>&nbsp;&nbsp;&nbsp;
-          <button
-            className="current-view catBtn sidebarBtn"
-            onClick={_showCards}
-          >
-            Indicators
-          </button>&nbsp;&nbsp;&nbsp;
-          <button
-            className="current-view catBtn sidebarBtn"
-            onClick={_showCards}
-          >
-            Performance
-          </button>&nbsp;&nbsp;&nbsp;
-          <button
-            className="current-view catBtn sidebarBtn"
-            onClick={_showCards}
-          >
-            Indicator Thresholds
-          </button>&nbsp;&nbsp;&nbsp;
-          <button
-            className="current-view catBtn sidebarBtn"
-            onClick={_showCards}
-          >
-            Wider Area Thresholds
-          </button>&nbsp;&nbsp;&nbsp;
-          {props.forecastData.length ? 
+        <div style={{"align-self": "center", "display": "flex"}}>
+              <button className="side-btns"
+                  // onClick={_showFieldBtns}
+                  >
+                Fields
+              </button>&nbsp;&nbsp;&nbsp;
+              <button className="side-btns"
+                  // onClick={_showFieldBtns}
+                  >
+                Wider Area
+              </button>&nbsp;&nbsp;&nbsp;
+        </div>
+        <div className= "field-btns">
+        <div style={{"display": "grid"}}>
+              <div style={{"padding": "10px"}}>
+              <style type="text/css">
+                {`
+                  .grid-color-view {
+                    background-color: white !important;
+                    width: 7vw;
+                    height: 3vh;
+                    border: 1px solid #e15b26;
+                    border-radius: 10px; 
+                    left: 1.1rem;         
+                  }
+                  .grid-color-view button {
+                    padding: 0;
+                    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+                    color: #e15b26;  
+                  }
+                  .grid-color-view button:hover {
+                    box-shadow: none;
+                    background-color: #ecebeb;
+                    border-radius: 10px;
+                  }
+                  .grid-color-view div a {
+                    color: inherit !important;
+                  }
+                  .grid-color-view div a.active, .grid-color-view div a:active {
+                      color: #fff;
+                      text-decoration: none;
+                  }
+                `}
+              </style>
+              <DropdownButton
+                size="sm"
+                disabled={disablegridKator}
+                variant="outline-dropdown"
+                className="mr-1 grid-color-view btn-md"
+                iconCss='ddb-icons e-message'
+                id="dropdown-basic-button"
+                title={"Grid Indicator"}
+                as={ButtonGroup}
+              >
+                {
+                  Object.keys(localindicatorObj).map(key_ => 
+                    <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
+                        {key_}
+                    </Dropdown.Item>
+                  )
+                }
+              </DropdownButton>
+            </div>
             <button
-              className="current-view catBtn sidebarBtn"
+              // className="current-view catBtn clicked_topleft_btn sidebarBtn"
+              className="current-view fBtn catBtn clicked_topleft_btn sidebarBtn"
               onClick={_showCards}
             >
-              Forecast
-            </button>
-          : null}
-
+              Field Data
+            </button>&nbsp;&nbsp;&nbsp;
+            <button
+              className="current-view fBtn catBtn sidebarBtn"
+              onClick={_showCards}
+            >
+              Field Insight
+            </button>&nbsp;&nbsp;&nbsp;
+          </div>
+         </div>
+         <div className= "wide-btns">
+           <button
+              className="current-view fBtn catBtn sidebarBtn"
+              onClick={_showCards}
+            >
+              Wider Area Insight
+            </button>&nbsp;&nbsp;&nbsp;
+            <div style={{"position": "relative", "left": "1.5rem"}}>
+              <input type="radio" value="Landcover" name="insight"/> Landcover<br/>
+              <input type="radio" value="Slope" name="insight"/> Slope<br/>
+              <input type="radio" value="Elevation" name="insight"/> Elevation<br/>
+              <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
+            </div>
+            <button
+              className="current-view fBtn catBtn sidebarBtn"
+              onClick={_showCards}
+            >
+              Wider Area Thresholds
+            </button>&nbsp;&nbsp;&nbsp;
+         </div>
         </div>
       </Control>
       {
-      localState.Overview && results.length ?
-        <React.Fragment>
-          <Control
-            position="topleft"
-            className={
-              localState.Overview ? "current-view donut_css slide-in" :
-              "current-view donut_css slide-out"
-            }
-          >
-            <OverViewTable graphData={results} />
-          </Control>
-        </React.Fragment>
-        : null
-      }
-      <br/>
-      {localState.Indicators && props.cropTypes.length > 0 ?
+      localState['Field Data'] && results.length ?
         <React.Fragment>
           <style type="text/css">
                 {`
                   .katorline {
-                    height: 51vh;
+                    height: 71vh;
                   }
                 `}
           </style>
           <Control
             position="topleft"
             className={
-              localState.Indicators ? "current-view donut_css katorline slide-in" :
+              localState['Field Data'] ? "current-view donut_css katorline slide-in" :
               "current-view donut_css katorline slide-out"
             }
-            id="katorlineId"
           >
+            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
+            <OverViewTable graphData={results} />
+            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Indicators</h6>
             <IndicatorsLineGraph SidePanelCollapsed={false} />
           </Control>
         </React.Fragment>
-       : <React.Fragment />}
+        : null
+      }
       <br/>
-      {localState.Performance && props.cropTypes.length > 0 ?
+      {localState['Field Insight'] && props.cropTypes.length > 0 ?
         <React.Fragment>
           <style type="text/css">
                 {`
@@ -418,83 +454,37 @@ let ShMap = ({
                   }
                 `}
           </style>
-          <React.Fragment>
-            <Control>
-              <button
-               className="current-view"   
-                >
-                  NDVI Drops Grid
-              </button>&nbsp;&nbsp;&nbsp;
-            </Control>
-        </React.Fragment>
           <Control
             position="topleft"
             className={
-              localState.Performance ? "current-view donut_css katorline slide-in" :
+              localState['Field Insight'] ? "current-view donut_css katorline slide-in" :
               "current-view donut_css katorline slide-out"
             }
             id="katorlineId"
           >
+            <h6 style={{"padding": "10px", "font-weight": "bold", "color": "#9b9b9b"}}>Select Crop</h6>
+            <DropdownButton
+              style={{"padding-left": "5px"}}
+              size="sm"
+              variant="outline-dropdown"
+              id="dropdown-basic-button"
+              title={"Selected Crop"}
+              as={ButtonGroup}
+              />
+            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Biomass Difference</h6>
             <NdviPerformanceLineGraph SidePanelCollapsed={false} />
-            <br/>
-            <h6 style={{"padding": "10px"}}>Field Performance</h6>
-            <h6 style={{"padding": "10px"}}>Top 5% Fields</h6>
-            <OverViewTable graphData={results} />
-            <br/>
-            <h6 style={{"padding": "10px"}}>Bottom 5% Fields</h6>
-            <OverViewTable graphData={results} />
+            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Top/Bottom Performing Fields</h6>
+            <h6 style={{"padding": "10px"}}>Top Performing Fields</h6>
+            <h6 style={{"padding": "10px"}}>Bottom Performing Fields</h6>
+            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Thresholds/Extremes</h6>
+            <h6 style={{"padding": "10px"}}>Rainfall</h6>
+            <h6 style={{"padding": "10px"}}>Vegetation Health</h6>
+            <h6 style={{"padding": "10px"}}>Soil Moisture</h6>
+            <h6 style={{"padding": "10px"}}>Ground Temperature</h6>
+            <h6 style={{"padding": "10px"}}>Evapotranspiration</h6>
           </Control>
         </React.Fragment>
        : <React.Fragment />}
-      <br/>
-             {
-      localState['Indicator Thresholds'] && results.length ?
-        <React.Fragment>
-          <Control
-            position="topleft"
-            className={
-              localState['Indicator Thresholds'] ? "current-view donut_css slide-in" :
-              "current-view donut_css slide-out"
-            }
-          >
-          <h6 style={{"padding": "10px"}}>Indicator Values for all fields</h6>
-          <h6 style={{"padding-left": "7px"}}>January 2021 - December 2021</h6>
-          <Button id="thresholds_button" size="sm" variant="outline-primary">
-            Edit Thresholds
-          </Button>
-      <br/>
-            <OverViewTable graphData={results} />
-          </Control>
-        </React.Fragment>
-        : null
-      }
-      {
-      localState['Wider Area Thresholds'] && results.length ?
-        <React.Fragment>
-      <Control>
-        <button
-          className="current-view"   
-        >
-          Edit Thresholds
-        </button>&nbsp;&nbsp;&nbsp;
-      </Control>
-        </React.Fragment>
-        : null
-      }
-      <br/>
-      {localState.Forecast && props.forecastData.length && props.fieldId !== "" ?
-        <Control
-          position="topleft"
-          className={
-            localState.Forecast ? "current-view donut_css katorline slide-in" :
-            "current-view donut_css katorline slide-out"
-          }
-          id="katorlineId"
-        >
-          <ForecastBarGraph
-            SidePanelCollapsed={false}
-          />
-        </Control> : <React.Fragment />}
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       {!localStorage.getItem("cookieusagedisplayed") ?
       <Control 

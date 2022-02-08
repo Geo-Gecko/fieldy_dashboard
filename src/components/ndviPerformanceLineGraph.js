@@ -189,79 +189,8 @@ function NdviPerformanceLineGraph (props) {
       }
       `}
       </style>
-      <div style={{"padding": "10px"}}>
-        <h6>Vegetation Health Difference</h6>
-      </div>
-      {' '}
-      <DropdownButton
-      size="sm"
-      variant="outline-dropdown"
-      id="dropdown-basic-button"
-      title={props.fieldId === "" ? selectedCropType : props.cropType}
-      as={ButtonGroup}
-      >
-        {/* NOTE: this should remain as getting from redux state because actual
+         {/* NOTE: this should remain as getting from redux state because actual
         croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
-        {
-          props.fieldId === "" &&
-          Object.keys(props.groupFieldData).length ?
-          Object.keys(props.groupFieldData.field_ndvi).map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
-                  {type_}
-              </Dropdown.Item>
-          ) :
-            props.fieldId === "" &&
-            !Object.keys(props.groupFieldData).length ? cropTypes.map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
-                  {type_}
-              </Dropdown.Item>
-          ) : ""
-        }
-      </DropdownButton>
-      {' '}
-      <Button id="indicator_download_button" size="sm" variant="outline-primary">
-        <CSVLink
-        // if indicatorsArray is undefined will return an error,
-        // so need to check for it
-          data={
-            props.fieldId ?
-            FieldindicatorArray ? FieldindicatorArray : []
-              :
-            Object.keys(props.groupFieldData).length ?
-            groupFieldIndicatorArray :
-            allFieldsIndicatorArray
-          }
-          target="_blank"
-          id="indicator_download_button_words"
-          style={{"textDecoration": "none"}}
-          filename={
-            props.fieldId ?
-            `${props.fieldId}_indicators_data.csv` : "indicators_data.csv"
-          }
-        >
-        Download Data
-        </CSVLink>
-      </Button>
-      {' '}
-      {
-        props.fieldId || props.grid_id ?
-        <Button
-          size="sm" variant="outline-primary"
-          style={{color: "black"}}
-          onClick={
-            () => dispatch({
-                type: GET_ALL_FIELD_DATA,
-                payload: {
-                  data_: props.allFieldData, collapsed: false,
-                  allFieldsIndicatorArray: props.allFieldsIndicatorArray
-                }
-            })
-          }
-        >
-          All fields
-        </Button> : null
-      }
-      <br/><br/>
       <Line
         data={
             {
