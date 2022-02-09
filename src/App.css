@@ -168,4 +168,36 @@ border: none;
   border: 1px solid #e15b26;
   padding: 10px;
 }
+
+.side-btns {
+  padding: 5px;
+  border: 1px solid #e15b26;
+  border-radius: 6px;
+  color: #e15b26;
+  background-color: white;
+  width: 5rem;
+}
+
+.side-btns:hover{
+  color: #7d7171;
+}
+
+.side-btns:focus{
+  background-color: #e15b26;
+  color: black;
+}
+
+.reset-btn{
+  border: 1px solid #e15b26;
+  border-radius: 6px;
+  color: #e15b26;
+  background-color: white;
+  position: relative;
+  left: 5rem;
+}
+
+.reset-btn:hover{
+  color: #7d7171;
+}
+
 /* ##################################################### */
