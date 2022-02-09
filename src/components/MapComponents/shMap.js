@@ -519,13 +519,13 @@ let ShMap = ({
             attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
           />
         </BaseLayer>
-        <BaseLayer checked name="OpenStreetMap.BlackAndWhite">
+        {/* <BaseLayer name="OpenStreetMap.BlackAndWhite">
           <TileLayer
             attribution={`&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors | &copy; ${new Date().getFullYear()} GeckosUnited  <br/> Note that this imagery isn't necessarily up to date `}
             url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
           />
-        </BaseLayer>
-        <BaseLayer name="OpenStreetMap.Mapnik">
+        </BaseLayer> */}
+        <BaseLayer checked name="OpenStreetMap.Mapnik">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution={`&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
