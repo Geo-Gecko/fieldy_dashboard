@@ -12,7 +12,7 @@ import { GET_ALL_FIELD_DATA } from '../actions/types';
 
 function NdviPerformanceLineGraph (props) {
 
-  const [localState, setLocalState] = useState({ dataset: [] });
+  const [localState, setLocalState] = useState({ dataset: [], currentFieldId: "" });
   const dispatch = useDispatch();
   function usePrevious(value) {
     const ref = useRef();
@@ -31,6 +31,7 @@ function NdviPerformanceLineGraph (props) {
       let firstFieldId = props.NDVIChange[0].field_id
       setLocalState({
         ...localState,
+        currentFieldId: firstFieldId,
         dataset: props.NDVIChange.filter(row_ => row_.field_id === firstFieldId)
       })
     } 
@@ -41,6 +42,7 @@ function NdviPerformanceLineGraph (props) {
       // block to display one field's data by uncollapsing sidepanel
       setLocalState({
         ...localState,
+        currentFieldId: props.fieldId,
         dataset: props.NDVIChange.filter(row_ => row_.field_id === props.fieldId)
       })
     }
@@ -48,7 +50,7 @@ function NdviPerformanceLineGraph (props) {
     localState, props, prevfieldId
   ])
 
-  let { dataset } = localState;
+  let { dataset, currentFieldId } = localState;
   // note: why are the values repeated
   let ndviCvalues = [
     ...new Set(dataset.flatMap(Object.values))
@@ -156,7 +158,7 @@ function NdviPerformanceLineGraph (props) {
               position: "top",
               fontSize: 18,
               fontStyle: "normal",
-              text: `Indicator Chart for ${props.fieldId}`
+              text: `Indicator Chart for ${currentFieldId}`
           },
             legend: {
                 display: true,
