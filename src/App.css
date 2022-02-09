@@ -187,4 +187,17 @@ border: none;
   color: black;
 }
 
+.reset-btn{
+  border: 1px solid #e15b26;
+  border-radius: 6px;
+  color: #e15b26;
+  background-color: white;
+  position: relative;
+  left: 5rem;
+}
+
+.reset-btn:hover{
+  color: #7d7171;
+}
+
 /* ##################################################### */

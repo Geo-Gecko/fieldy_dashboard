@@ -27,7 +27,6 @@ import '../popupMod.css'
 // local components
 import IndicatorsLineGraph from '../indicatorsLineGraph';
 import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
-import ForecastBarGraph from '../forecastBarGraph';
 import { IndicatorInformation } from '../indicatorInformation';
 import { OverViewTable } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
@@ -181,45 +180,8 @@ let ShMap = ({
     }
   }
 
-  // let _showFieldBtns = e => {
-  //   if (e.currentTarget.textContent === "Forecast" && !props.forecastFieldId) {
-  //     toast("Right click on a field to show this chart", {
-  //       position: "top-center",
-  //       autoClose: 3000,
-  //       hideProgressBar: true,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       })
-  //   } else {
-  //     // switch selected button
-  //     Array.from(
-  //       document.getElementsByClassName("side-btns")
-  //     ).forEach(el => {
-  //       if (el.textContent === e.currentTarget.textContent) {
-  //         el.className = "field-btns"
-  //       } else {
-  //         el.className = "field-btns catBtn"
-  //       };
-  //     })
-  //     // switch cards
-  //     setLocalState({
-  //       ...Object.fromEntries(
-  //         Object.keys(localState).map(key_ => [localState[key_], false])
-  //       ),
-  //       [e.currentTarget.textContent]: true
-  //     });
-  //   }
-  // }
-
-  const targetDiv = document.getElementsByClassName("field-btns");
-  const btn = document.getElementsByClassName("side-btns");
-  btn.onclick = function () {
-    if (targetDiv.style.display !== "none") {
-      targetDiv.style.display = "none";
-    } else {
-      targetDiv.style.display = "grid";
-    }
-  };
+    const [showFieldData, setshowFieldData] = React.useState(false);
+    const [showWideData, setShowWideData] = React.useState(false);
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -320,17 +282,29 @@ let ShMap = ({
       <hr></hr>
         <div style={{"align-self": "center", "display": "flex"}}>
               <button className="side-btns"
-                  // onClick={_showFieldBtns}
+                  onClick={() => {
+                    setshowFieldData(true)
+                    setShowWideData(false)
+                  }}
                   >
-                Fields
+                  Fields
               </button>&nbsp;&nbsp;&nbsp;
               <button className="side-btns"
-                  // onClick={_showFieldBtns}
+                  onClick={() => {
+                    setshowFieldData(false)
+                    setShowWideData(true)
+                  }}
                   >
                 Wider Area
               </button>&nbsp;&nbsp;&nbsp;
         </div>
-        <div className= "field-btns">
+        <style type="text/css">
+          {`
+            .element-visible { display: block }
+            .element-hidden { display: none }
+                `}
+        </style>
+        <div className={showFieldData ? 'element-visible' : 'element-hidden'}>
         <div style={{"display": "grid"}}>
               <div style={{"padding": "10px"}}>
               <style type="text/css">
@@ -382,23 +356,28 @@ let ShMap = ({
               </DropdownButton>
             </div>
             <button
-              // className="current-view catBtn clicked_topleft_btn sidebarBtn"
-              className="current-view fBtn catBtn clicked_topleft_btn sidebarBtn"
+              className="current-view catBtn clicked_topleft_btn sidebarBtn"
               onClick={_showCards}
             >
               Field Data
             </button>&nbsp;&nbsp;&nbsp;
             <button
-              className="current-view fBtn catBtn sidebarBtn"
+              className="current-view catBtn sidebarBtn"
               onClick={_showCards}
             >
               Field Insight
             </button>&nbsp;&nbsp;&nbsp;
           </div>
          </div>
-         <div className= "wide-btns">
+         <style type="text/css">
+          {`
+            .element-visible { display: block }
+            .element-hidden { display: none }
+                `}
+        </style>
+        <div className={showWideData ? 'element-visible' : 'element-hidden'}>
            <button
-              className="current-view fBtn catBtn sidebarBtn"
+              className="current-view catBtn sidebarBtn"
               onClick={_showCards}
             >
               Wider Area Insight
@@ -410,11 +389,20 @@ let ShMap = ({
               <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
             </div>
             <button
-              className="current-view fBtn catBtn sidebarBtn"
+              className="current-view catBtn sidebarBtn"
               onClick={_showCards}
             >
               Wider Area Thresholds
             </button>&nbsp;&nbsp;&nbsp;
+            <div style={{"position": "relative", "left": "1.5rem"}}>
+              <p>Landcover Filter</p>
+              <p>Slope Filter</p>
+              <p>Elevation Filter</p>
+              <p>Fertility Classification Filter</p>
+              <button className="reset-btn">
+                  Reset Filters
+              </button>&nbsp;&nbsp;&nbsp;
+            </div>
          </div>
         </div>
       </Control>
