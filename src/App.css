@@ -187,6 +187,29 @@ border: none;
   color: black;
 }
 
+#fields-button {
+  height: 100%;
+}
+
+.field-side-btns {
+  padding: 5px;
+  border: 1px solid #e15b26;
+  border-radius: 6px;
+  color: #e15b26;
+  background-color: white;
+  width: 10rem;
+}
+
+.field-side-btns:hover{
+  color: #7d7171;
+}
+
+.field-side-btns:focus{
+  background-color: #e15b26;
+  color: black;
+}
+
+
 .reset-btn{
   border: 1px solid #e15b26;
   border-radius: 6px;
