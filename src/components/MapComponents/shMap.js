@@ -181,14 +181,14 @@ let ShMap = ({
     }
   }
 
-    const [showFieldData, setshowFieldData] = useState(false);
-    const [showWideData, setshowWideData] = useState(false);
-
     // showFieldDataChoice activeFieldDataKey
     const [activeFieldKey, setActiveFieldKey] = useState("-1");
     const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
     const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
-    const [showWideDataChoice, setshowWideDataChoice] = useState(false);
+
+    const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
+    const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
+    const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1")
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -289,17 +289,14 @@ let ShMap = ({
       <hr></hr>
         <div style={{"align-self": "center", "display": "flex"}}>
               <button
-                className="side-btns" aria-controls="fields-button" aria-expanded={showFieldData}
-                onClick={() => { setActiveFieldKey("0"); setshowWideData(false) }}
+                className="side-btns"
+                onClick={() => { setActiveFieldKey("0"); setActiveWiderAreaKey("-1") }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
                   Fields
               </button>&nbsp;&nbsp;&nbsp;
               <button className="side-btns"
-                  onClick={() => {
-                    setshowFieldData(false)
-                    setshowWideData(true)
-                  }}
+                  onClick={() => { setActiveFieldKey("-1"); setActiveWiderAreaKey("3") }}
                   >
                 Wider Area
               </button>&nbsp;&nbsp;&nbsp;
@@ -411,41 +408,61 @@ let ShMap = ({
             )
           }
         </DropdownButton> */}
-         <style type="text/css">
-          {`
-            .element-visible { display: block }
-            .element-hidden { display: none }
-                `}
-        </style>
-        <div className={showWideData ? 'element-visible' : 'element-hidden'}>
-           <button
-              className="current-view catBtn sidebarBtn"
-              onClick={_showCards}
-            >
-              Wider Area Insight
-            </button>&nbsp;&nbsp;&nbsp;
-            <div style={{"position": "relative", "left": "1.5rem"}}>
-              <input type="radio" value="Landcover" name="insight"/> Landcover<br/>
-              <input type="radio" value="Slope" name="insight"/> Slope<br/>
-              <input type="radio" value="Elevation" name="insight"/> Elevation<br/>
-              <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
-            </div>
-            <button
-              className="current-view catBtn sidebarBtn"
-              onClick={_showCards}
-            >
-              Wider Area Thresholds
-            </button>&nbsp;&nbsp;&nbsp;
-            <div style={{"position": "relative", "left": "1.5rem"}}>
-              <p>Landcover Filter</p>
-              <p>Slope Filter</p>
-              <p>Elevation Filter</p>
-              <p>Fertility Classification Filter</p>
-              <button className="reset-btn">
-                  Reset Filters
-              </button>&nbsp;&nbsp;&nbsp;
-            </div>
-         </div>
+
+        <Accordion activeKey={activeWiderAreaKey}>
+          <Accordion.Collapse eventKey="3">
+            <>
+              <div id="fields-button" style={{"align-self": "center"}}>
+                <button
+                  className="current-view field-side-btns" onClick={
+                    e => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
+                  }
+                >
+                  Wider Area Insights
+                </button>
+                <Accordion activeKey={activeWiderAreaInsightKey}>
+                  {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                  <Accordion.Collapse eventKey="4">
+                    <>
+                      <hr></hr>
+                        <div style={{"position": "relative", "left": "1.5rem"}}>
+                          <input type="radio" value="Landcover" name="insight"/> Landcover<br/>
+                          <input type="radio" value="Slope" name="insight"/> Slope<br/>
+                          <input type="radio" value="Elevation" name="insight"/> Elevation<br/>
+                          <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
+                        </div>
+                    </>
+                  </Accordion.Collapse>
+                </Accordion>
+                <hr></hr>
+                <button
+                  className="current-view field-side-btns" onClick={
+                    (e) => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5") }
+                  }
+                >
+                  Wider Area Thresholds
+                </button>
+                <Accordion activeKey={activeWiderAreaFiltersKey}>
+                  {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                  <Accordion.Collapse eventKey="5">
+                    <>
+                      <hr></hr>
+                        <div style={{"position": "relative", "left": "1.5rem"}}>
+                          <p>Landcover</p>
+                          <p>Slope</p>
+                          <p>Elevation</p>
+                          <p>Fertility Classification</p>
+                          <button className="reset-btn">
+                              Reset Filters
+                          </button>&nbsp;&nbsp;&nbsp;
+                        </div>
+                    </>
+                  </Accordion.Collapse>
+                </Accordion>
+              </div>
+            </>
+          </Accordion.Collapse>
+        </Accordion>
         </div>
       </Control>
       {
