@@ -181,14 +181,14 @@ let ShMap = ({
     }
   }
 
-    const [showFieldData, setshowFieldData] = React.useState(false);
-    const [showWideData, setshowWideData] = React.useState(false);
+    const [showFieldData, setshowFieldData] = useState(false);
+    const [showWideData, setshowWideData] = useState(false);
 
     // showFieldDataChoice activeFieldDataKey
     const [activeFieldKey, setActiveFieldKey] = useState("-1");
     const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
-    const [showFieldDataChoice, setshowFieldDataChoice] = React.useState(false);
-    const [showWideDataChoice, setshowWideDataChoice] = React.useState(false);
+    const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
+    const [showWideDataChoice, setshowWideDataChoice] = useState(false);
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -311,9 +311,8 @@ let ShMap = ({
               <div id="fields-button" style={{"align-self": "center"}}>
                 <button
                   className="current-view field-side-btns" onClick={
-                    e => { _showCards(e); setActiveFieldDataKey("1"); setshowWideDataChoice(false) }
+                    e => { _showCards(e); setActiveFieldDataKey("1"); setactiveFieldInsightsKey("-1") }
                   }
-                  aria-controls="fields-choice-button" aria-expanded={showFieldDataChoice}
                 >
                   Field Data
                 </button>
@@ -359,11 +358,35 @@ let ShMap = ({
                 <hr></hr>
                 <button
                   className="current-view field-side-btns" onClick={
-                    () => { /*_showCards();*/ setshowFieldDataChoice(false); setshowWideDataChoice(true) }
+                    (e) => { _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2") }
                   }
                 >
                   Field Insight
-                </button>&nbsp;&nbsp;&nbsp;
+                </button>
+                <Accordion activeKey={activeFieldInsightsKey}>
+                  {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                  <Accordion.Collapse eventKey="2">
+                    <>
+                      <hr></hr>
+                      <div id="fields-choice-button" style={{"align-self": "center"}}>
+                        <DropdownButton
+                          size="sm"
+                          variant="outline-dropdown"
+                          className="mr-1"
+                          id="dropdown-basic-button"
+                          title="Indicators"
+                          as={ButtonGroup}
+                        >
+                          <Dropdown.Item>Vegetation Health</Dropdown.Item>
+                          <Dropdown.Item>Rainfall</Dropdown.Item>
+                          <Dropdown.Item>Soil Moisture</Dropdown.Item>
+                          <Dropdown.Item>Ground Temperature</Dropdown.Item>
+                          <Dropdown.Item>Evapotranspiration</Dropdown.Item>
+                        </DropdownButton>
+                      </div>
+                    </>
+                  </Accordion.Collapse>
+                </Accordion>
               </div>
             </>
           </Accordion.Collapse>
@@ -432,6 +455,7 @@ let ShMap = ({
                 {`
                   .katorline {
                     height: 71vh;
+                    z-index: -9;
                   }
                 `}
           </style>
@@ -458,6 +482,7 @@ let ShMap = ({
                   .katorline {
                     height: 98.5vh !important;
                     overflow-y: scroll;
+                    z-index: -9;
                   }
                 `}
           </style>
@@ -469,15 +494,6 @@ let ShMap = ({
             }
             id="katorlineId"
           >
-            <h6 style={{"padding": "10px", "font-weight": "bold", "color": "#9b9b9b"}}>Select Crop</h6>
-            <DropdownButton
-              style={{"padding-left": "5px"}}
-              size="sm"
-              variant="outline-dropdown"
-              id="dropdown-basic-button"
-              title={"Selected Crop"}
-              as={ButtonGroup}
-              />
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Biomass Difference</h6>
             <NdviPerformanceLineGraph SidePanelCollapsed={false} />
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Top/Bottom Performing Fields</h6>
