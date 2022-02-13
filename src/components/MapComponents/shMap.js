@@ -12,9 +12,10 @@ import Control from 'react-leaflet-control';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import {
-  Dropdown, DropdownButton, ButtonGroup, Button, Modal
+  Dropdown, DropdownButton, ButtonGroup, Button, Modal, Collapse
 } from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
+import Accordion from "react-bootstrap/Accordion";
 
 import 'font-awesome/css/font-awesome.css';
 import 'leaflet/dist/leaflet.css';
@@ -161,15 +162,15 @@ let ShMap = ({
         })
     } else {
       // switch selected button
-      Array.from(
-        document.getElementsByClassName("catBtn")
-      ).forEach(el => {
-        if (el.textContent === e.currentTarget.textContent) {
-          el.className = "current-view catBtn clicked_topleft_btn sidebarBtn"
-        } else {
-          el.className = "current-view catBtn sidebarBtn"
-        };
-      })
+      // Array.from(
+      //   document.getElementsByClassName("catBtn")
+      // ).forEach(el => {
+      //   if (el.textContent === e.currentTarget.textContent) {
+      //     el.className = "current-view catBtn clicked_topleft_btn sidebarBtn"
+      //   } else {
+      //     el.className = "current-view catBtn sidebarBtn"
+      //   };
+      // })
       // switch cards
       setLocalState({
         ...Object.fromEntries(
@@ -180,8 +181,14 @@ let ShMap = ({
     }
   }
 
-    const [showFieldData, setshowFieldData] = React.useState(false);
-    const [showWideData, setShowWideData] = React.useState(false);
+    // showFieldDataChoice activeFieldDataKey
+    const [activeFieldKey, setActiveFieldKey] = useState("-1");
+    const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
+    const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
+
+    const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
+    const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
+    const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1")
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -281,129 +288,185 @@ let ShMap = ({
       <br/>
       <hr></hr>
         <div style={{"align-self": "center", "display": "flex"}}>
-              <button className="side-btns"
-                  onClick={() => {
-                    setshowFieldData(true)
-                    setShowWideData(false)
-                  }}
-                  >
+              <button
+                className="side-btns"
+                onClick={() => { setActiveFieldKey("0"); setActiveWiderAreaKey("-1") }}
+                // setActiveWideAreaKey to -1. the other button will be vice-versa
+              >
                   Fields
               </button>&nbsp;&nbsp;&nbsp;
               <button className="side-btns"
-                  onClick={() => {
-                    setshowFieldData(false)
-                    setShowWideData(true)
-                  }}
+                  onClick={e => { _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3") }}
                   >
                 Wider Area
               </button>&nbsp;&nbsp;&nbsp;
         </div>
-        <style type="text/css">
-          {`
-            .element-visible { display: block }
-            .element-hidden { display: none }
-                `}
-        </style>
-        <div className={showFieldData ? 'element-visible' : 'element-hidden'}>
-        <div style={{"display": "grid"}}>
-              <div style={{"padding": "10px"}}>
-              <style type="text/css">
-                {`
-                  .grid-color-view {
-                    background-color: white !important;
-                    width: 7vw;
-                    height: 3vh;
-                    border: 1px solid #e15b26;
-                    border-radius: 10px; 
-                    left: 1.1rem;         
-                  }
-                  .grid-color-view button {
-                    padding: 0;
-                    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
-                    color: #e15b26;  
-                  }
-                  .grid-color-view button:hover {
-                    box-shadow: none;
-                    background-color: #ecebeb;
-                    border-radius: 10px;
-                  }
-                  .grid-color-view div a {
-                    color: inherit !important;
-                  }
-                  .grid-color-view div a.active, .grid-color-view div a:active {
-                      color: #fff;
-                      text-decoration: none;
-                  }
-                `}
-              </style>
-              <DropdownButton
-                size="sm"
-                disabled={disablegridKator}
-                variant="outline-dropdown"
-                className="mr-1 grid-color-view btn-md"
-                iconCss='ddb-icons e-message'
-                id="dropdown-basic-button"
-                title={"Grid Indicator"}
-                as={ButtonGroup}
-              >
-                {
-                  Object.keys(localindicatorObj).map(key_ => 
-                    <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
-                        {key_}
-                    </Dropdown.Item>
-                  )
-                }
-              </DropdownButton>
-            </div>
-            <button
-              className="current-view catBtn clicked_topleft_btn sidebarBtn"
-              onClick={_showCards}
-            >
-              Field Data
-            </button>&nbsp;&nbsp;&nbsp;
-            <button
-              className="current-view catBtn sidebarBtn"
-              onClick={_showCards}
-            >
-              Field Insight
-            </button>&nbsp;&nbsp;&nbsp;
+        <hr></hr>
+        <Accordion activeKey={activeFieldKey}>
+          <div className='d-flex justify-content-center'>
+            <Accordion.Collapse eventKey="0">
+              <>
+                <div id="fields-button" style={{"align-self": "center"}}>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      e => { _showCards(e); setActiveFieldDataKey("1"); setactiveFieldInsightsKey("-1") }
+                    }
+                  >
+                    Field Data
+                  </button>
+                  <Accordion activeKey={activeFieldDataKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="1">
+                      <>
+                        <hr></hr>
+                        <div id="fields-choice-button" style={{"align-self": "center"}}>
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-dropdown"
+                            className="mr-1"
+                            id="dropdown-basic-button"
+                            title="Crop Type"
+                            as={ButtonGroup}
+                          >
+                            <Dropdown.Item>Maize</Dropdown.Item>
+                            <Dropdown.Item>Corn</Dropdown.Item>
+                            <Dropdown.Item>Flour</Dropdown.Item>
+                          </DropdownButton>
+                          <hr></hr>
+
+
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-dropdown"
+                            className="mr-1"
+                            id="dropdown-basic-button"
+                            title="Indicators"
+                            as={ButtonGroup}
+                          >
+                            <Dropdown.Item>Vegetation Health</Dropdown.Item>
+                            <Dropdown.Item>Rainfall</Dropdown.Item>
+                            <Dropdown.Item>Soil Moisture</Dropdown.Item>
+                            <Dropdown.Item>Ground Temperature</Dropdown.Item>
+                            <Dropdown.Item>Evapotranspiration</Dropdown.Item>
+                          </DropdownButton>
+                        </div>
+                      </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                  <hr></hr>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      (e) => { _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2") }
+                    }
+                  >
+                    Field Insight
+                  </button>
+                  <Accordion activeKey={activeFieldInsightsKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="2">
+                      <>
+                        <hr></hr>
+                        <div id="fields-choice-button" style={{"align-self": "center"}}>
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-dropdown"
+                            className="mr-1"
+                            id="dropdown-basic-button"
+                            title="Indicators"
+                            as={ButtonGroup}
+                          >
+                            <Dropdown.Item>Vegetation Health</Dropdown.Item>
+                            <Dropdown.Item>Rainfall</Dropdown.Item>
+                            <Dropdown.Item>Soil Moisture</Dropdown.Item>
+                            <Dropdown.Item>Ground Temperature</Dropdown.Item>
+                            <Dropdown.Item>Evapotranspiration</Dropdown.Item>
+                          </DropdownButton>
+                        </div>
+                      </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                </div>
+              </>
+            </Accordion.Collapse>
           </div>
-         </div>
-         <style type="text/css">
-          {`
-            .element-visible { display: block }
-            .element-hidden { display: none }
-                `}
-        </style>
-        <div className={showWideData ? 'element-visible' : 'element-hidden'}>
-           <button
-              className="current-view catBtn sidebarBtn"
-              onClick={_showCards}
-            >
-              Wider Area Insight
-            </button>&nbsp;&nbsp;&nbsp;
-            <div style={{"position": "relative", "left": "1.5rem"}}>
-              <input type="radio" value="Landcover" name="insight"/> Landcover<br/>
-              <input type="radio" value="Slope" name="insight"/> Slope<br/>
-              <input type="radio" value="Elevation" name="insight"/> Elevation<br/>
-              <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
-            </div>
-            <button
-              className="current-view catBtn sidebarBtn"
-              onClick={_showCards}
-            >
-              Wider Area Thresholds
-            </button>&nbsp;&nbsp;&nbsp;
-            <div style={{"position": "relative", "left": "1.5rem"}}>
-              <p>Landcover Filter</p>
-              <p>Slope Filter</p>
-              <p>Elevation Filter</p>
-              <p>Fertility Classification Filter</p>
-              <button className="reset-btn">
-                  Reset Filters
-              </button>&nbsp;&nbsp;&nbsp;
-            </div>
-         </div>
+        </Accordion>
+
+        {/* Grid indicators drop down */}
+        {/* <DropdownButton
+          size="sm"
+          disabled={disablegridKator}
+          variant="outline-dropdown"
+          className="mr-1 grid-color-view btn-md"
+          iconCss='ddb-icons e-message'
+          id="dropdown-basic-button"
+          title={"Grid Indicator"}
+          as={ButtonGroup}
+        >
+          {
+            Object.keys(localindicatorObj).map(key_ => 
+              <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
+                  {key_}
+              </Dropdown.Item>
+            )
+          }
+        </DropdownButton> */}
+
+        <Accordion activeKey={activeWiderAreaKey}>
+          <div className='d-flex justify-content-center'>
+            <Accordion.Collapse eventKey="3">
+              <>
+                <div id="fields-button" style={{"align-self": "center"}}>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      e => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
+                    }
+                  >
+                    Wider Area Insights
+                  </button>
+                  <Accordion activeKey={activeWiderAreaInsightKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="4">
+                      <>
+                        <hr></hr>
+                          <div style={{"position": "relative", "left": "1.5rem"}}>
+                            <input type="radio" value="Landcover" name="insight"/> Landcover<br/>
+                            <input type="radio" value="Slope" name="insight"/> Slope<br/>
+                            <input type="radio" value="Elevation" name="insight"/> Elevation<br/>
+                            <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
+                          </div>
+                      </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                  <hr></hr>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      (e) => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5") }
+                    }
+                  >
+                    Wider Area Thresholds
+                  </button>
+                  <Accordion activeKey={activeWiderAreaFiltersKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="5">
+                      <>
+                        <hr></hr>
+                          <div style={{"position": "relative", "left": "1.5rem"}}>
+                            <p className='float-center'>Landcover</p>
+                            <p className='float-center'>Slope</p>
+                            <p className='float-center'>Elevation</p>
+                            <p className='float-center'>Fertility Classification</p>
+                            <button className="reset-btn float-right">
+                                Reset Filters
+                            </button>&nbsp;&nbsp;&nbsp;
+                          </div>
+                      </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                </div>
+              </>
+            </Accordion.Collapse>
+          </div>
+        </Accordion>
         </div>
       </Control>
       {
@@ -413,6 +476,7 @@ let ShMap = ({
                 {`
                   .katorline {
                     height: 71vh;
+                    z-index: -9;
                   }
                 `}
           </style>
@@ -423,9 +487,9 @@ let ShMap = ({
               "current-view donut_css katorline slide-out"
             }
           >
-            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
-            <OverViewTable graphData={results} />
-            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Indicators</h6>
+            {/* <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
+            <OverViewTable graphData={results} /> */}
+            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Monthly Field Indicators</h6>
             <IndicatorsLineGraph SidePanelCollapsed={false} />
           </Control>
         </React.Fragment>
@@ -437,8 +501,9 @@ let ShMap = ({
           <style type="text/css">
                 {`
                   .katorline {
-                    height: 98.5vh !important;
+                    height: 97.5vh !important;
                     overflow-y: scroll;
+                    z-index: -9;
                   }
                 `}
           </style>
@@ -450,26 +515,11 @@ let ShMap = ({
             }
             id="katorlineId"
           >
-            <h6 style={{"padding": "10px", "font-weight": "bold", "color": "#9b9b9b"}}>Select Crop</h6>
-            <DropdownButton
-              style={{"padding-left": "5px"}}
-              size="sm"
-              variant="outline-dropdown"
-              id="dropdown-basic-button"
-              title={"Selected Crop"}
-              as={ButtonGroup}
-              />
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Biomass Difference</h6>
             <NdviPerformanceLineGraph SidePanelCollapsed={false} />
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Top/Bottom Performing Fields</h6>
-            <h6 style={{"padding": "10px"}}>Top Performing Fields</h6>
-            <h6 style={{"padding": "10px"}}>Bottom Performing Fields</h6>
+            <hr/>
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Thresholds/Extremes</h6>
-            <h6 style={{"padding": "10px"}}>Rainfall</h6>
-            <h6 style={{"padding": "10px"}}>Vegetation Health</h6>
-            <h6 style={{"padding": "10px"}}>Soil Moisture</h6>
-            <h6 style={{"padding": "10px"}}>Ground Temperature</h6>
-            <h6 style={{"padding": "10px"}}>Evapotranspiration</h6>
           </Control>
         </React.Fragment>
        : <React.Fragment />}
@@ -513,7 +563,7 @@ let ShMap = ({
       </Control> : null }
       <Legend map={myMap} gridCellArea={gridCellArea} />
       <LayersControl position="bottomright">
-        <BaseLayer name="Google Satellite">
+        <BaseLayer checked name="Google Satellite">
           <TileLayer
             url="https://mt0.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
             attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
@@ -535,7 +585,7 @@ let ShMap = ({
       <ZoomControl position="bottomright" />
       <FeatureGroup
         ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
-        onContextmenu={handleRightClick}
+        onClick={handleRightClick}
       >
         {userType === "EDITOR" ? <EditControl
           position='topright'

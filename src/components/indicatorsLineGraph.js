@@ -193,7 +193,7 @@ function IndicatorsLineGraph (props) {
       }
       `}
       </style>
-      <br />&nbsp;<DropdownButton
+      {/* <br />&nbsp;<DropdownButton
       size="sm"
       variant="outline-dropdown"
       className="mr-1"
@@ -215,8 +215,6 @@ function IndicatorsLineGraph (props) {
       title={props.fieldId === "" ? selectedCropType : props.cropType}
       as={ButtonGroup}
       >
-        {/* NOTE: this should remain as getting from redux state because actual
-        croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
         {
           props.fieldId === "" &&
           Object.keys(props.groupFieldData).length ?
@@ -232,7 +230,7 @@ function IndicatorsLineGraph (props) {
               </Dropdown.Item>
           ) : ""
         }
-      </DropdownButton>
+      </DropdownButton> */}
       {' '}
       <Button id="indicator_download_button" size="sm" variant="outline-primary">
         <CSVLink
