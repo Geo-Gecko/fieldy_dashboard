@@ -296,97 +296,99 @@ let ShMap = ({
                   Fields
               </button>&nbsp;&nbsp;&nbsp;
               <button className="side-btns"
-                  onClick={() => { setActiveFieldKey("-1"); setActiveWiderAreaKey("3") }}
+                  onClick={e => { _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3") }}
                   >
                 Wider Area
               </button>&nbsp;&nbsp;&nbsp;
         </div>
         <hr></hr>
         <Accordion activeKey={activeFieldKey}>
-          <Accordion.Collapse eventKey="0">
-            <>
-              <div id="fields-button" style={{"align-self": "center"}}>
-                <button
-                  className="current-view field-side-btns" onClick={
-                    e => { _showCards(e); setActiveFieldDataKey("1"); setactiveFieldInsightsKey("-1") }
-                  }
-                >
-                  Field Data
-                </button>
-                <Accordion activeKey={activeFieldDataKey}>
-                  {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
-                  <Accordion.Collapse eventKey="1">
-                    <>
-                      <hr></hr>
-                      <div id="fields-choice-button" style={{"align-self": "center"}}>
-                        <DropdownButton
-                          size="sm"
-                          variant="outline-dropdown"
-                          className="mr-1"
-                          id="dropdown-basic-button"
-                          title="Crop Type"
-                          as={ButtonGroup}
-                        >
-                          <Dropdown.Item>Maize</Dropdown.Item>
-                          <Dropdown.Item>Corn</Dropdown.Item>
-                          <Dropdown.Item>Flour</Dropdown.Item>
-                        </DropdownButton>
+          <div className='d-flex justify-content-center'>
+            <Accordion.Collapse eventKey="0">
+              <>
+                <div id="fields-button" style={{"align-self": "center"}}>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      e => { _showCards(e); setActiveFieldDataKey("1"); setactiveFieldInsightsKey("-1") }
+                    }
+                  >
+                    Field Data
+                  </button>
+                  <Accordion activeKey={activeFieldDataKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="1">
+                      <>
                         <hr></hr>
+                        <div id="fields-choice-button" style={{"align-self": "center"}}>
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-dropdown"
+                            className="mr-1"
+                            id="dropdown-basic-button"
+                            title="Crop Type"
+                            as={ButtonGroup}
+                          >
+                            <Dropdown.Item>Maize</Dropdown.Item>
+                            <Dropdown.Item>Corn</Dropdown.Item>
+                            <Dropdown.Item>Flour</Dropdown.Item>
+                          </DropdownButton>
+                          <hr></hr>
 
 
-                        <DropdownButton
-                          size="sm"
-                          variant="outline-dropdown"
-                          className="mr-1"
-                          id="dropdown-basic-button"
-                          title="Indicators"
-                          as={ButtonGroup}
-                        >
-                          <Dropdown.Item>Vegetation Health</Dropdown.Item>
-                          <Dropdown.Item>Rainfall</Dropdown.Item>
-                          <Dropdown.Item>Soil Moisture</Dropdown.Item>
-                          <Dropdown.Item>Ground Temperature</Dropdown.Item>
-                          <Dropdown.Item>Evapotranspiration</Dropdown.Item>
-                        </DropdownButton>
-                      </div>
-                    </>
-                  </Accordion.Collapse>
-                </Accordion>
-                <hr></hr>
-                <button
-                  className="current-view field-side-btns" onClick={
-                    (e) => { _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2") }
-                  }
-                >
-                  Field Insight
-                </button>
-                <Accordion activeKey={activeFieldInsightsKey}>
-                  {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
-                  <Accordion.Collapse eventKey="2">
-                    <>
-                      <hr></hr>
-                      <div id="fields-choice-button" style={{"align-self": "center"}}>
-                        <DropdownButton
-                          size="sm"
-                          variant="outline-dropdown"
-                          className="mr-1"
-                          id="dropdown-basic-button"
-                          title="Indicators"
-                          as={ButtonGroup}
-                        >
-                          <Dropdown.Item>Vegetation Health</Dropdown.Item>
-                          <Dropdown.Item>Rainfall</Dropdown.Item>
-                          <Dropdown.Item>Soil Moisture</Dropdown.Item>
-                          <Dropdown.Item>Ground Temperature</Dropdown.Item>
-                          <Dropdown.Item>Evapotranspiration</Dropdown.Item>
-                        </DropdownButton>
-                      </div>
-                    </>
-                  </Accordion.Collapse>
-                </Accordion>
-              </div>
-            </>
-          </Accordion.Collapse>
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-dropdown"
+                            className="mr-1"
+                            id="dropdown-basic-button"
+                            title="Indicators"
+                            as={ButtonGroup}
+                          >
+                            <Dropdown.Item>Vegetation Health</Dropdown.Item>
+                            <Dropdown.Item>Rainfall</Dropdown.Item>
+                            <Dropdown.Item>Soil Moisture</Dropdown.Item>
+                            <Dropdown.Item>Ground Temperature</Dropdown.Item>
+                            <Dropdown.Item>Evapotranspiration</Dropdown.Item>
+                          </DropdownButton>
+                        </div>
+                      </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                  <hr></hr>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      (e) => { _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2") }
+                    }
+                  >
+                    Field Insight
+                  </button>
+                  <Accordion activeKey={activeFieldInsightsKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="2">
+                      <>
+                        <hr></hr>
+                        <div id="fields-choice-button" style={{"align-self": "center"}}>
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-dropdown"
+                            className="mr-1"
+                            id="dropdown-basic-button"
+                            title="Indicators"
+                            as={ButtonGroup}
+                          >
+                            <Dropdown.Item>Vegetation Health</Dropdown.Item>
+                            <Dropdown.Item>Rainfall</Dropdown.Item>
+                            <Dropdown.Item>Soil Moisture</Dropdown.Item>
+                            <Dropdown.Item>Ground Temperature</Dropdown.Item>
+                            <Dropdown.Item>Evapotranspiration</Dropdown.Item>
+                          </DropdownButton>
+                        </div>
+                      </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                </div>
+              </>
+            </Accordion.Collapse>
+          </div>
         </Accordion>
 
         {/* Grid indicators drop down */}
@@ -410,58 +412,60 @@ let ShMap = ({
         </DropdownButton> */}
 
         <Accordion activeKey={activeWiderAreaKey}>
-          <Accordion.Collapse eventKey="3">
-            <>
-              <div id="fields-button" style={{"align-self": "center"}}>
-                <button
-                  className="current-view field-side-btns" onClick={
-                    e => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
-                  }
-                >
-                  Wider Area Insights
-                </button>
-                <Accordion activeKey={activeWiderAreaInsightKey}>
-                  {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
-                  <Accordion.Collapse eventKey="4">
-                    <>
-                      <hr></hr>
-                        <div style={{"position": "relative", "left": "1.5rem"}}>
-                          <input type="radio" value="Landcover" name="insight"/> Landcover<br/>
-                          <input type="radio" value="Slope" name="insight"/> Slope<br/>
-                          <input type="radio" value="Elevation" name="insight"/> Elevation<br/>
-                          <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
-                        </div>
-                    </>
-                  </Accordion.Collapse>
-                </Accordion>
-                <hr></hr>
-                <button
-                  className="current-view field-side-btns" onClick={
-                    (e) => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5") }
-                  }
-                >
-                  Wider Area Thresholds
-                </button>
-                <Accordion activeKey={activeWiderAreaFiltersKey}>
-                  {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
-                  <Accordion.Collapse eventKey="5">
-                    <>
-                      <hr></hr>
-                        <div style={{"position": "relative", "left": "1.5rem"}}>
-                          <p>Landcover</p>
-                          <p>Slope</p>
-                          <p>Elevation</p>
-                          <p>Fertility Classification</p>
-                          <button className="reset-btn">
-                              Reset Filters
-                          </button>&nbsp;&nbsp;&nbsp;
-                        </div>
-                    </>
-                  </Accordion.Collapse>
-                </Accordion>
-              </div>
-            </>
-          </Accordion.Collapse>
+          <div className='d-flex justify-content-center'>
+            <Accordion.Collapse eventKey="3">
+              <>
+                <div id="fields-button" style={{"align-self": "center"}}>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      e => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
+                    }
+                  >
+                    Wider Area Insights
+                  </button>
+                  <Accordion activeKey={activeWiderAreaInsightKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="4">
+                      <>
+                        <hr></hr>
+                          <div style={{"position": "relative", "left": "1.5rem"}}>
+                            <input type="radio" value="Landcover" name="insight"/> Landcover<br/>
+                            <input type="radio" value="Slope" name="insight"/> Slope<br/>
+                            <input type="radio" value="Elevation" name="insight"/> Elevation<br/>
+                            <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
+                          </div>
+                      </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                  <hr></hr>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      (e) => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5") }
+                    }
+                  >
+                    Wider Area Thresholds
+                  </button>
+                  <Accordion activeKey={activeWiderAreaFiltersKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="5">
+                      <>
+                        <hr></hr>
+                          <div style={{"position": "relative", "left": "1.5rem"}}>
+                            <p className='float-center'>Landcover</p>
+                            <p className='float-center'>Slope</p>
+                            <p className='float-center'>Elevation</p>
+                            <p className='float-center'>Fertility Classification</p>
+                            <button className="reset-btn float-right">
+                                Reset Filters
+                            </button>&nbsp;&nbsp;&nbsp;
+                          </div>
+                      </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                </div>
+              </>
+            </Accordion.Collapse>
+          </div>
         </Accordion>
         </div>
       </Control>
@@ -497,7 +501,7 @@ let ShMap = ({
           <style type="text/css">
                 {`
                   .katorline {
-                    height: 98.5vh !important;
+                    height: 97.5vh !important;
                     overflow-y: scroll;
                     z-index: -9;
                   }
@@ -514,14 +518,8 @@ let ShMap = ({
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Biomass Difference</h6>
             <NdviPerformanceLineGraph SidePanelCollapsed={false} />
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Top/Bottom Performing Fields</h6>
-            <h6 style={{"padding": "10px"}}>Top Performing Fields</h6>
-            <h6 style={{"padding": "10px"}}>Bottom Performing Fields</h6>
+            <hr/>
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Thresholds/Extremes</h6>
-            <h6 style={{"padding": "10px"}}>Rainfall</h6>
-            <h6 style={{"padding": "10px"}}>Vegetation Health</h6>
-            <h6 style={{"padding": "10px"}}>Soil Moisture</h6>
-            <h6 style={{"padding": "10px"}}>Ground Temperature</h6>
-            <h6 style={{"padding": "10px"}}>Evapotranspiration</h6>
           </Control>
         </React.Fragment>
        : <React.Fragment />}
