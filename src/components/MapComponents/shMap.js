@@ -239,7 +239,7 @@ let ShMap = ({
         <button className="map-btns"
           onClick={_saveCurrentView}
         >
-          <i class="fa fa-bookmark"></i>
+          <i className="fa fa-bookmark"></i>
           <br/>
           Save view
         </button>&nbsp;&nbsp;&nbsp;
@@ -256,7 +256,7 @@ let ShMap = ({
                 `}
         </style>
         <button className="map-btns">
-        <i class="fa fa-download"></i>
+        <i className="fa fa-download"></i>
           <br/>
           <a
             href={`data:text/json;charset=utf-8,${encodeURIComponent(
@@ -278,7 +278,7 @@ let ShMap = ({
                 mapInstance.setState({ ...state, disablegridKator: !disablegridKator });
               }
             }>
-          <i class="fa fa-toggle-on"></i>
+          <i className="fa fa-toggle-on"></i>
           <br/>
               Toggle Grid
             </button>&nbsp;&nbsp;&nbsp;
@@ -563,7 +563,7 @@ let ShMap = ({
       </Control> : null }
       <Legend map={myMap} gridCellArea={gridCellArea} />
       <LayersControl position="bottomright">
-        <BaseLayer name="Google Satellite">
+        <BaseLayer checked name="Google Satellite">
           <TileLayer
             url="https://mt0.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
             attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
@@ -585,7 +585,7 @@ let ShMap = ({
       <ZoomControl position="bottomright" />
       <FeatureGroup
         ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
-        onContextmenu={handleRightClick}
+        onClick={handleRightClick}
       >
         {userType === "EDITOR" ? <EditControl
           position='topright'
@@ -619,8 +619,8 @@ let ShMap = ({
                 border-radius: 4px;
                 border: none;
                 background: #ecebeb;
-                padding-right: 2px;
-                padding-left: 2px;
+                paddingRight: 2px;
+                paddingLeft: 2px;
               }
               `}
         </style>
@@ -644,7 +644,7 @@ let ShMap = ({
             }
           `}
         </style>
-        <div style={{"padding-left": "3rem"}}>
+        <div style={{"paddingLeft": "3rem"}}>
           <Button
             variant="outline-primary"
             className="rounded-circle btn-md fa fa-info logoutbtn"

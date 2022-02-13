@@ -2,28 +2,17 @@ import React, {
   useState, useEffect, useRef
 } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 
 import { CSVLink } from "react-csv";
 import {Dropdown, DropdownButton, ButtonGroup, Button} from 'react-bootstrap';
 
-import { months_ } from '../actions/graphActions';
+import { getNdviChange, months_ } from '../actions/graphActions';
 import { GET_ALL_FIELD_DATA } from '../actions/types';
 
 function NdviPerformanceLineGraph (props) {
 
-  const [localState, setLocalState] = useState({
-    dataset: [],
-    selectedIndicator: "field_ndvi",
-    indicatorObj: {
-        "Vegetation Health": ["field_ndvi", "Vegetation Health Index (-1, 1)"]
-    },
-    displayedIndicator: "Vegetation Health",
-    selectedCropType: "Crop Type",
-    cropTypes: [],
-    FieldindicatorArray: [],
-    allFieldsIndicatorArray: []
-  });
+  const [localState, setLocalState] = useState({ dataset: [], currentFieldId: "" });
   const dispatch = useDispatch();
   function usePrevious(value) {
     const ref = useRef();
@@ -34,123 +23,42 @@ function NdviPerformanceLineGraph (props) {
   }
   const prevfieldId = usePrevious(props.fieldId);
   const prevSidePanelCollapsed = usePrevious(props.SidePanelCollapsed);
-  const prevgroupFieldData = usePrevious(props.groupFieldData);
-  const prevgrid_id = usePrevious(props.grid_id);
+  const prevNDVIChange = usePrevious(props.NDVIChange);
 
   useEffect(() => {
-    let cropTypes = props.cropTypes
-    // this isn't setting croptypes for admins
-    setLocalState({
-      ...localState,
-      cropTypes,
-      allFieldsIndicatorArray: props.allFieldsIndicatorArray,
-      dataset: props.allFieldData["field_ndvi"] ?
-       props.allFieldData["field_ndvi"][cropTypes[0]] : []
-    })
-  }, []);
+    dispatch(getNdviChange("february"))
+    if (props.NDVIChange.length) {
+      let firstFieldId = props.NDVIChange[0].field_id
+      setLocalState({
+        ...localState,
+        currentFieldId: firstFieldId,
+        dataset: props.NDVIChange.filter(row_ => row_.field_id === firstFieldId)
+      })
+    } 
+  }, [props.NDVIChange.length]);
 
   useEffect(() => {
-    if (
-      props.fieldId !== "" && prevfieldId !== props.fieldId
-    ) {
+    if (prevfieldId !== props.fieldId) {
       // block to display one field's data by uncollapsing sidepanel
       setLocalState({
         ...localState,
-        dataset: props.field_data["field_ndvi"][props.cropType],
-        FieldindicatorArray: props.FieldindicatorArray,
-        selectedCropType: props.cropType,
-        selectedIndicator: "field_ndvi",
-        displayedIndicator: "Vegetation Health"
-      })
-    } else if (
-      (props.fieldId === "" && !Object.keys(props.groupFieldData).length ) &&
-       prevSidePanelCollapsed !== props.SidePanelCollapsed
-    ) {
-      // block to display all fields data by uncollapsing sidepanel
-      let { cropTypes, allFieldData } = props
-      setLocalState({
-        ...localState,
-        cropTypes,
-        dataset: allFieldData["field_ndvi"] ?
-         allFieldData["field_ndvi"][cropTypes[0]] : [],
-        selectedCropType: cropTypes[0],
-        selectedIndicator: "field_ndvi",
-        displayedIndicator: "Vegetation Health"
-      })
-    } else if (
-      props.grid_id !== "" && prevgrid_id !== props.grid_id
-    ) {
-      // block to display group field data and uncollapse sidepanel
-      let { groupFieldData } = props
-      let groupCrops = Object.keys(groupFieldData.field_ndvi)
-      setLocalState({
-        ...localState,
-        dataset: props.groupFieldData["field_ndvi"] ?
-         props.groupFieldData["field_ndvi"][groupCrops[0]] : [],
-         FieldindicatorArray: props.FieldindicatorArray,
-        selectedCropType: groupCrops[0],
-        selectedIndicator: "field_ndvi",
-        displayedIndicator: "Vegetation Health"
-      })
-    } else if (
-      (prevfieldId !== props.fieldId && props.fieldId === "") ||
-      (Object.keys(prevgroupFieldData).length &&
-        !Object.keys(props.groupFieldData).length)
-    ) {
-      // block to display allFieldData when sidepanel ain't collapsed
-      let { cropTypes, allFieldData } = props
-      setLocalState({
-        ...localState,
-        cropTypes,
-        dataset: allFieldData["field_ndvi"] ?
-         allFieldData["field_ndvi"][cropTypes[0]] : [],
-        selectedCropType: cropTypes[0],
-        selectedIndicator: "field_ndvi",
-        displayedIndicator: "Vegetation Health"
+        currentFieldId: props.fieldId,
+        dataset: props.NDVIChange.filter(row_ => row_.field_id === props.fieldId)
       })
     }
   }, [
-    localState, props,
-    prevSidePanelCollapsed, prevfieldId, prevgroupFieldData
+    localState, props, prevfieldId
   ])
 
-  let getEvent = e => {
-    if (typeof(e.currentTarget.text) === "string") {
-      let { allFieldData, fieldId, field_data, groupFieldData } = props;
-      let cropTypes = localState.cropTypes;
-      let selectedCropType = localState.selectedCropType === "Crop Type" ?
-        cropTypes[0] : localState.selectedCropType;
+  let { dataset, currentFieldId } = localState;
+  // note: why are the values repeated
+  let ndviCvalues = [
+    ...new Set(dataset.flatMap(Object.values))
+  ].slice(1).reverse()
+  let ndviClabels = [
+    ...new Set(dataset.flatMap(Object.keys))
+  ].slice(1).reverse().map(row_ => row_.split(" - ")[1])
 
-      if (cropTypes.includes(e.currentTarget.text)) {
-        setLocalState({
-          ...localState,
-          dataset: fieldId === "" && !Object.keys(groupFieldData).length ?
-           allFieldData[localState.selectedIndicator][e.currentTarget.text]
-            :fieldId === "" && Object.keys(groupFieldData).length ?
-            groupFieldData[localState.selectedIndicator][e.currentTarget.text]
-            : field_data[localState.selectedIndicator][e.currentTarget.text],
-          selectedCropType: e.currentTarget.text
-        })
-      } else {
-        setLocalState({
-          ...localState,
-          dataset: fieldId === "" ?
-           allFieldData[localState.indicatorObj[e.currentTarget.text][0]][selectedCropType]
-            : field_data[localState.indicatorObj[e.currentTarget.text][0]][selectedCropType],
-          selectedIndicator: localState.indicatorObj[e.currentTarget.text][0],
-          displayedIndicator: e.currentTarget.text
-        })
-      }
-    }
-  }
-
-  let {
-    displayedIndicator, indicatorObj,
-    selectedCropType, FieldindicatorArray, dataset, cropTypes
-    } = localState;
-    let { 
-      groupFieldIndicatorArray, allFieldsIndicatorArray
-     } = props;
   return (
     <React.Fragment>
       <style type="text/css">
@@ -189,19 +97,39 @@ function NdviPerformanceLineGraph (props) {
       }
       `}
       </style>
+      <div style={{"padding": "10px"}}>
+        <h6>Vegetation Health Difference</h6>
+      </div>
+      {' '}
+      <Button id="indicator_download_button" size="sm" variant="outline-primary">
+        <CSVLink
+        // if indicatorsArray is undefined will return an error,
+        // so need to check for it
+          data={dataset}
+          target="_blank"
+          id="indicator_download_button_words"
+          style={{"textDecoration": "none"}}
+          filename={
+            props.fieldId ?
+            `${props.fieldId}_indicators_data.csv` : "indicators_data.csv"
+          }
+        >
+        Download Data
+        </CSVLink>
+      </Button>
+      <br/><br/>
          {/* NOTE: this should remain as getting from redux state because actual
         croptypes are not yet gotten from the backend by the time component is mounted...hehe. mounted. */}
-      <Line
+      <Bar
         data={
             {
-                "labels": months_.map(
-                  mth => mth[0].toUpperCase() + mth.slice(1,3)
-                ),
+                "labels": ndviClabels,
                 "datasets": [{
-                    "label": indicatorObj[displayedIndicator][1],
-                    "data": dataset,
+                    "label": "Days",
+                    "data": ndviCvalues,
                     "fill": false,
-                    "borderColor": "rgb(75, 192, 192)",
+                    "backgroundColor": "#e15b26",
+                    "borderColor": "#e15b26",
                     "lineTension": 0.1 
                 }]
 
@@ -230,31 +158,31 @@ function NdviPerformanceLineGraph (props) {
               position: "top",
               fontSize: 18,
               fontStyle: "normal",
-              text: `${
-                props.fieldId ? "Field Identifier: " + props.fieldId :
-                Object.keys(props.groupFieldData).length ?
-                // division of 4 is because there are 4 indicators
-                  `Indicator Chart for ${
-                  (props.groupFieldIndicatorArray.length - 1) / 4
-                  } fields` : "All fields"
-              }`
+              text: `Indicator Chart for ${currentFieldId}`
           },
             legend: {
                 display: true,
                 position: "bottom",
             },
             scales: {
-                yAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: indicatorObj[displayedIndicator][1]
-                  }
-                }],
+                // yAxes: [{
+                //   scaleLabel: {
+                //     display: true,
+                //     labelString: indicatorObj[displayedIndicator][1]
+                //   }
+                // }],
                 xAxes: [{
-                  scaleLabel: {
-                    display: false,
-                    labelString: "months"
-                  }
+                  type: 'time',
+                  time: {
+                      unit: 'day',
+                      displayFormats: {
+                          day: 'DD-MM'
+                      }
+                  }  
+                  // scaleLabel: {
+                  //   display: false,
+                  //   labelString: "months"
+                  // }
                 }],
               }
         }}
@@ -264,18 +192,9 @@ function NdviPerformanceLineGraph (props) {
 }
 
 const mapStateToProps = state => ({
-  FieldindicatorArray: state.graphs.FieldindicatorArray,
-  allFieldData: state.graphs.allFieldData,
-  allFieldsIndicatorArray: state.graphs.allFieldsIndicatorArray,
-  groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
-  field_data: state.graphs.field_data,
-  groupFieldData: state.graphs.groupFieldData,
+  ex_: state.graphs,
   fieldId: state.graphs.fieldId,
-  cropType: state.graphs.cropType,
-  grid_id: state.graphs.grid_id,
-  cropTypes: state.layers.cropTypes,
-  LayersPayload: state.layers.LayersPayload,
-  katorPayload: state.grid.katorPayload
+  NDVIChange: state.graphs.NDVIChange
 });
 
 

@@ -208,7 +208,7 @@ class MapView extends Component {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
           let { grid, gridCellArea } = createGrid(this)
-          grid.on("contextmenu", e => {
+          grid.on("click", e => {
             let indicatorsInCell = getKatorsInCell(
               e.layer, this.props.allFieldsIndicatorArray,
               new L.GeoJSON(this.props.LayersPayload)
@@ -328,6 +328,7 @@ const mapStateToProps = state => ({
   katorPayload: state.grid.katorPayload,
   fieldId: state.graphs.fieldId,
   forecastFieldId: state.graphs.forecastFieldId,
+  NDVIChange: state.graphs.NDVIChange
 });
 
 const matchDispatchToProps = dispatch => ({
