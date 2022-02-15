@@ -31,10 +31,7 @@ import * as WMS from "leaflet.wms";
 // }
 // var MySource = WMS.source.extend({});
 
-function CustomWMSLayer(props) {
-    const { url, options, layers } = props;
-    const ctx = useLeaflet()
-    const map = ctx.map;
+function CustomWMSLayer(url, options, layers, map, widerAreaLayer, setWiderAreaLayer) {
 
 
     // Add WMS source/layers
@@ -43,9 +40,17 @@ function CustomWMSLayer(props) {
         options
     );
 
-    // console.log(layers)
     for (let name of layers) {
-        source.getLayer(name).addTo(map)
+        let layer_;
+        if (!widerAreaLayer) {
+            layer_ = source.getLayer(name)
+            setWiderAreaLayer(layer_)
+        } else {
+            layer_ = widerAreaLayer
+        }
+        layer_.addTo(map.current.leafletElement)
+        // NOTE: For multiple layers, would look like this below. Would need to specify widerAreaLayer array length so they can be replaced
+        // setWiderAreaLayer(prevState => [...prevState, source.getLayer(name).addTo(map)])
     }
 
 

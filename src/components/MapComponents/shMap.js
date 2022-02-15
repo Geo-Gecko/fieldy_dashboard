@@ -112,6 +112,7 @@ let ShMap = ({
 
   const [localState, setLocalState] = useState({
     "Field Data": false,
+    "Wider Area": false,
     "Field Insight": false,
     "Wider Area Insight": false,
     "Wider Area Thresholds": false,
@@ -191,6 +192,7 @@ let ShMap = ({
     const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
     const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
 
+    const [widerAreaLayer, setWiderAreaLayer] = useState(undefined);
     const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
     const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
     const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1")
@@ -295,13 +297,19 @@ let ShMap = ({
         <div style={{"align-self": "center", "display": "flex"}}>
               <button
                 className="side-btns"
-                onClick={() => { setActiveFieldKey("0"); setActiveWiderAreaKey("-1") }}
+                onClick={() => {
+                  setActiveFieldKey("0"); setActiveWiderAreaKey("-1");
+                  myMap.current.leafletElement.removeLayer(widerAreaLayer); setLocalState({ ...localState, "Wider Area": false})
+                }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
                   Fields
               </button>&nbsp;&nbsp;&nbsp;
               <button className="side-btns"
-                  onClick={e => { _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3") }}
+                  onClick={e => {
+                    setLocalState({ ...localState, "Wider Area": true});
+                    _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");
+                  }}
                   >
                 Wider Area
               </button>&nbsp;&nbsp;&nbsp;
@@ -599,16 +607,13 @@ let ShMap = ({
         </h6>
       </Control> : null }
       <Legend map={myMap} gridCellArea={gridCellArea} />
-        <CustomWMSLayer
-          url={"http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms"}
-          layers={["fieldy_data:kenya_HT_grid"]}
-          options={{
-            "transparent" : "true",
-            "format": "image/png",
-            "attribution": "GeoGecko",
-            "info_format": "text/html"
-          }}
-        />
+      {localState["Wider Area"] ?
+        CustomWMSLayer(
+          "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms",
+          { "transparent" : "true", "format": "image/png",
+            "attribution": "GeoGecko", "info_format": "text/html"
+          }, ["fieldy_data:kenya_HT_grid"], myMap, widerAreaLayer, setWiderAreaLayer
+        ) : null}
       <LayersControl position="bottomright">
         <BaseLayer checked name="Google Satellite">
           <TileLayer
