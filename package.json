@@ -13,6 +13,7 @@
     "jsonwebtoken": "^8.5.1",
     "leaflet": "^1.5.1",
     "leaflet-draw": "^1.0.4",
+    "leaflet.wms": "^0.2.0",
     "react": "^16.14.0",
     "react-bootstrap": "^2.0.0-beta.6",
     "react-bootstrap-table-next": "^4.0.3",
