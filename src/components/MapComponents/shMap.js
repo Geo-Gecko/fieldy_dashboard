@@ -14,8 +14,10 @@ import { toast } from 'react-toastify';
 import {
   Dropdown, DropdownButton, ButtonGroup, Button, Modal, Collapse
 } from 'react-bootstrap';
+import CloseButton from 'react-bootstrap/CloseButton'
 import Spinner from 'react-bootstrap/Spinner';
 import Accordion from "react-bootstrap/Accordion";
+
 
 import 'font-awesome/css/font-awesome.css';
 import 'leaflet/dist/leaflet.css';
@@ -32,6 +34,9 @@ import { IndicatorInformation } from '../indicatorInformation';
 import { OverViewTable } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
 import { colorGrid } from '../../utilities/gridFns';
+
+
+import CustomWMSLayer from './customLayer';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -107,6 +112,7 @@ let ShMap = ({
 
   const [localState, setLocalState] = useState({
     "Field Data": false,
+    "Wider Area": false,
     "Field Insight": false,
     "Wider Area Insight": false,
     "Wider Area Thresholds": false,
@@ -186,6 +192,7 @@ let ShMap = ({
     const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
     const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
 
+    const [widerAreaLayer, setWiderAreaLayer] = useState(undefined);
     const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
     const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
     const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1")
@@ -290,13 +297,19 @@ let ShMap = ({
         <div style={{"align-self": "center", "display": "flex"}}>
               <button
                 className="side-btns"
-                onClick={() => { setActiveFieldKey("0"); setActiveWiderAreaKey("-1") }}
+                onClick={() => {
+                  setActiveFieldKey("0"); setActiveWiderAreaKey("-1");
+                  myMap.current.leafletElement.removeLayer(widerAreaLayer); setLocalState({ ...localState, "Wider Area": false})
+                }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
                   Fields
               </button>&nbsp;&nbsp;&nbsp;
               <button className="side-btns"
-                  onClick={e => { _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3") }}
+                  onClick={e => {
+                    setLocalState({ ...localState, "Wider Area": true});
+                    _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");
+                  }}
                   >
                 Wider Area
               </button>&nbsp;&nbsp;&nbsp;
@@ -478,6 +491,19 @@ let ShMap = ({
                     height: 71vh;
                     z-index: -9;
                   }
+                  .close-btn{
+                    margin-left: 90%;
+                    margin-top: 0.5rem;
+                    border: 1px solid #e15b26;
+                    background-color: white;
+                    color: black;
+                    position: absolute;
+                  }
+                  .close-btn:hover{
+                    color: #7d7171;
+                    background-color: white;
+                    border: 1px solid #e15b26;
+                  }                  
                 `}
           </style>
           <Control
@@ -487,6 +513,9 @@ let ShMap = ({
               "current-view donut_css katorline slide-out"
             }
           >
+            <Button className='close-btn' onClick={setLocalState}>
+            X
+            </Button>
             {/* <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
             <OverViewTable graphData={results} /> */}
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Monthly Field Indicators</h6>
@@ -505,6 +534,19 @@ let ShMap = ({
                     overflow-y: scroll;
                     z-index: -9;
                   }
+                  .close-btn{
+                    margin-left: 90%;
+                    margin-top: 0.5rem;
+                    border: 1px solid #e15b26;
+                    background-color: white;
+                    color: black;
+                    position: absolute;
+                  }
+                  .close-btn:hover{
+                    color: #7d7171;
+                    background-color: white;
+                    border: 1px solid #e15b26;
+                  }                  
                 `}
           </style>
           <Control
@@ -515,6 +557,9 @@ let ShMap = ({
             }
             id="katorlineId"
           >
+            <Button className='close-btn' onClick={setLocalState}>
+            X
+            </Button>
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Biomass Difference</h6>
             <NdviPerformanceLineGraph SidePanelCollapsed={false} />
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Top/Bottom Performing Fields</h6>
@@ -562,6 +607,13 @@ let ShMap = ({
         </h6>
       </Control> : null }
       <Legend map={myMap} gridCellArea={gridCellArea} />
+      {localState["Wider Area"] ?
+        CustomWMSLayer(
+          "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms",
+          { "transparent" : "true", "format": "image/png",
+            "attribution": "GeoGecko", "info_format": "text/html"
+          }, ["fieldy_data:kenya_HT_grid"], myMap, widerAreaLayer, setWiderAreaLayer
+        ) : null}
       <LayersControl position="bottomright">
         <BaseLayer checked name="Google Satellite">
           <TileLayer
@@ -644,7 +696,7 @@ let ShMap = ({
             }
           `}
         </style>
-        <div style={{"paddingLeft": "3rem"}}>
+        <div style={{"paddingLeft": "3rem", "paddingBottom": "10%"}}>
           <Button
             variant="outline-primary"
             className="rounded-circle btn-md fa fa-info logoutbtn"
