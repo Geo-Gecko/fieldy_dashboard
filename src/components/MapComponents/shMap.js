@@ -299,7 +299,8 @@ let ShMap = ({
                 className="side-btns"
                 onClick={() => {
                   setActiveFieldKey("0"); setActiveWiderAreaKey("-1");
-                  myMap.current.leafletElement.removeLayer(widerAreaLayer); setLocalState({ ...localState, "Wider Area": false})
+                  (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
+                  setLocalState({ ...localState, "Wider Area": false})
                 }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
