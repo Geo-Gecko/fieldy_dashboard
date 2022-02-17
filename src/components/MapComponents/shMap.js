@@ -562,7 +562,7 @@ let ShMap = ({
             <OverViewTable graphData={results} /> */}
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Monthly Field Indicators</h6>
             <IndicatorsLineGraph
-              SidePanelCollapsed={false} cropTypes={props.cropTypes}
+              SidePanelCollapsed={false} cropTypes={props.cropTypes} 
               lineGraphState={lineGraphState} setLineGraphState={setLineGraphState}
             />
           </Control>
@@ -681,7 +681,7 @@ let ShMap = ({
       </LayersControl>
       <ZoomControl position="bottomright" />
       <FeatureGroup
-        ref={(reactFGref) => { _onFeatureGroupReady(reactFGref); }}
+        ref={(reactFGref) => { _onFeatureGroupReady(reactFGref, props); }}
         onClick={handleRightClick}
       >
         {userType === "EDITOR" ? <EditControl

@@ -278,6 +278,8 @@ const mapStateToProps = state => ({
   groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
   field_data: state.graphs.field_data,
   groupFieldData: state.graphs.groupFieldData,
+  fieldId: state.graphs.fieldId,
+  cropType: state.graphs.cropType,
   grid_id: state.graphs.grid_id
 });
 
