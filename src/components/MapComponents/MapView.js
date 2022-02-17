@@ -328,7 +328,14 @@ const mapStateToProps = state => ({
   katorPayload: state.grid.katorPayload,
   fieldId: state.graphs.fieldId,
   forecastFieldId: state.graphs.forecastFieldId,
-  NDVIChange: state.graphs.NDVIChange
+  NDVIChange: state.graphs.NDVIChange,
+
+  // passed for indicatorslinegraph
+  cropType: state.graphs.cropType,
+  fieldId: state.graphs.fieldId,
+  allFieldData: state.graphs.allFieldData,
+  field_data: state.graphs.field_data,
+  groupFieldData: state.graphs.groupFieldData,
 });
 
 const matchDispatchToProps = dispatch => ({
