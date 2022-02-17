@@ -326,7 +326,7 @@ let ShMap = ({
       </div>
       <br/>
       <hr></hr>
-        <div style={{"align-self": "center", "display": "flex"}}>
+        <div style={{"alignSelf": "center", "display": "flex"}}>
               <button
                 className="side-btns"
                 onClick={() => {
@@ -352,7 +352,7 @@ let ShMap = ({
           <div className='d-flex justify-content-center'>
             <Accordion.Collapse eventKey="0">
               <>
-                <div id="fields-button" style={{"align-self": "center"}}>
+                <div id="fields-button" style={{"alignSelf": "center"}}>
                   <button
                     className="current-view field-side-btns" onClick={
                       e => { _showCards(e); setActiveFieldDataKey("1"); setactiveFieldInsightsKey("-1") }
@@ -365,18 +365,29 @@ let ShMap = ({
                     <Accordion.Collapse eventKey="1">
                       <>
                         <hr></hr>
-                        <div id="fields-choice-button" style={{"align-self": "center"}}>
+                        <div id="fields-choice-button" style={{"alignSelf": "center"}}>
                           <DropdownButton
-                            size="sm"
-                            variant="outline-dropdown"
-                            className="mr-1"
-                            id="dropdown-basic-button"
-                            title="Crop Type"
-                            as={ButtonGroup}
+                          size="sm"
+                          variant="outline-dropdown"
+                          id="dropdown-basic-button"
+                          title={props.fieldId === "" ? lineGraphState.selectedCropType : props.cropType}
+                          as={ButtonGroup}
                           >
-                            <Dropdown.Item>Maize</Dropdown.Item>
-                            <Dropdown.Item>Corn</Dropdown.Item>
-                            <Dropdown.Item>Flour</Dropdown.Item>
+                            {
+                              props.fieldId === "" &&
+                              Object.keys(props.groupFieldData).length ?
+                              Object.keys(props.groupFieldData.field_rainfall).map(type_ => 
+                                  <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
+                                      {type_}
+                                  </Dropdown.Item>
+                              ) :
+                                props.fieldId === "" &&
+                                !Object.keys(props.groupFieldData).length ? props.cropTypes.map(type_ => 
+                                  <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
+                                      {type_}
+                                  </Dropdown.Item>
+                              ) : ""
+                            }
                           </DropdownButton>
                           <hr></hr>
                           <DropdownButton
@@ -410,7 +421,7 @@ let ShMap = ({
                     <Accordion.Collapse eventKey="2">
                       <>
                         <hr></hr>
-                        <div id="fields-choice-button" style={{"align-self": "center"}}>
+                        <div id="fields-choice-button" style={{"alignSelf": "center"}}>
                           <DropdownButton
                             size="sm"
                             variant="outline-dropdown"
@@ -459,7 +470,7 @@ let ShMap = ({
           <div className='d-flex justify-content-center'>
             <Accordion.Collapse eventKey="3">
               <>
-                <div id="fields-button" style={{"align-self": "center"}}>
+                <div id="fields-button" style={{"alignSelf": "center"}}>
                   <button
                     className="current-view field-side-btns" onClick={
                       e => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
