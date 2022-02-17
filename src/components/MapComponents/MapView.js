@@ -164,7 +164,7 @@ class MapView extends Component {
 
   _editableFG = null
 
-  _onFeatureGroupReady = async (reactFGref) => {
+  _onFeatureGroupReady = async (reactFGref, props) => {
 
     // populate the leaflet FeatureGroup with the geoJson layers
     if (
@@ -182,6 +182,15 @@ class MapView extends Component {
             if (clickedLayer) {
               clickedLayer.setStyle({ weight: 0.5, color: "#3388ff" });
             }
+            props.dispatch({
+              type: GET_ALL_FIELD_DATA_INITIATED,
+              payload: true
+            });
+            props.dispatch(getcreateputGraphData(
+              {}, 'GET', layer.feature.properties.field_id,
+              layer.feature.properties.CropType,
+              props.cropTypes, props.LayersPayload
+            ));
         
             document.getElementById("grid-info").innerHTML = attr_list;
             layer.setStyle({ weight: 4, color: "#e15b26" });
