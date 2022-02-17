@@ -12,22 +12,11 @@ import { GET_ALL_FIELD_DATA } from '../actions/types';
 
 function IndicatorsLineGraph (props) {
 
-  const [localState, setLocalState] = useState({
-    dataset: [],
-    selectedIndicator: "field_rainfall",
-    indicatorObj: {
-        "Rainfall": ["field_rainfall", "Precipitation (mm)"],
-        "Vegetation Health": ["field_ndvi", "Vegetation Health Index (-1, 1)"],
-        "Soil Moisture": ["field_ndwi", "Soil Moisture Index (-1, 1)"],
-        "Ground Temperature": ["field_temperature", "Ground Temperature (°Celcius)"],
-        "Evapotranspiration": ["field_evapotranspiration", "Evapotranspiration (mm)"]
-    },
-    displayedIndicator: "Rainfall",
-    selectedCropType: "Crop Type",
-    cropTypes: [],
-    FieldindicatorArray: [],
-    allFieldsIndicatorArray: []
-  });
+  let {
+    lineGraphState, setLineGraphState,
+    groupFieldIndicatorArray, allFieldsIndicatorArray, indicatorObj
+  } = props;
+
   const dispatch = useDispatch();
   function usePrevious(value) {
     const ref = useRef();
@@ -44,8 +33,8 @@ function IndicatorsLineGraph (props) {
   useEffect(() => {
     let cropTypes = props.cropTypes
     // this isn't setting croptypes for admins
-    setLocalState({
-      ...localState,
+    setLineGraphState({
+      ...lineGraphState,
       cropTypes,
       allFieldsIndicatorArray: props.allFieldsIndicatorArray,
       dataset: props.allFieldData["field_rainfall"] ?
@@ -58,8 +47,8 @@ function IndicatorsLineGraph (props) {
       props.fieldId !== "" && prevfieldId !== props.fieldId
     ) {
       // block to display one field's data by uncollapsing sidepanel
-      setLocalState({
-        ...localState,
+      setLineGraphState({
+        ...lineGraphState,
         dataset: props.field_data["field_rainfall"][props.cropType],
         FieldindicatorArray: props.FieldindicatorArray,
         selectedCropType: props.cropType,
@@ -72,8 +61,8 @@ function IndicatorsLineGraph (props) {
     ) {
       // block to display all fields data by uncollapsing sidepanel
       let { cropTypes, allFieldData } = props
-      setLocalState({
-        ...localState,
+      setLineGraphState({
+        ...lineGraphState,
         cropTypes,
         dataset: allFieldData["field_rainfall"] ?
          allFieldData["field_rainfall"][cropTypes[0]] : [],
@@ -87,8 +76,8 @@ function IndicatorsLineGraph (props) {
       // block to display group field data and uncollapse sidepanel
       let { groupFieldData } = props
       let groupCrops = Object.keys(groupFieldData.field_rainfall)
-      setLocalState({
-        ...localState,
+      setLineGraphState({
+        ...lineGraphState,
         dataset: props.groupFieldData["field_rainfall"] ?
          props.groupFieldData["field_rainfall"][groupCrops[0]] : [],
          FieldindicatorArray: props.FieldindicatorArray,
@@ -98,13 +87,13 @@ function IndicatorsLineGraph (props) {
       })
     } else if (
       (prevfieldId !== props.fieldId && props.fieldId === "") ||
-      (Object.keys(prevgroupFieldData).length &&
+      prevgroupFieldData && (Object.keys(prevgroupFieldData).length &&
         !Object.keys(props.groupFieldData).length)
     ) {
       // block to display allFieldData when sidepanel ain't collapsed
       let { cropTypes, allFieldData } = props
-      setLocalState({
-        ...localState,
+      setLineGraphState({
+        ...lineGraphState,
         cropTypes,
         dataset: allFieldData["field_rainfall"] ?
          allFieldData["field_rainfall"][cropTypes[0]] : [],
@@ -114,47 +103,14 @@ function IndicatorsLineGraph (props) {
       })
     }
   }, [
-    localState, props,
+    lineGraphState, props,
     prevSidePanelCollapsed, prevfieldId, prevgroupFieldData
   ])
 
-  let getEvent = e => {
-    if (typeof(e.currentTarget.text) === "string") {
-      let { allFieldData, fieldId, field_data, groupFieldData } = props;
-      let cropTypes = localState.cropTypes;
-      let selectedCropType = localState.selectedCropType === "Crop Type" ?
-        cropTypes[0] : localState.selectedCropType;
-
-      if (cropTypes.includes(e.currentTarget.text)) {
-        setLocalState({
-          ...localState,
-          dataset: fieldId === "" && !Object.keys(groupFieldData).length ?
-           allFieldData[localState.selectedIndicator][e.currentTarget.text]
-            :fieldId === "" && Object.keys(groupFieldData).length ?
-            groupFieldData[localState.selectedIndicator][e.currentTarget.text]
-            : field_data[localState.selectedIndicator][e.currentTarget.text],
-          selectedCropType: e.currentTarget.text
-        })
-      } else {
-        setLocalState({
-          ...localState,
-          dataset: fieldId === "" ?
-           allFieldData[localState.indicatorObj[e.currentTarget.text][0]][selectedCropType]
-            : field_data[localState.indicatorObj[e.currentTarget.text][0]][selectedCropType],
-          selectedIndicator: localState.indicatorObj[e.currentTarget.text][0],
-          displayedIndicator: e.currentTarget.text
-        })
-      }
-    }
-  }
 
   let {
-    displayedIndicator, indicatorObj,
-    selectedCropType, FieldindicatorArray, dataset, cropTypes
-    } = localState;
-    let { 
-      groupFieldIndicatorArray, allFieldsIndicatorArray
-     } = props;
+    displayedIndicator, selectedCropType, FieldindicatorArray, dataset, cropTypes
+    } = lineGraphState;
   return (
     <React.Fragment>
       <style type="text/css">
@@ -193,21 +149,7 @@ function IndicatorsLineGraph (props) {
       }
       `}
       </style>
-      {/* <br />&nbsp;<DropdownButton
-      size="sm"
-      variant="outline-dropdown"
-      className="mr-1"
-      id="dropdown-basic-button"
-      title={displayedIndicator}
-      as={ButtonGroup}
-      >
-        {Object.keys(indicatorObj).map(obj_ => 
-            <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
-                {obj_}
-            </Dropdown.Item>
-        )}
-      </DropdownButton>
-      {' '}
+      {/* 
       <DropdownButton
       size="sm"
       variant="outline-dropdown"
@@ -282,7 +224,7 @@ function IndicatorsLineGraph (props) {
                   mth => mth[0].toUpperCase() + mth.slice(1,3)
                 ),
                 "datasets": [{
-                    "label": indicatorObj[displayedIndicator][1],
+                    "label": lineGraphState.indicatorObj[displayedIndicator][1],
                     "data": dataset,
                     "fill": false,
                     "borderColor": "rgb(75, 192, 192)",
@@ -313,7 +255,7 @@ function IndicatorsLineGraph (props) {
                 yAxes: [{
                   scaleLabel: {
                     display: true,
-                    labelString: indicatorObj[displayedIndicator][1]
+                    labelString: lineGraphState.indicatorObj[displayedIndicator][1]
                   }
                 }],
                 xAxes: [{
@@ -336,12 +278,7 @@ const mapStateToProps = state => ({
   groupFieldIndicatorArray: state.graphs.groupFieldIndicatorArray,
   field_data: state.graphs.field_data,
   groupFieldData: state.graphs.groupFieldData,
-  fieldId: state.graphs.fieldId,
-  cropType: state.graphs.cropType,
-  grid_id: state.graphs.grid_id,
-  cropTypes: state.layers.cropTypes,
-  LayersPayload: state.layers.LayersPayload,
-  katorPayload: state.grid.katorPayload
+  grid_id: state.graphs.grid_id
 });
 
 

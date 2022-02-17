@@ -118,10 +118,21 @@ let ShMap = ({
     "Wider Area Thresholds": false,
   })
 
-  const [localindicatorObj, setLocalindicatorObj] = useState({
-    "Precipitation": "field_rainfall", "Crop Health": "field_ndvi",
-    "Soil Moisture": "field_ndwi", "Ground Temperature": "field_temperature",
-    "Evapotranspiration": "field_evapotranspiration", "✓ Field Count": "count"
+  const [lineGraphState, setLineGraphState] = useState({
+    dataset: [],
+    selectedIndicator: "field_rainfall",
+    indicatorObj: {
+        "Rainfall": ["field_rainfall", "Precipitation (mm)"],
+        "Vegetation Health": ["field_ndvi", "Vegetation Health Index (-1, 1)"],
+        "Soil Moisture": ["field_ndwi", "Soil Moisture Index (-1, 1)"],
+        "Ground Temperature": ["field_temperature", "Ground Temperature (°Celcius)"],
+        "Evapotranspiration": ["field_evapotranspiration", "Evapotranspiration (mm)"]
+    },
+    displayedIndicator: "Rainfall",
+    selectedCropType: "Crop Type",
+    cropTypes: [],
+    FieldindicatorArray: [],
+    allFieldsIndicatorArray: []
   })
 
   let results = [];
@@ -167,16 +178,6 @@ let ShMap = ({
         pauseOnHover: true,
         })
     } else {
-      // switch selected button
-      // Array.from(
-      //   document.getElementsByClassName("catBtn")
-      // ).forEach(el => {
-      //   if (el.textContent === e.currentTarget.textContent) {
-      //     el.className = "current-view catBtn clicked_topleft_btn sidebarBtn"
-      //   } else {
-      //     el.className = "current-view catBtn sidebarBtn"
-      //   };
-      // })
       // switch cards
       setLocalState({
         ...Object.fromEntries(
@@ -203,26 +204,57 @@ let ShMap = ({
     window.location.reload()
   }
 
+
   let getEvent = e => {
-    let indicatorObj = localindicatorObj
-    let gridIndicator = indicatorObj[e.currentTarget.text]
+    if (typeof(e.currentTarget.text) === "string") {
+      let { allFieldData, fieldId, field_data, groupFieldData } = props;
+      let cropTypes = lineGraphState.cropTypes;
+      let selectedCropType = lineGraphState.selectedCropType === "Crop Type" ?
+        cropTypes[0] : lineGraphState.selectedCropType;
 
-    // create new obj with selected indicator key. fromEntries is so key order is maintained
-    indicatorObj = Object.fromEntries(
-      Object.entries(indicatorObj).map(([key_, val_]) => {
-        if (key_.includes("✓")) {
-          key_ = key_.replace("✓ ", "")
-        }
-        if (key_ === e.currentTarget.text) {
-          key_ = e.currentTarget.text = "✓ " + e.currentTarget.text
-        }
-        return [key_, val_]
-      })
-    )
-
-    colorGrid(grid, gridIndicator)
-    setLocalindicatorObj({...indicatorObj})
+      if (cropTypes.includes(e.currentTarget.text)) {
+        setLineGraphState({
+          ...lineGraphState,
+          dataset: fieldId === "" && !Object.keys(groupFieldData).length ?
+           allFieldData[lineGraphState.selectedIndicator][e.currentTarget.text]
+            :fieldId === "" && Object.keys(groupFieldData).length ?
+            groupFieldData[lineGraphState.selectedIndicator][e.currentTarget.text]
+            : field_data[lineGraphState.selectedIndicator][e.currentTarget.text],
+          selectedCropType: e.currentTarget.text
+        })
+      } else {
+        setLineGraphState({
+          ...lineGraphState,
+          dataset: fieldId === "" ?
+           allFieldData[lineGraphState.indicatorObj[e.currentTarget.text][0]][selectedCropType]
+            : field_data[lineGraphState.indicatorObj[e.currentTarget.text][0]][selectedCropType],
+          selectedIndicator: lineGraphState.indicatorObj[e.currentTarget.text][0],
+          displayedIndicator: e.currentTarget.text
+        })
+      }
+    }
   }
+
+  // let getEvent = e => {
+  //   let indicatorObj = localindicatorObj
+  //   let gridIndicator = indicatorObj[e.currentTarget.text]
+
+  //   // create new obj with selected indicator key. fromEntries is so key order is maintained
+  //   indicatorObj = Object.fromEntries(
+  //     Object.entries(indicatorObj).map(([key_, val_]) => {
+  //       if (key_.includes("✓")) {
+  //         key_ = key_.replace("✓ ", "")
+  //       }
+  //       if (key_ === e.currentTarget.text) {
+  //         key_ = e.currentTarget.text = "✓ " + e.currentTarget.text
+  //       }
+  //       return [key_, val_]
+  //     })
+  //   )
+
+  //   colorGrid(grid, gridIndicator)
+  //   setLocalindicatorObj({...indicatorObj})
+  // }
 
   return (
     <React.Fragment>
@@ -294,7 +326,7 @@ let ShMap = ({
       </div>
       <br/>
       <hr></hr>
-        <div style={{"align-self": "center", "display": "flex"}}>
+        <div style={{"alignSelf": "center", "display": "flex"}}>
               <button
                 className="side-btns"
                 onClick={() => {
@@ -320,7 +352,7 @@ let ShMap = ({
           <div className='d-flex justify-content-center'>
             <Accordion.Collapse eventKey="0">
               <>
-                <div id="fields-button" style={{"align-self": "center"}}>
+                <div id="fields-button" style={{"alignSelf": "center"}}>
                   <button
                     className="current-view field-side-btns" onClick={
                       e => { _showCards(e); setActiveFieldDataKey("1"); setactiveFieldInsightsKey("-1") }
@@ -333,35 +365,44 @@ let ShMap = ({
                     <Accordion.Collapse eventKey="1">
                       <>
                         <hr></hr>
-                        <div id="fields-choice-button" style={{"align-self": "center"}}>
+                        <div id="fields-choice-button" style={{"alignSelf": "center"}}>
                           <DropdownButton
-                            size="sm"
-                            variant="outline-dropdown"
-                            className="mr-1"
-                            id="dropdown-basic-button"
-                            title="Crop Type"
-                            as={ButtonGroup}
+                          size="sm"
+                          variant="outline-dropdown"
+                          id="dropdown-basic-button"
+                          title={props.fieldId === "" ? lineGraphState.selectedCropType : props.cropType}
+                          as={ButtonGroup}
                           >
-                            <Dropdown.Item>Maize</Dropdown.Item>
-                            <Dropdown.Item>Corn</Dropdown.Item>
-                            <Dropdown.Item>Flour</Dropdown.Item>
+                            {
+                              props.fieldId === "" &&
+                              Object.keys(props.groupFieldData).length ?
+                              Object.keys(props.groupFieldData.field_rainfall).map(type_ => 
+                                  <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
+                                      {type_}
+                                  </Dropdown.Item>
+                              ) :
+                                props.fieldId === "" &&
+                                !Object.keys(props.groupFieldData).length ? props.cropTypes.map(type_ => 
+                                  <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
+                                      {type_}
+                                  </Dropdown.Item>
+                              ) : ""
+                            }
                           </DropdownButton>
                           <hr></hr>
-
-
                           <DropdownButton
                             size="sm"
                             variant="outline-dropdown"
                             className="mr-1"
                             id="dropdown-basic-button"
-                            title="Indicators"
+                            title={lineGraphState.displayedIndicator}
                             as={ButtonGroup}
-                          >
-                            <Dropdown.Item>Vegetation Health</Dropdown.Item>
-                            <Dropdown.Item>Rainfall</Dropdown.Item>
-                            <Dropdown.Item>Soil Moisture</Dropdown.Item>
-                            <Dropdown.Item>Ground Temperature</Dropdown.Item>
-                            <Dropdown.Item>Evapotranspiration</Dropdown.Item>
+                            >
+                              {Object.keys(lineGraphState.indicatorObj).map(obj_ => 
+                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
+                                      {obj_}
+                                  </Dropdown.Item>
+                              )}
                           </DropdownButton>
                         </div>
                       </>
@@ -380,20 +421,20 @@ let ShMap = ({
                     <Accordion.Collapse eventKey="2">
                       <>
                         <hr></hr>
-                        <div id="fields-choice-button" style={{"align-self": "center"}}>
+                        <div id="fields-choice-button" style={{"alignSelf": "center"}}>
                           <DropdownButton
                             size="sm"
                             variant="outline-dropdown"
                             className="mr-1"
                             id="dropdown-basic-button"
-                            title="Indicators"
+                            title={lineGraphState.displayedIndicator}
                             as={ButtonGroup}
-                          >
-                            <Dropdown.Item>Vegetation Health</Dropdown.Item>
-                            <Dropdown.Item>Rainfall</Dropdown.Item>
-                            <Dropdown.Item>Soil Moisture</Dropdown.Item>
-                            <Dropdown.Item>Ground Temperature</Dropdown.Item>
-                            <Dropdown.Item>Evapotranspiration</Dropdown.Item>
+                            >
+                              {Object.keys(lineGraphState.indicatorObj).map(obj_ => 
+                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
+                                      {obj_}
+                                  </Dropdown.Item>
+                              )}
                           </DropdownButton>
                         </div>
                       </>
@@ -429,7 +470,7 @@ let ShMap = ({
           <div className='d-flex justify-content-center'>
             <Accordion.Collapse eventKey="3">
               <>
-                <div id="fields-button" style={{"align-self": "center"}}>
+                <div id="fields-button" style={{"alignSelf": "center"}}>
                   <button
                     className="current-view field-side-btns" onClick={
                       e => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
@@ -520,7 +561,10 @@ let ShMap = ({
             {/* <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
             <OverViewTable graphData={results} /> */}
             <h6 style={{"padding": "10px", "font-weight": "bold"}}>Monthly Field Indicators</h6>
-            <IndicatorsLineGraph SidePanelCollapsed={false} />
+            <IndicatorsLineGraph
+              SidePanelCollapsed={false} cropTypes={props.cropTypes}
+              lineGraphState={lineGraphState} setLineGraphState={setLineGraphState}
+            />
           </Control>
         </React.Fragment>
         : null
