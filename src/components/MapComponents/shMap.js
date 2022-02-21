@@ -115,6 +115,8 @@ let ShMap = ({
   const [localState, setLocalState] = useState({
     "Field Data": false,
     "Wider Area": false,
+    "Top/Bottom Performance": false,
+    "Thresholds": false,
     "Biomass Change": false,
     "Wider Area Insight": false,
     "Wider Area Thresholds": false,
@@ -135,6 +137,23 @@ let ShMap = ({
     cropTypes: [],
     FieldindicatorArray: [],
     allFieldsIndicatorArray: []
+  })
+
+  // showFieldDataChoice activeFieldDataKey
+  const [activeFieldKey, setActiveFieldKey] = useState("-1");
+  const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
+  const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
+
+  const [widerAreaLayer, setWiderAreaLayer] = useState(undefined);
+  const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
+  const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
+  const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1");
+
+  const [clickedActiveKey, setClickedActiveKey] = useState({
+    BioMassKey: "-1",
+    TopBottomKey: "-1",
+    ThresholdsKey: "-1",
+    FieldInsightsKey: "-1"
   })
 
   let results = [];
@@ -179,34 +198,18 @@ let ShMap = ({
         closeOnClick: true,
         pauseOnHover: true,
         })
-    } else {
+    } else if (Object.keys(localState).includes(e.currentTarget.textContent)) {
       // switch cards
       setLocalState({
-        ...Object.fromEntries(
-          Object.keys(localState).map(key_ => [localState[key_], false])
-        ),
+        ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
         [e.currentTarget.textContent]: true
       });
+    } else {
+      setLocalState({
+        ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false]))
+      })
     }
   }
-
-  // showFieldDataChoice activeFieldDataKey
-  const [activeFieldKey, setActiveFieldKey] = useState("-1");
-  const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
-  const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
-
-  const [widerAreaLayer, setWiderAreaLayer] = useState(undefined);
-  const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
-  const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
-  const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1")
-
-
-  const [clickedActiveKey, setClickedActiveKey] = useState({
-    BioMassKey: "-1",
-    TopBottomKey: "-1",
-    ThresholdsKey: "-1",
-    FieldInsightsKey: "-1"
-  })
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -339,10 +342,9 @@ let ShMap = ({
         <div style={{"alignSelf": "center", "display": "flex"}}>
               <button
                 className="side-btns"
-                onClick={() => {
-                  setActiveFieldKey("0"); setActiveWiderAreaKey("-1");
+                onClick={e => {
+                  setActiveFieldKey("0"); setActiveWiderAreaKey("-1"); _showCards(e);
                   (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
-                  setLocalState({ ...localState, "Wider Area": false})
                 }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
@@ -350,8 +352,8 @@ let ShMap = ({
               </button>&nbsp;&nbsp;&nbsp;
               <button className="side-btns"
                   onClick={e => {
-                    setLocalState({ ...localState, "Wider Area": true});
                     _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");
+                    setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1");
                   }}
                   >
                 Wider Area
@@ -421,27 +423,20 @@ let ShMap = ({
                   <hr></hr>
                   <button
                     className="current-view field-side-btns" onClick={
-                      (e) => {
-                        setClickedActiveKey({
-                          ...Object.fromEntries(
-                            Object.keys(clickedActiveKey).map(key_ => [clickedActiveKey[key_], "-1"])
-                          ), FieldInsightsKey: "2"
-                        })
-                      }
+                      (e) => { _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2"); }
                     }
                   >
                     Field Insight
                   </button>
-                  <Accordion activeKey={clickedActiveKey.FieldInsightsKey}>
+                  <Accordion activeKey={activeFieldInsightsKey}>
                     {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
                     <div className='d-flex justify-content-center'>
                       <Accordion.Collapse eventKey="2">
                         <>
                           <hr></hr>
                           <FieldInsightAccordions
-                            _showCards={_showCards}
                             clickedActiveKey={clickedActiveKey} setClickedActiveKey={setClickedActiveKey}
-                            lineGraphState={lineGraphState} getEvent={getEvent}
+                            _showCards={_showCards} lineGraphState={lineGraphState} getEvent={getEvent}
                           />
                         </>
                       </Accordion.Collapse>
@@ -480,7 +475,7 @@ let ShMap = ({
                 <div id="fields-button" style={{"alignSelf": "center"}}>
                   <button
                     className="current-view field-side-btns" onClick={
-                      e => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
+                      () => { setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
                     }
                   >
                     Wider Area Insights
@@ -502,7 +497,7 @@ let ShMap = ({
                   <hr></hr>
                   <button
                     className="current-view field-side-btns" onClick={
-                      (e) => { /*_showCards(e);*/ setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5") }
+                      () => { setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5") }
                     }
                   >
                     Wider Area Thresholds
@@ -567,7 +562,7 @@ let ShMap = ({
             </Button>
             {/* <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
             <OverViewTable graphData={results} /> */}
-            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Monthly Field Indicators</h6>
+            <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Monthly Field Indicators</h6>
             <IndicatorsLineGraph
               SidePanelCollapsed={false} cropTypes={props.cropTypes} 
               lineGraphState={lineGraphState} setLineGraphState={setLineGraphState}
@@ -578,8 +573,8 @@ let ShMap = ({
       }
       <br/>
       {
-        localState['Biomass Change'] && props.cropTypes.length > 0 ?
-        <FieldInsightCards localState={localState} setLocalState={setLocalState} props={props} /> : <React.Fragment />
+        props.cropTypes.length > 0 ?
+        <FieldInsightCards localState={localState} props={props} /> : <React.Fragment />
       }
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       {!localStorage.getItem("cookieusagedisplayed") ?

@@ -1,21 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
-  Map, TileLayer, FeatureGroup, MapControl,
-  ZoomControl, LayersControl
-} from 'react-leaflet';
-import L from 'leaflet';
-// https://github.com/alex3165/react-leaflet-draw/issues/100
-// react-leaflet-draw has been pinned to 0.19.0 coz of above
-import { EditControl } from "react-leaflet-draw";
-import Control from 'react-leaflet-control';
-import { ToastContainer } from 'react-toastify';
-import { toast } from 'react-toastify';
-import {
-  Dropdown, DropdownButton, ButtonGroup, Button, Modal, Collapse
+  Dropdown, DropdownButton, ButtonGroup,
 } from 'react-bootstrap';
-import CloseButton from 'react-bootstrap/CloseButton'
-import Spinner from 'react-bootstrap/Spinner';
 import Accordion from "react-bootstrap/Accordion";
 
 
@@ -27,24 +14,48 @@ import '../../popupMod.css'
 
 
 
-// local components
-import IndicatorsLineGraph from '../../indicatorsLineGraph';
-import NdviPerformanceLineGraph from '../../ndviPerformanceLineGraph';
-import { IndicatorInformation } from '../../indicatorInformation';
-import { OverViewTable } from '../../overView';
-import { CookiesPolicy } from '../../cookiesPolicy';
-import { colorGrid } from '../../../utilities/gridFns';
-
-
-import CustomWMSLayer from '../customLayer';
-import FieldInsightCards from '../fieldInsightCards';
-
-
-let FieldInsightAccordions = ({ _showCards, getEvent, lineGraphState, clickedActiveKey, setClickedActiveKey }) => {
-
+let FieldInsightAccordions = ({
+  _showCards, getEvent, lineGraphState, clickedActiveKey, setClickedActiveKey
+}) => {
 
   return (
       <React.Fragment>
+        <style type="text/css">
+        {`
+        .btn-dropdown {
+            background-color: #e15b26;
+            color: white;
+        }
+        .btn-sm {
+          border-color: #e15b26;
+        }
+        .dropdown-item {
+          color: inherit !important;
+        }
+        .dropdown-item.active, .dropdown-item:active {
+            color: #fff;
+            text-decoration: none;
+            background-color: #e15b26;
+        }
+        #indicator_download_button {
+          border-color: #e15b26;
+        }
+        a {
+          color: white;
+        }
+        a:hover {
+          color: black;
+          text-decoration: none;
+        }
+        .btn:focus,.btn:active {
+          outline: none !important;
+          box-shadow: none;
+        }
+        #indicator_download_button_words {
+          color: black;
+        }
+        `}
+        </style>
         <button
           className="current-view field-side-btns" onClick={
             e => {
@@ -69,8 +80,8 @@ let FieldInsightAccordions = ({ _showCards, getEvent, lineGraphState, clickedAct
               })
             }
           }
-        > Top/Bottom Performance </button>
-        <Accordion activeKey={clickedActiveKey.ThresholdsKey}>
+        >Top/Bottom Performance</button>
+        <Accordion activeKey={clickedActiveKey.TopBottomKey}>
           {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
           <Accordion.Collapse eventKey="7">
             <>
@@ -100,11 +111,11 @@ let FieldInsightAccordions = ({ _showCards, getEvent, lineGraphState, clickedAct
             (e) => {
               _showCards(e); setClickedActiveKey({
                 ...Object.fromEntries(Object.keys(clickedActiveKey).map(key_ => [clickedActiveKey[key_], -1])),
-                TopBottomKey: "8"
+                ThresholdsKey: "8"
               })
             }
           }
-        > Thresholds </button>
+        >Thresholds</button>
         <Accordion activeKey={clickedActiveKey.ThresholdsKey}>
           {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
           <Accordion.Collapse eventKey="8">
