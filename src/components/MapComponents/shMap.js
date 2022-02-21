@@ -37,6 +37,8 @@ import { colorGrid } from '../../utilities/gridFns';
 
 
 import CustomWMSLayer from './customLayer';
+import FieldInsightCards from './fieldInsightCards';
+import FieldInsightAccordions from './MapAccordions/fieldInsightAccordions';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -113,7 +115,7 @@ let ShMap = ({
   const [localState, setLocalState] = useState({
     "Field Data": false,
     "Wider Area": false,
-    "Field Insight": false,
+    "Biomass Change": false,
     "Wider Area Insight": false,
     "Wider Area Thresholds": false,
   })
@@ -188,15 +190,23 @@ let ShMap = ({
     }
   }
 
-    // showFieldDataChoice activeFieldDataKey
-    const [activeFieldKey, setActiveFieldKey] = useState("-1");
-    const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
-    const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
+  // showFieldDataChoice activeFieldDataKey
+  const [activeFieldKey, setActiveFieldKey] = useState("-1");
+  const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
+  const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
 
-    const [widerAreaLayer, setWiderAreaLayer] = useState(undefined);
-    const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
-    const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
-    const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1")
+  const [widerAreaLayer, setWiderAreaLayer] = useState(undefined);
+  const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
+  const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
+  const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1")
+
+
+  const [clickedActiveKey, setClickedActiveKey] = useState({
+    BioMassKey: "-1",
+    TopBottomKey: "-1",
+    ThresholdsKey: "-1",
+    FieldInsightsKey: "-1"
+  })
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -411,34 +421,31 @@ let ShMap = ({
                   <hr></hr>
                   <button
                     className="current-view field-side-btns" onClick={
-                      (e) => { _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2") }
+                      (e) => {
+                        setClickedActiveKey({
+                          ...Object.fromEntries(
+                            Object.keys(clickedActiveKey).map(key_ => [clickedActiveKey[key_], "-1"])
+                          ), FieldInsightsKey: "2"
+                        })
+                      }
                     }
                   >
                     Field Insight
                   </button>
-                  <Accordion activeKey={activeFieldInsightsKey}>
+                  <Accordion activeKey={clickedActiveKey.FieldInsightsKey}>
                     {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
-                    <Accordion.Collapse eventKey="2">
-                      <>
-                        <hr></hr>
-                        <div id="fields-choice-button" style={{"alignSelf": "center"}}>
-                          <DropdownButton
-                            size="sm"
-                            variant="outline-dropdown"
-                            className="mr-1"
-                            id="dropdown-basic-button"
-                            title={lineGraphState.displayedIndicator}
-                            as={ButtonGroup}
-                            >
-                              {Object.keys(lineGraphState.indicatorObj).map(obj_ => 
-                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
-                                      {obj_}
-                                  </Dropdown.Item>
-                              )}
-                          </DropdownButton>
-                        </div>
-                      </>
-                    </Accordion.Collapse>
+                    <div className='d-flex justify-content-center'>
+                      <Accordion.Collapse eventKey="2">
+                        <>
+                          <hr></hr>
+                          <FieldInsightAccordions
+                            _showCards={_showCards}
+                            clickedActiveKey={clickedActiveKey} setClickedActiveKey={setClickedActiveKey}
+                            lineGraphState={lineGraphState} getEvent={getEvent}
+                          />
+                        </>
+                      </Accordion.Collapse>
+                    </div>
                   </Accordion>
                 </div>
               </>
@@ -570,49 +577,10 @@ let ShMap = ({
         : null
       }
       <br/>
-      {localState['Field Insight'] && props.cropTypes.length > 0 ?
-        <React.Fragment>
-          <style type="text/css">
-                {`
-                  .katorline {
-                    height: 97.5vh !important;
-                    overflow-y: scroll;
-                    z-index: -9;
-                  }
-                  .close-btn{
-                    margin-left: 90%;
-                    margin-top: 0.5rem;
-                    border: 1px solid #e15b26;
-                    background-color: white;
-                    color: black;
-                    position: absolute;
-                  }
-                  .close-btn:hover{
-                    color: #7d7171;
-                    background-color: white;
-                    border: 1px solid #e15b26;
-                  }                  
-                `}
-          </style>
-          <Control
-            position="topleft"
-            className={
-              localState['Field Insight'] ? "current-view donut_css katorline slide-in" :
-              "current-view donut_css katorline slide-out"
-            }
-            id="katorlineId"
-          >
-            <Button className='close-btn' onClick={setLocalState}>
-            X
-            </Button>
-            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Biomass Difference</h6>
-            <NdviPerformanceLineGraph SidePanelCollapsed={false} />
-            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Top/Bottom Performing Fields</h6>
-            <hr/>
-            <h6 style={{"padding": "10px", "font-weight": "bold"}}>Thresholds/Extremes</h6>
-          </Control>
-        </React.Fragment>
-       : <React.Fragment />}
+      {
+        localState['Biomass Change'] && props.cropTypes.length > 0 ?
+        <FieldInsightCards localState={localState} setLocalState={setLocalState} props={props} /> : <React.Fragment />
+      }
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       {!localStorage.getItem("cookieusagedisplayed") ?
       <Control 
