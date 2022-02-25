@@ -125,7 +125,7 @@ let ShMap = ({
     "Field Insight": false,
     "Wider Area Insight": false,
     "Wider Area Thresholds": false,
-  })
+  });
 
   const [lineGraphState, setLineGraphState] = useState({
     dataset: [],
@@ -216,18 +216,6 @@ let ShMap = ({
     }
   }
 
-    // showFieldDataChoice activeFieldDataKey
-    const [activeFieldKey, setActiveFieldKey] = useState("-1");
-    const [activeFieldDataKey, setActiveFieldDataKey] = useState("-1");
-    const [activeFieldInsightsKey, setactiveFieldInsightsKey] = useState("-1");
-
-    const [widerAreaLandcover, setWiderAreaLandcover] = useState(undefined);
-    const [widerAreaElevation, setWiderAreaElevation] = useState(undefined);
-    const [widerAreaSlope, setWiderAreaSlope] = useState(undefined);
-    const [widerAreaFertility, setWiderAreaFertility] = useState(undefined);
-    const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
-    const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
-    const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1")
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -360,24 +348,16 @@ let ShMap = ({
         <div style={{"alignSelf": "center", "display": "flex"}}>
               <button
                 className="side-btns"
-                onClick={() => {
+                onClick={e => {
                   setActiveFieldKey("0"); setActiveWiderAreaKey("-1"); _showCards(e);
                   (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
-                  setLocalState({ ...localState, "Wider Area Landcover": false}); 
-                  setLocalState({ ...localState, "Wider Area Elevation": false});
-                  setLocalState({ ...localState, "Wider Area Slope": false});
-                  setLocalState({ ...localState, "Wider Area Fertility": false}); 
-  }}
+                }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
                   Fields
               </button>&nbsp;&nbsp;&nbsp;
               <button className="side-btns"
                   onClick={e => {
-                    setLocalState({ ...localState, "Wider Area Landcover": false}); 
-                    setLocalState({ ...localState, "Wider Area Elevation": false});
-                    setLocalState({ ...localState, "Wider Area Slope": false});
-                    setLocalState({ ...localState, "Wider Area Fertility": false}); 
                     _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");
                     setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1");
                   }}
@@ -513,36 +493,32 @@ let ShMap = ({
                         <hr></hr>
                           <div style={{"position": "relative", "left": "1.5rem"}}>
                             <input type="radio" value="Landcover" name="insight"
-                              onClick={e => {
-                              setLocalState({ ...localState, "Wider Area Elevation": false});
-                              setLocalState({ ...localState, "Wider Area Slope": false});
-                              setLocalState({ ...localState, "Wider Area Fertility": false});
-                              setLocalState({ ...localState, "Wider Area Landcover": true});
-                                }}
+                              onClick={() => setLocalState({
+                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                                    "Wider Area Landcover": true
+                                  })
+                                }
                             /> Landcover<br/>
                             <input type="radio" value="Slope" name="insight"
-                              onClick={e => {
-                              setLocalState({ ...localState, "Wider Area Landcover": false});
-                              setLocalState({ ...localState, "Wider Area Elevation": false});
-                              setLocalState({ ...localState, "Wider Area Fertility": false});
-                              setLocalState({ ...localState, "Wider Area Slope": true});
-                                }}
+                              onClick={() => setLocalState({
+                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                                    "Wider Area Slope": true
+                                  })
+                                }
                               /> Slope<br/>
                             <input type="radio" value="Elevation" name="insight"
-                              onClick={e => {
-                              setLocalState({ ...localState, "Wider Area Landcover": false});
-                              setLocalState({ ...localState, "Wider Area Slope": false});
-                              setLocalState({ ...localState, "Wider Area Fertility": false});
-                              setLocalState({ ...localState, "Wider Area Elevation": true});
-                                }}
+                              onClick={() => setLocalState({
+                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                                    "Wider Area Elevation": true
+                                  })
+                                }
                               /> Elevation<br/>
                             <input type="radio" value="Fertility Classification" name="insight"
-                              onClick={e => {
-                              setLocalState({ ...localState, "Wider Area Landcover": false});
-                              setLocalState({ ...localState, "Wider Area Elevation": false});
-                              setLocalState({ ...localState, "Wider Area Slope": false});
-                              setLocalState({ ...localState, "Wider Area Fertility": true});
-                                }}
+                              onClick={() => setLocalState({
+                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                                    "Wider Area Fertility": true
+                                  })
+                                }
                               /> Fertility Classification
                           </div>
                       </>
@@ -669,33 +645,11 @@ let ShMap = ({
         </h6>
       </Control> : null }
       <Legend map={myMap} gridCellArea={gridCellArea} />
-      {localState["Wider Area Landcover"] ?
-        CustomWMSLayer(
-          "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms",
-          { "transparent" : "true", "format": "image/png",
-            "attribution": "GeoGecko", "styles": "fieldy_lc"
-          }, ["fieldy_data:kenya_HT_grid"], myMap, widerAreaLandcover, setWiderAreaLandcover
-        ) : null}
-      {localState["Wider Area Elevation"] ?
-        CustomWMSLayer(
-          "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms",
-          { "transparent" : "true", "format": "image/png",
-            "attribution": "GeoGecko", "styles": "fieldy_elevation"
-          }, ["fieldy_data:kenya_HT_grid"], myMap, widerAreaElevation, setWiderAreaElevation
-        ) : null}
-      {localState["Wider Area Slope"] ?
-        CustomWMSLayer(
-          "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms",
-          { "transparent" : "true", "format": "image/png",
-            "attribution": "GeoGecko", "styles": "fieldy_slope"
-          }, ["fieldy_data:kenya_HT_grid"], myMap, widerAreaSlope, setWiderAreaSlope
-        ) : null}
-      {localState["Wider Area Fertility"] ?
-        CustomWMSLayer(
-          "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms",
-          { "transparent" : "true", "format": "image/png",
-            "attribution": "GeoGecko", "styles": "fieldy_fcc"
-          }, ["fieldy_data:kenya_HT_grid"], myMap, widerAreaFertility, setWiderAreaFertility
+      {/* filter for events with "Wider Area" and call CustomWMSLayer if one of them is set to true */}
+      {Object.keys(localState).filter(
+            key_ => key_.includes("Wider Area") && localState[key_] ? key_ : ""
+        ).join("") !== "" ? CustomWMSLayer(
+          localState, myMap, widerAreaLayer, setWiderAreaLayer
         ) : null}
       <LayersControl position="bottomright">
         <BaseLayer checked name="Google Satellite">
