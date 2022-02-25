@@ -118,9 +118,14 @@ let ShMap = ({
     "Top/Bottom Performance": false,
     "Thresholds": false,
     "Biomass Change": false,
+    "Wider Area Landcover": false,
+    "Wider Area Elevation": false,
+    "Wider Area Slope": false,
+    "Wider Area Fertility": false,
+    "Field Insight": false,
     "Wider Area Insight": false,
     "Wider Area Thresholds": false,
-  })
+  });
 
   const [lineGraphState, setLineGraphState] = useState({
     dataset: [],
@@ -210,6 +215,7 @@ let ShMap = ({
       })
     }
   }
+
 
   function handleshowLogout() {
     localStorage.removeItem('x-token')
@@ -486,10 +492,34 @@ let ShMap = ({
                       <>
                         <hr></hr>
                           <div style={{"position": "relative", "left": "1.5rem"}}>
-                            <input type="radio" value="Landcover" name="insight"/> Landcover<br/>
-                            <input type="radio" value="Slope" name="insight"/> Slope<br/>
-                            <input type="radio" value="Elevation" name="insight"/> Elevation<br/>
-                            <input type="radio" value="Fertility Classification" name="insight"/> Fertility Classification
+                            <input type="radio" value="Landcover" name="insight"
+                              onClick={() => setLocalState({
+                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                                    "Wider Area Landcover": true
+                                  })
+                                }
+                            /> Landcover<br/>
+                            <input type="radio" value="Slope" name="insight"
+                              onClick={() => setLocalState({
+                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                                    "Wider Area Slope": true
+                                  })
+                                }
+                              /> Slope<br/>
+                            <input type="radio" value="Elevation" name="insight"
+                              onClick={() => setLocalState({
+                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                                    "Wider Area Elevation": true
+                                  })
+                                }
+                              /> Elevation<br/>
+                            <input type="radio" value="Fertility Classification" name="insight"
+                              onClick={() => setLocalState({
+                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                                    "Wider Area Fertility": true
+                                  })
+                                }
+                              /> Fertility Classification
                           </div>
                       </>
                     </Accordion.Collapse>
@@ -615,12 +645,11 @@ let ShMap = ({
         </h6>
       </Control> : null }
       <Legend map={myMap} gridCellArea={gridCellArea} />
-      {localState["Wider Area"] ?
-        CustomWMSLayer(
-          "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms",
-          { "transparent" : "true", "format": "image/png",
-            "attribution": "GeoGecko", "info_format": "text/html"
-          }, ["fieldy_data:kenya_HT_grid"], myMap, widerAreaLayer, setWiderAreaLayer
+      {/* filter for events with "Wider Area" and call CustomWMSLayer if one of them is set to true */}
+      {Object.keys(localState).filter(
+            key_ => key_.includes("Wider Area") && localState[key_] ? key_ : ""
+        ).join("") !== "" ? CustomWMSLayer(
+          localState, myMap, widerAreaLayer, setWiderAreaLayer
         ) : null}
       <LayersControl position="bottomright">
         <BaseLayer checked name="Google Satellite">
@@ -704,7 +733,7 @@ let ShMap = ({
             }
           `}
         </style>
-        <div style={{"paddingLeft": "3rem", "paddingBottom": "10%"}}>
+        <div style={{"paddingLeft": "50%", "paddingBottom": "10%", "display": "flex", "columnGap": "20px"}}>
           <Button
             variant="outline-primary"
             className="rounded-circle btn-md fa fa-info logoutbtn"
