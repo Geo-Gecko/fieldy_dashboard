@@ -236,22 +236,6 @@ class MapView extends Component {
           // SCRIPT FOR SAVING GRIDS GOES HERE
           await this.setState({...this.state, grid, gridCellArea});
 
-          // removing grid affects toggle and grid-indicator btns hence placement here
-          // where this.state.grid exists
-          if (this.myMap.current && this.myMap.current.leafletElement) {
-            //this removes the grid when the user zooms in past zoom level 11
-            this.myMap.current.leafletElement.on('moveend', () => {
-              if (
-                !this.props.gridLayer.length &&
-                this.myMap.current.leafletElement.getZoom() > 10
-              ) {
-                this.myMap.current.leafletElement.removeLayer(this.state.grid);
-                this.setState({...this.state, disablegridKator: true})
-                document.getElementById("grid-info").innerHTML = "Click on field for info";
-              }
-            })
-          }
-
           this.myMap.current.leafletElement.addLayer(this.state.grid)
         }
       }

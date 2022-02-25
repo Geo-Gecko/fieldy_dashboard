@@ -99,7 +99,6 @@ class Legend extends MapControl {
 let ShMap = ({
   state, myMap, mapInstance
 }) => {
-  
   let {
     currentLocation, zoom, userType, gridCellArea,
     initiateGetData, grid, disablegridKator
@@ -159,6 +158,13 @@ let ShMap = ({
     TopBottomKey: "-1",
     ThresholdsKey: "-1",
     FieldInsightsKey: "-1"
+  })
+
+  // NOTE: Top/Bottom is still weekly
+  const [slVals, setSlVals] = useState({
+    // values follow formart ---> [min, max, title, slider-step]
+    "field_ndvi": [0.2, 1, "Crop Health", 0.1], "field_precipitation": [3, 500, "Precipitation", 1],
+    "field_ndwi": [0, 0.3, "Soil Moisture", 0.01], "field_temperature": [15, 35, "Temperature", 1]
   })
 
   let results = [];
@@ -604,7 +610,7 @@ let ShMap = ({
       <br/>
       {
         props.cropTypes.length > 0 ?
-        <FieldInsightCards localState={localState} props={props} /> : <React.Fragment />
+        <FieldInsightCards localState={localState} slVals={slVals} setSlVals={setSlVals} /> : <React.Fragment />
       }
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       {!localStorage.getItem("cookieusagedisplayed") ?

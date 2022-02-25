@@ -74,7 +74,7 @@
   -webkit-transform: translateX(-100%);
   position: absolute;
   left: 12rem;
-  /* top: 6vh; */
+  z-index: -9;
 }
 
 .clicked_topleft_btn::before {
@@ -255,4 +255,10 @@ border: none;
   color: #7d7171;
 }
 
+.rc-slider {
+  margin: auto;
+}
+
+/* https://github.com/Leaflet/Leaflet/issues/4686 */
+.leaflet-fade-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-zoom-animated { will-change:auto !important; }
 /* ##################################################### */
