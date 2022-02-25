@@ -160,12 +160,6 @@ let ShMap = ({
     FieldInsightsKey: "-1"
   })
 
-  // NOTE: Top/Bottom is still weekly
-  const [slVals, setSlVals] = useState({
-    // values follow formart ---> [min, max, title, slider-step]
-    "field_ndvi": [0.2, 1, "Crop Health", 0.1], "field_precipitation": [3, 500, "Precipitation", 1],
-    "field_ndwi": [0, 0.3, "Soil Moisture", 0.01], "field_temperature": [15, 35, "Temperature", 1]
-  })
 
   let results = [];
   if (props.LayersPayload.length) {
@@ -610,7 +604,7 @@ let ShMap = ({
       <br/>
       {
         props.cropTypes.length > 0 ?
-        <FieldInsightCards localState={localState} slVals={slVals} setSlVals={setSlVals} /> : <React.Fragment />
+        <FieldInsightCards localState={localState} /> : <React.Fragment />
       }
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       {!localStorage.getItem("cookieusagedisplayed") ?

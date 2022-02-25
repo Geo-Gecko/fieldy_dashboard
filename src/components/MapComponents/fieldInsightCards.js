@@ -10,9 +10,22 @@ import Slider, { createSliderWithTooltip } from 'rc-slider';
 import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
 
 
-let FieldInsightCards = ({ localState, slVals, setSlVals }) => {
+let FieldInsightCards = ({ localState }) => {
 
   const Range = createSliderWithTooltip(Slider.Range)
+
+  // NOTE: Top/Bottom is still weekly
+  const [slVals, setSlVals] = useState({
+    // values follow formart ---> [min, max, title, slider-step]
+    "field_ndvi": [0.2, 1], "field_precipitation": [3, 500],
+    "field_ndwi": [0, 0.3], "field_temperature": [15, 35]
+  })
+
+  // this is because min, max stay connected to slVals otherwise, preventing slider mov't
+  const defaultThreshVals = {
+    "field_ndvi": [0.2, 1, "Crop Health", 0.1, "(-1, 1)"], "field_precipitation": [3, 500, "Precipitation", 1, "mm"],
+    "field_ndwi": [0, 0.3, "Soil Moisture", 0.01, "(-1, 1)"], "field_temperature": [15, 35, "Temperature", 1, "°C"]
+  }
 
   return (
       <React.Fragment>
@@ -64,14 +77,14 @@ let FieldInsightCards = ({ localState, slVals, setSlVals }) => {
             <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Field Thresholds</h6>
             <hr />
               {Object.entries(slVals).map(([key_, val_]) => {
-                console.log(key_, val_)
+
                 // key={key_} coz of warning of each child in list requiring unique key prop
                 return <React.Fragment key={key_}>
-                  <h6 style={{"padding": "10px"}}>{val_[2]}</h6>
+                  <div style={{"padding": "10px"}}>{defaultThreshVals[key_][2]}</div>
                   <Range
-                    style={{ width: "80%" }} min={val_[0]} max={val_[1]} tipFormatter={value => `${value}%`} value={[val_[0], val_[1]]}
-                    onChange={values_ => setSlVals({...slVals, [key_]: [values_[0], values_[1], slVals[key_][2]]})} step={val_[3]}
-                    defaultValue={[val_[0], val_[1]]} onAfterChange={values_ => {console.log(values_)}}
+                    style={{ width: "80%" }} min={defaultThreshVals[key_][0]} max={defaultThreshVals[key_][1]}
+                    tipFormatter={value => `${value}${defaultThreshVals[key_][4]}`}step={defaultThreshVals[key_][3]}
+                    defaultValue={[val_[0], val_[1]]} onAfterChange={values_ => { setSlVals({ ...slVals, [key_]: [values_[0], values_[1]] }); console.log(values_)}}
                   />
                 </React.Fragment>
               })}
