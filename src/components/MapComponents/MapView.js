@@ -15,7 +15,7 @@ import {
   GET_ALL_FIELD_DATA_INITIATED, GET_GROUP_FIELD_DATA, FORECAST_FIELD_ID
 } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
-import getcreateputGraphData from '../../actions/graphActions';
+import getcreateputGraphData, { getWeeklyIndicators } from '../../actions/graphActions';
 import { getGridData, getIndicatorData } from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
@@ -175,12 +175,12 @@ class MapView extends Component {
       let leafletGeoJSON = this.props.LayersPayload
 
       leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
-      if (!this.props.gridLayer.length) {
+      if (!this._editableFG && !this.props.gridLayer.length) {
         leafletGeoJSON.eachLayer( layer => {
           let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
           layer.on('click', function (e) {
             if (clickedLayer) {
-              clickedLayer.setStyle({ weight: 0.5, color: "#3388ff" });
+              clickedLayer.setStyle({ weight: 4, color: "#3388ff" });
             }
             props.dispatch({
               type: GET_ALL_FIELD_DATA_INITIATED,
@@ -321,6 +321,7 @@ const mapStateToProps = state => ({
   katorPayload: state.grid.katorPayload,
   fieldId: state.graphs.fieldId,
   forecastFieldId: state.graphs.forecastFieldId,
+  weeklyData: state.graphs.weeklyData,
   NDVIChange: state.graphs.NDVIChange,
 
   // passed for indicatorslinegraph
@@ -333,7 +334,7 @@ const mapStateToProps = state => ({
 
 const matchDispatchToProps = dispatch => ({
   postPointLayer, postPolygonLayer, getIndicatorData, getcreateputGraphData,
-  deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail,
+  deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail, getWeeklyIndicators,
   dispatch
 });
 

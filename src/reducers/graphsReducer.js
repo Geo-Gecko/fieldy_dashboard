@@ -1,12 +1,8 @@
 import {
-    GET_FIELD_DATA,
-    GET_FIELD_DATA_FAIL,
-    GET_ALL_FIELD_DATA,
-    GET_GROUP_FIELD_DATA,
-    GET_ALL_FIELD_DATA_INITIATED,
-    FORECAST_FIELD_ID,
-    INITIATE_GET_NDVI_CHANGE,
-    GET_NDVI_CHANGE_SUCCESS
+    GET_FIELD_DATA, GET_FIELD_DATA_FAIL, GET_ALL_FIELD_DATA, GET_GROUP_FIELD_DATA,
+    GET_ALL_FIELD_DATA_INITIATED, FORECAST_FIELD_ID, INITIATE_GET_NDVI_CHANGE,
+    GET_NDVI_CHANGE_SUCCESS, INITIATE_GET_WEEKLY_DATA, GET_WEEKLY_DATA_FAIL,
+    GET_WEEKLY_DATA_SUCCESS
 } from '../actions/types';
 
 const initialState = {
@@ -20,7 +16,9 @@ const initialState = {
     noFieldData: false,
     initiateGetAllFieldData: false,
     initiateGetNDVIChange: false,
+    initiateGetWeeklyData: false,
     NDVIChange: [],
+    weeklyData: [],
     allFieldsIndicatorArray: [],
     groupFieldIndicatorArray: [],
     FieldindicatorArray: [],
@@ -29,6 +27,17 @@ const initialState = {
 
 const graphsReducer = (state = initialState, action) => {
     switch (action.type) {
+        case INITIATE_GET_WEEKLY_DATA:
+            return {
+                ...state,
+                initiateGetWeeklyData: action.payload
+            }
+        case GET_WEEKLY_DATA_SUCCESS:
+            return {
+                ...state,
+                weeklyData: action.payload,
+                initiateGetWeeklyData: false
+            }
         case INITIATE_GET_NDVI_CHANGE:
             return {
                 ...state,
@@ -37,7 +46,8 @@ const graphsReducer = (state = initialState, action) => {
         case GET_NDVI_CHANGE_SUCCESS:
             return {
                 ...state,
-                NDVIChange: action.payload
+                NDVIChange: action.payload,
+                initiateGetNDVIChange: false
             }
         case GET_ALL_FIELD_DATA_INITIATED:
             return {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import L from 'leaflet';
 import Control from 'react-leaflet-control';
 
+import { Button } from 'react-bootstrap';
 
 
 import 'rc-slider/assets/index.css'
@@ -10,21 +11,53 @@ import Slider, { createSliderWithTooltip } from 'rc-slider';
 import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
 
 
-let FieldInsightCards = ({ localState }) => {
+let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG }) => {
 
   const Range = createSliderWithTooltip(Slider.Range)
+
+  // https://gist.github.com/RonKbS/de2fc33bcbb591aef1024b92b9610de4
+  let localGroupBy = function(data, key) { 
+    return data.reduce(function(storage, item) {
+      let group = item[key];
+      storage[group] = storage[group] || [];
+      storage[group].push(item);
+      return storage;
+    }, {});
+  };
 
   // NOTE: Top/Bottom is still weekly
   const [slVals, setSlVals] = useState({
     // values follow formart ---> [min, max, title, slider-step]
-    "field_ndvi": [0.2, 1], "field_precipitation": [3, 500],
-    "field_ndwi": [0, 0.3], "field_temperature": [15, 35]
+    "field_ndvi": [-1, 1], "field_precipitation": [0, 500],
+    "field_ndwi": [-1, 1], "field_temperature": [15, 35]
   })
 
   // this is because min, max stay connected to slVals otherwise, preventing slider mov't
   const defaultThreshVals = {
-    "field_ndvi": [0.2, 1, "Crop Health", 0.1, "(-1, 1)"], "field_precipitation": [3, 500, "Precipitation", 1, "mm"],
-    "field_ndwi": [0, 0.3, "Soil Moisture", 0.01, "(-1, 1)"], "field_temperature": [15, 35, "Temperature", 1, "°C"]
+    "field_ndvi": [-1, 1, "Crop Health", 0.1, "(-1, 1)"], "field_precipitation": [0, 500, "Precipitation", 1, "mm"],
+    "field_ndwi": [-1, 1, "Soil Moisture", 0.01, "(-1, 1)"], "field_temperature": [15, 35, "Temperature", 1, "°C"]
+  }
+
+  let recentWeeklyData = localGroupBy(weeklyData, "date_observed")
+  let weeks_ = Object.keys(recentWeeklyData); weeks_.sort().reverse();
+  recentWeeklyData = recentWeeklyData[weeks_[0]]
+
+  let filterFields = (values_, key_) => {
+    _editableFG.leafletElement.eachLayer(layer_ => layer_.setStyle({ weight: 4, color: "#3388ff" }))
+    let filteredExceededWeeklyData = recentWeeklyData.filter(row_ => {
+      if (row_[key_] < values_[0] || row_[key_] > values_[1]) {
+        return true
+      }
+      return false
+    })
+    if (filteredExceededWeeklyData.length) {
+      let exceedingFieldIds = filteredExceededWeeklyData.map(row_ => row_["field_id"])
+      _editableFG.leafletElement.eachLayer(
+        layer_ => exceedingFieldIds.includes(layer_.feature.properties.field_id) ?
+          layer_.setStyle({ weight: 4, color: "#e15b26" }) : layer_.setStyle({ weight: 4, color: "#3388ff" })
+      )
+    }
+    
   }
 
   return (
@@ -55,6 +88,9 @@ let FieldInsightCards = ({ localState }) => {
               "current-view insight-card slide-out"
             }
           >
+            <Button className='close-btn' onClick={_showCards}>
+            X
+            </Button>
             <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Bio Mass graph</h6>
             <NdviPerformanceLineGraph SidePanelCollapsed={false} />
           </Control> : localState['Top/Bottom Performance'] ?
@@ -84,7 +120,7 @@ let FieldInsightCards = ({ localState }) => {
                   <Range
                     style={{ width: "80%" }} min={defaultThreshVals[key_][0]} max={defaultThreshVals[key_][1]}
                     tipFormatter={value => `${value}${defaultThreshVals[key_][4]}`}step={defaultThreshVals[key_][3]}
-                    defaultValue={[val_[0], val_[1]]} onAfterChange={values_ => { setSlVals({ ...slVals, [key_]: [values_[0], values_[1]] }); console.log(values_)}}
+                    defaultValue={[val_[0], val_[1]]} onAfterChange={values_ => { setSlVals({ ...slVals, [key_]: [values_[0], values_[1]] }); filterFields(values_, key_)}}
                   />
                 </React.Fragment>
               })}
