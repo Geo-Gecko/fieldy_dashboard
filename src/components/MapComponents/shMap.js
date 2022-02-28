@@ -275,6 +275,13 @@ let ShMap = ({
   //   colorGrid(grid, gridIndicator)
   //   setLocalindicatorObj({...indicatorObj})
   // }
+  const [wide, setWide] = React.useState('Landcover');
+  const handleChange = (event) => {
+      setWide(event.target.value)
+    }
+  const resetRadioState = () => {
+      setWide('');
+    }
 
   return (
     <React.Fragment>
@@ -347,20 +354,26 @@ let ShMap = ({
       <br/>
       <hr></hr>
         <div style={{"alignSelf": "center", "display": "flex"}}>
-              <button
+              <button type="reset"
                 className="side-btns"
                 onClick={e => {
                   setActiveFieldKey("0"); setActiveWiderAreaKey("-1"); _showCards(e);
                   (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
+                  resetRadioState(true);
                 }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
                   Fields
               </button>&nbsp;&nbsp;&nbsp;
-              <button className="side-btns"
+              <button type="reset" className="side-btns"
                   onClick={e => {
                     _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");
                     setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1");
+                    resetRadioState(true);
+                    setLocalState({
+                      ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                      "Wider Area Landcover": false
+                    })
                   }}
                   >
                 Wider Area
@@ -496,28 +509,28 @@ let ShMap = ({
                       <>
                         <hr></hr>
                           <div style={{"position": "relative", "left": "1.5rem"}}>
-                            <input type="radio" value="Landcover" name="insight"
+                            <input type="radio" value="Landcover" name="insight" checked={wide === 'Landcover'} onChange={handleChange}
                               onClick={() => setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Landcover": true
                                   })
                                 }
                             /> Landcover<br/>
-                            <input type="radio" value="Slope" name="insight"
+                            <input type="radio" value="Slope" name="insight" checked={wide === 'Slope'} onChange={handleChange}
                               onClick={() => setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Slope": true
                                   })
                                 }
                               /> Slope<br/>
-                            <input type="radio" value="Elevation" name="insight"
+                            <input type="radio" value="Elevation" name="insight" checked={wide === 'Elevation'} onChange={handleChange}
                               onClick={() => setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Elevation": true
                                   })
                                 }
                               /> Elevation<br/>
-                            <input type="radio" value="Fertility Classification" name="insight"
+                            <input type="radio" value="Fertility Classification" name="insight" checked={wide === 'Fertility Classification'} onChange={handleChange}
                               onClick={() => setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Fertility": true
