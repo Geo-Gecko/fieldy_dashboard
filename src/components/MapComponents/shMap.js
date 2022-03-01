@@ -610,6 +610,7 @@ let ShMap = ({
         props.cropTypes.length > 0 ?
         <FieldInsightCards
          localState={localState}
+         selectedIndicator={lineGraphState.selectedIndicator}
          _showCards={_showCards}
          _editableFG={_editableFG}
          weeklyData={props.weeklyData}
