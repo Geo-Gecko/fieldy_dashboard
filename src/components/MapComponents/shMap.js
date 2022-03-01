@@ -255,33 +255,10 @@ let ShMap = ({
     }
   }
 
-  // let getEvent = e => {
-  //   let indicatorObj = localindicatorObj
-  //   let gridIndicator = indicatorObj[e.currentTarget.text]
-
-  //   // create new obj with selected indicator key. fromEntries is so key order is maintained
-  //   indicatorObj = Object.fromEntries(
-  //     Object.entries(indicatorObj).map(([key_, val_]) => {
-  //       if (key_.includes("✓")) {
-  //         key_ = key_.replace("✓ ", "")
-  //       }
-  //       if (key_ === e.currentTarget.text) {
-  //         key_ = e.currentTarget.text = "✓ " + e.currentTarget.text
-  //       }
-  //       return [key_, val_]
-  //     })
-  //   )
-
-  //   colorGrid(grid, gridIndicator)
-  //   setLocalindicatorObj({...indicatorObj})
-  // }
-  const [wide, setWide] = React.useState('Landcover');
+  const [wAreaRadioBtns, setWAreaRadioBtns] = React.useState('Landcover');
   const handleChange = (event) => {
-      setWide(event.target.value)
-    }
-  const resetRadioState = () => {
-      setWide('');
-    }
+    setWAreaRadioBtns(event.target.value)
+  }
 
   return (
     <React.Fragment>
@@ -359,7 +336,7 @@ let ShMap = ({
                 onClick={e => {
                   setActiveFieldKey("0"); setActiveWiderAreaKey("-1"); _showCards(e);
                   (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
-                  resetRadioState(true);
+                  setWAreaRadioBtns('');
                 }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
@@ -369,7 +346,7 @@ let ShMap = ({
                   onClick={e => {
                     _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");
                     setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1");
-                    resetRadioState(true);
+                    setWAreaRadioBtns('');
                     setLocalState({
                       ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                       "Wider Area Landcover": false
@@ -509,28 +486,28 @@ let ShMap = ({
                       <>
                         <hr></hr>
                           <div style={{"position": "relative", "left": "1.5rem"}}>
-                            <input type="radio" value="Landcover" name="insight" checked={wide === 'Landcover'} onChange={handleChange}
+                            <input type="radio" value="Landcover" name="insight" checked={wAreaRadioBtns === 'Landcover'} onChange={handleChange}
                               onClick={() => setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Landcover": true
                                   })
                                 }
                             /> Landcover<br/>
-                            <input type="radio" value="Slope" name="insight" checked={wide === 'Slope'} onChange={handleChange}
+                            <input type="radio" value="Slope" name="insight" checked={wAreaRadioBtns === 'Slope'} onChange={handleChange}
                               onClick={() => setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Slope": true
                                   })
                                 }
                               /> Slope<br/>
-                            <input type="radio" value="Elevation" name="insight" checked={wide === 'Elevation'} onChange={handleChange}
+                            <input type="radio" value="Elevation" name="insight" checked={wAreaRadioBtns === 'Elevation'} onChange={handleChange}
                               onClick={() => setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Elevation": true
                                   })
                                 }
                               /> Elevation<br/>
-                            <input type="radio" value="Fertility Classification" name="insight" checked={wide === 'Fertility Classification'} onChange={handleChange}
+                            <input type="radio" value="Fertility Classification" name="insight" checked={wAreaRadioBtns === 'Fertility Classification'} onChange={handleChange}
                               onClick={() => setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Fertility": true
