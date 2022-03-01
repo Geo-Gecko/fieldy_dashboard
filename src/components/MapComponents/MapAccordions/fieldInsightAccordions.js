@@ -116,30 +116,6 @@ let FieldInsightAccordions = ({
             }
           }
         >Thresholds</button>
-        <Accordion activeKey={clickedActiveKey.ThresholdsKey}>
-          {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
-          <Accordion.Collapse eventKey="8">
-            <>
-              <hr></hr>
-                <div id="fields-choice-button" style={{"alignSelf": "center"}}>
-                  <DropdownButton
-                    size="sm"
-                    variant="outline-dropdown"
-                    className="mr-1"
-                    id="dropdown-basic-button"
-                    title={lineGraphState.displayedIndicator}
-                    as={ButtonGroup}
-                    >
-                      {Object.keys(lineGraphState.indicatorObj).map(obj_ => 
-                          <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
-                              {obj_}
-                          </Dropdown.Item>
-                      )}
-                  </DropdownButton>
-                </div>
-            </>
-          </Accordion.Collapse>
-        </Accordion>
       </React.Fragment>
   )
 }
