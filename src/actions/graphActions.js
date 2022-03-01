@@ -2,7 +2,8 @@ import axiosInstance from './axiosInstance';
 import {
     GET_FIELD_DATA, GET_FIELD_DATA_FAIL, GET_ALL_FIELD_DATA,
     GET_ALL_FIELD_DATA_INITIATED, INITIATE_GET_NDVI_CHANGE,
-    GET_NDVI_CHANGE_SUCCESS, GET_NDVI_CHANGE_FAIL
+    GET_NDVI_CHANGE_SUCCESS, GET_NDVI_CHANGE_FAIL, INITIATE_GET_WEEKLY_DATA,
+    GET_WEEKLY_DATA_SUCCESS, GET_WEEKLY_DATA_FAIL
 } from './types';
 
 import { newkatorArr } from '../utilities/IndicatorArr';
@@ -158,5 +159,32 @@ export const getNdviChange = earliest_month => async dispatch =>  {
             })
         });
     };
+
+
+export const getWeeklyIndicators = earliest_month => async dispatch =>  {
+    await dispatch({
+        type: INITIATE_GET_WEEKLY_DATA,
+        payload: true
+    })
+    console.log("How many times are you called")
+    return axiosInstance
+        .get(`/indicator-analytics/weekly-indicators/${earliest_month ? `earliest_month=${earliest_month}` : ''}`)
+        .then(async response => {
+            response.data.results = response.data.results.map(row_ => {
+                row_["field_temperature"] = row_["field_temperature"] - 273.15
+                return row_
+            })
+            await dispatch({
+                type: GET_WEEKLY_DATA_SUCCESS,
+                payload: response.data.results
+            })
+        })
+        .catch(async error => {
+            await dispatch({
+                type: GET_WEEKLY_DATA_FAIL,
+                payload: error
+            })
+        });
+};
 
 export default getcreateputGraphData;

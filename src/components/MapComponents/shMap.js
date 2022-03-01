@@ -39,6 +39,7 @@ import { colorGrid } from '../../utilities/gridFns';
 import CustomWMSLayer from './customLayer';
 import FieldInsightCards from './fieldInsightCards';
 import FieldInsightAccordions from './MapAccordions/fieldInsightAccordions';
+import { getWeeklyIndicators } from '../../actions/graphActions';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -99,13 +100,12 @@ class Legend extends MapControl {
 let ShMap = ({
   state, myMap, mapInstance
 }) => {
-  
   let {
     currentLocation, zoom, userType, gridCellArea,
     initiateGetData, grid, disablegridKator
   } = state;
   let {
-    _saveCurrentView, toggleGridLayers, _onFeatureGroupReady,
+    _saveCurrentView, toggleGridLayers, _onFeatureGroupReady, _editableFG,
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
   } = mapInstance;
 
@@ -160,6 +160,7 @@ let ShMap = ({
     ThresholdsKey: "-1",
     FieldInsightsKey: "-1"
   })
+
 
   let results = [];
   if (props.LayersPayload.length) {
@@ -429,7 +430,10 @@ let ShMap = ({
                   <hr></hr>
                   <button
                     className="current-view field-side-btns" onClick={
-                      (e) => { _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2"); }
+                      (e) => {
+                        _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2");
+                        return props.weeklyData ? props.dispatch(getWeeklyIndicators('')) : null;
+                      }
                     }
                   >
                     Field Insight
@@ -562,7 +566,7 @@ let ShMap = ({
           <style type="text/css">
                 {`
                   .katorline {
-                    height: 71vh;
+                    min-height: 61vh;
                     z-index: -9;
                   }
                   .close-btn{
@@ -587,7 +591,7 @@ let ShMap = ({
               "current-view donut_css katorline slide-out"
             }
           >
-            <Button className='close-btn' onClick={setLocalState}>
+            <Button className='close-btn' onClick={_showCards}>
             X
             </Button>
             {/* <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
@@ -604,7 +608,13 @@ let ShMap = ({
       <br/>
       {
         props.cropTypes.length > 0 ?
-        <FieldInsightCards localState={localState} props={props} /> : <React.Fragment />
+        <FieldInsightCards
+         localState={localState}
+         selectedIndicator={lineGraphState.selectedIndicator}
+         _showCards={_showCards}
+         _editableFG={_editableFG}
+         weeklyData={props.weeklyData}
+        /> : <React.Fragment />
       }
       <CookiesPolicy mapInstance={mapInstance} state={state} />
       {!localStorage.getItem("cookieusagedisplayed") ?

@@ -15,7 +15,7 @@ import {
   GET_ALL_FIELD_DATA_INITIATED, GET_GROUP_FIELD_DATA, FORECAST_FIELD_ID
 } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
-import getcreateputGraphData from '../../actions/graphActions';
+import getcreateputGraphData, { getWeeklyIndicators } from '../../actions/graphActions';
 import { getGridData, getIndicatorData } from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
@@ -175,12 +175,12 @@ class MapView extends Component {
       let leafletGeoJSON = this.props.LayersPayload
 
       leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
-      if (!this.props.gridLayer.length) {
+      if (!this._editableFG && !this.props.gridLayer.length) {
         leafletGeoJSON.eachLayer( layer => {
           let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
           layer.on('click', function (e) {
             if (clickedLayer) {
-              clickedLayer.setStyle({ weight: 0.5, color: "#3388ff" });
+              clickedLayer.setStyle({ weight: 4, color: "#3388ff" });
             }
             props.dispatch({
               type: GET_ALL_FIELD_DATA_INITIATED,
@@ -235,22 +235,6 @@ class MapView extends Component {
 
           // SCRIPT FOR SAVING GRIDS GOES HERE
           await this.setState({...this.state, grid, gridCellArea});
-
-          // removing grid affects toggle and grid-indicator btns hence placement here
-          // where this.state.grid exists
-          if (this.myMap.current && this.myMap.current.leafletElement) {
-            //this removes the grid when the user zooms in past zoom level 11
-            this.myMap.current.leafletElement.on('moveend', () => {
-              if (
-                !this.props.gridLayer.length &&
-                this.myMap.current.leafletElement.getZoom() > 10
-              ) {
-                this.myMap.current.leafletElement.removeLayer(this.state.grid);
-                this.setState({...this.state, disablegridKator: true})
-                document.getElementById("grid-info").innerHTML = "Click on field for info";
-              }
-            })
-          }
 
           this.myMap.current.leafletElement.addLayer(this.state.grid)
         }
@@ -337,6 +321,7 @@ const mapStateToProps = state => ({
   katorPayload: state.grid.katorPayload,
   fieldId: state.graphs.fieldId,
   forecastFieldId: state.graphs.forecastFieldId,
+  weeklyData: state.graphs.weeklyData,
   NDVIChange: state.graphs.NDVIChange,
 
   // passed for indicatorslinegraph
@@ -349,7 +334,7 @@ const mapStateToProps = state => ({
 
 const matchDispatchToProps = dispatch => ({
   postPointLayer, postPolygonLayer, getIndicatorData, getcreateputGraphData,
-  deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail,
+  deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail, getWeeklyIndicators,
   dispatch
 });
 
