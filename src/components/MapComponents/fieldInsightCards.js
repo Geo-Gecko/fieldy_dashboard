@@ -109,6 +109,8 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
                 }                  
               `}
         </style>
+        {/* NOTE: Have to separate each statement using a ternary operator rather than chaining them together */}
+        {/* Otherwise the amazing react-leaflet duo won't switch out the three divs ma-propsi */}
         {
           localState['Biomass Change'] ?
           <Control
@@ -123,7 +125,8 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
             </Button>
             <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Bio Mass graph</h6>
             <NdviPerformanceLineGraph SidePanelCollapsed={false} />
-          </Control> : localState['Top/Bottom Performance'] ?
+          </Control> : null }
+          { localState['Top/Bottom Performance'] ?
           <Control
             position="topleft"
             className={
@@ -137,7 +140,8 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
               tipFormatter={value => `${value}%`}
               defaultValue={slTpVals} onAfterChange={value_ => {console.log(value_); setSlTpVals(value_); filterTPFields(value_)}}
             />
-          </Control> : localState['Thresholds'] ? 
+          </Control> : null }
+          { localState['Thresholds'] ? 
           <Control
             position="topleft"
             className={
@@ -159,8 +163,7 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
                   />
                 </React.Fragment>
               })}
-          </Control> : null
-        }
+          </Control> : null }
       </React.Fragment>
     )
 }
