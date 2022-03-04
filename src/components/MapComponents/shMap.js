@@ -17,6 +17,8 @@ import {
 import Spinner from 'react-bootstrap/Spinner';
 import Accordion from "react-bootstrap/Accordion";
 
+import 'rc-slider/assets/index.css';
+import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import 'font-awesome/css/font-awesome.css';
 import 'leaflet/dist/leaflet.css';
@@ -108,6 +110,8 @@ let ShMap = ({
     handleRightClick, _onEdited, _onCreated, _onDeleted, props, myCookiePref,
   } = mapInstance;
 
+  const Range = createSliderWithTooltip(Slider.Range);
+
   const [showLogout, setShowLogout] = useState(false);
   const [showKatorInfo, setShowKatorInfo] = useState(false);
 
@@ -159,6 +163,18 @@ let ShMap = ({
     ThresholdsKey: "-1",
     FieldInsightsKey: "-1"
   })
+
+
+  const [displayedWAT, setDisplayedWAT] = useState("Landcover");
+  const [slWThVals, setSlWThVals] = useState({
+      "Elevation": [0, 999, "elevation"], "Landcover": [10, 95, "land_cover"],
+      "Slope": [0, 10, "slope"], "Fertility": [0, 9644, "fcc"]
+  })
+
+  const defaultWThreshVals = {
+    "Elevation": [0, 999, 1, ""], "Landcover": [10, 95, 1, ""],
+    "Slope": [0, 10, 1, ""], "Fertility": [15, 9644, 1, ""]
+  }
 
 
   let results = [];
@@ -373,7 +389,7 @@ let ShMap = ({
                     <Accordion.Collapse eventKey="1">
                       <>
                         <hr></hr>
-                        <div id="fields-choice-button" style={{"alignSelf": "center"}}>
+                        <div style={{"alignSelf": "center"}}>
                           <DropdownButton
                           size="sm"
                           variant="outline-dropdown"
@@ -474,7 +490,7 @@ let ShMap = ({
                 <div id="fields-button" style={{"alignSelf": "center"}}>
                   <button
                     className="current-view field-side-btns" onClick={
-                      () => { setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1") }
+                      e => { setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1"); _showCards(e) }
                     }
                   >
                     Wider Area Insights
@@ -520,7 +536,7 @@ let ShMap = ({
                   <hr></hr>
                   <button
                     className="current-view field-side-btns" onClick={
-                      () => { setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5") }
+                      e => { setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5"); _showCards(e) }
                     }
                   >
                     Wider Area Thresholds
@@ -530,18 +546,46 @@ let ShMap = ({
                     <Accordion.Collapse eventKey="5">
                       <>
                         <hr></hr>
-                          <div style={{"position": "relative", "left": "1.5rem"}}>
-                            <p className='float-center'>Landcover</p>
-                            <p className='float-center'>Slope</p>
-                            <p className='float-center'>Elevation</p>
-                            <p className='float-center'>Fertility Classification</p>
-                            <button className="reset-btn float-right">
-                                Reset Filters
-                            </button>&nbsp;&nbsp;&nbsp;
-                          </div>
+                        <div style={{"alignSelf": "center"}}>
+                          <DropdownButton
+                            size="sm" variant="outline-dropdown" className="mr-1"
+                            id="dropdown-basic-button" title={displayedWAT} as={ButtonGroup}
+                            >
+                              {Object.keys(slWThVals).map(key_ => 
+                                  <Dropdown.Item
+                                    key={key_} eventKey={key_}
+                                    onClick={e => {
+                                      setDisplayedWAT(e.currentTarget.textContent); setLocalState({
+                                        ...Object.fromEntries(Object.keys(localState).map(
+                                          key_ => [key_, key_ !== "Wider Area Thresholds" ? false : true]
+                                        )),
+                                        [`Wider Area ${e.currentTarget.textContent}`]: true
+                                      })}}
+                                  >
+                                      {key_}
+                                  </Dropdown.Item>
+                              )}
+                          </DropdownButton>
+                        </div>
                       </>
                     </Accordion.Collapse>
                   </Accordion>
+                  { localState['Wider Area Thresholds'] ? 
+                  <Control
+                    position="topleft"
+                    className={
+                      localState['Wider Area Thresholds'] ? "click-propn current-view insight-card slide-in" :
+                      "click-propn current-view insight-card slide-out"
+                    }
+                  >
+                    <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Wider Area Thresholds</h6>
+                    <hr />
+                    <Range
+                      style={{ width: "80%" }} min={defaultWThreshVals[displayedWAT][0]} max={defaultWThreshVals[displayedWAT][1]}
+                      tipFormatter={value => `${value}${defaultWThreshVals[displayedWAT][3]}`} step={defaultWThreshVals[displayedWAT][2]}
+                      defaultValue={[slWThVals[displayedWAT][0], slWThVals[displayedWAT][1]]} onAfterChange={values_ => { setSlWThVals({ ...slWThVals, [displayedWAT]: [values_[0], values_[1]] }); console.log(values_, displayedWAT) /*filterThFields(values_, displayedWAT)*/}}
+                    />
+                  </Control> : null }
                 </div>
               </>
             </Accordion.Collapse>
