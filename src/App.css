@@ -241,6 +241,22 @@ border: none;
   color: black;
 }
 
+.field-insight-btns {
+  border: 1px solid #e15b26;
+  border-radius: 6px;
+  color: #e15b26;
+  background-color: white;
+  width: 8rem;
+}
+
+.field-insight-btns:hover{
+  color: #7d7171;
+}
+
+.field-insight-btns:focus{
+  background-color: #e15b26;
+  color: black;
+}
 
 .reset-btn{
   border: 1px solid #e15b26;

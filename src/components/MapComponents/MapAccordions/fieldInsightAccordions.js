@@ -57,7 +57,7 @@ let FieldInsightAccordions = ({
         `}
         </style>
         <button
-          className="current-view field-side-btns" onClick={
+          className="current-view field-insight-btns" onClick={
             e => {
               _showCards(e); setClickedActiveKey({
                 ...Object.fromEntries(
@@ -72,7 +72,7 @@ let FieldInsightAccordions = ({
         </button>
         <hr></hr>
         <button
-          className="current-view field-side-btns" onClick={
+          className="current-view field-insight-btns" onClick={
             (e) => {
               _showCards(e); setClickedActiveKey({
                 ...Object.fromEntries(Object.keys(clickedActiveKey).map(key_ => [clickedActiveKey[key_], -1])),
@@ -107,7 +107,7 @@ let FieldInsightAccordions = ({
         </Accordion>
         <hr></hr>
         <button
-          className="current-view field-side-btns" onClick={
+          className="current-view field-insight-btns" onClick={
             (e) => {
               _showCards(e); setClickedActiveKey({
                 ...Object.fromEntries(Object.keys(clickedActiveKey).map(key_ => [clickedActiveKey[key_], -1])),
