@@ -14,7 +14,6 @@ import { toast } from 'react-toastify';
 import {
   Dropdown, DropdownButton, ButtonGroup, Button, Modal, Collapse
 } from 'react-bootstrap';
-import CloseButton from 'react-bootstrap/CloseButton'
 import Spinner from 'react-bootstrap/Spinner';
 import Accordion from "react-bootstrap/Accordion";
 
