@@ -26,7 +26,7 @@ function NdviPerformanceLineGraph (props) {
   const prevNDVIChange = usePrevious(props.NDVIChange);
 
   useEffect(() => {
-    dispatch(getNdviChange("february"))
+    dispatch(getNdviChange("november"))
     if (props.NDVIChange.length) {
       let firstFieldId = props.NDVIChange[0].field_id
       setLocalState({
@@ -125,7 +125,7 @@ function NdviPerformanceLineGraph (props) {
             {
                 "labels": ndviClabels,
                 "datasets": [{
-                    "label": "Days",
+                    "label": "NDVI Change",
                     "data": ndviCvalues,
                     "fill": false,
                     "backgroundColor": "#e15b26",
@@ -133,21 +133,6 @@ function NdviPerformanceLineGraph (props) {
                     "lineTension": 0.1 
                 }]
 
-              //   "datasets": [{
-              //     "label": "Monthly goal reached",
-              //     backgroundColor: "green",
-              //     data: dataset.map(function(value) {
-              //           return value >= 1.0 ? value : null
-              //         }),
-              //   },
-              //   {
-              //     "label": "Monthly goal not reached",
-              //     backgroundColor: "red",
-              //     data: dataset.map(function(value) {
-              //       return value < 1.0 ? value : null
-              //     }),
-              //   }
-              // ]
 
 
             }
@@ -165,23 +150,19 @@ function NdviPerformanceLineGraph (props) {
                 position: "bottom",
             },
             scales: {
-                // yAxes: [{
-                //   scaleLabel: {
-                //     display: true,
-                //     labelString: indicatorObj[displayedIndicator][1]
-                //   }
-                // }],
                 xAxes: [{
                   type: 'time',
                   time: {
-                      unit: 'day',
+                      unit: 'week',
                       displayFormats: {
-                          day: 'DD-MM'
+                          week: 'DD-MM'
                       }
-                  }  
-                  // scaleLabel: {
-                  //   display: false,
-                  //   labelString: "months"
+                  },
+                  // NOTE: title doesn't appear but is needed hence being commented out
+                  // title: {
+                  //   display: true,
+                  //   align: "end",
+                  //   text: "week (day-month)"
                   // }
                 }],
               }
