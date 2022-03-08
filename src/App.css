@@ -275,6 +275,22 @@ border: none;
   margin: auto;
 }
 
+input[type="range"]::-moz-range-progress {
+  background-color: #e15b26; 
+}
+input[type="range"]::-moz-range-track {  
+  background-color: #7d7171;
+;
+}
+/* IE*/
+input[type="range"]::-ms-fill-lower {
+  background-color: #e15b26; 
+}
+input[type="range"]::-ms-fill-upper {  
+  background-color: #7d7171;
+;
+}
+
 /* https://github.com/Leaflet/Leaflet/issues/4686 */
 .leaflet-fade-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-zoom-animated { will-change:auto !important; }
 /* ##################################################### */

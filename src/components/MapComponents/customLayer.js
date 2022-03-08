@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { withLeaflet, useLeaflet } from "react-leaflet";
 import * as WMS from "leaflet.wms";
+import "leaflet.control.opacity/dist/L.Control.Opacity.css";
+import 'leaflet.control.opacity';
+
 // import * as WMS from "./CustomLeafletWMS/leaflet.wms/src/leaflet.wms"
 // import $ from "jquery";
 
@@ -92,8 +95,17 @@ function CustomWMSLayer(
         layer_.addTo(map.current.leafletElement)
         // NOTE: For multiple layers, would look like this below. Would need to specify widerAreaLayer array length so they can be replaced
         // setWiderAreaLayer(prevState => [...prevState, source.getLayer(name).addTo(map)])
-    }
+    };
 
+    const opacityInput = document.getElementById('opacity-input');
+    function update() {
+    const opacity = parseFloat(opacityInput.value);
+    source.setOpacity(opacity);
+    // source.setView([39.9526,-75.1652],13);
+    }
+    opacityInput.addEventListener('input', update);
+    opacityInput.addEventListener('change', update);
+    update();
 
     return null;
 }
