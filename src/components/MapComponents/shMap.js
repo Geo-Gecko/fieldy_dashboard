@@ -171,6 +171,10 @@ let ShMap = ({
       "Slope": [0, 10, "slope"], "Fertility": [0, 9644, "fcc"]
   })
 
+  const [wAreaRadioBtns, setWAreaRadioBtns] = React.useState('Landcover');
+  const [wAsliderValues, setWAsliderValues] = React.useState({"kator": "", "values": [0, 0]})
+
+
   const defaultWThreshVals = {
     "Elevation": [0, 999, 1, ""], "Landcover": [10, 95, 1, ""],
     "Slope": [0, 10, 1, ""], "Fertility": [15, 9644, 1, ""]
@@ -270,7 +274,6 @@ let ShMap = ({
     }
   }
 
-  const [wAreaRadioBtns, setWAreaRadioBtns] = React.useState('Landcover');
   const handleChange = (event) => {
     setWAreaRadioBtns(event.target.value)
   }
@@ -560,7 +563,8 @@ let ShMap = ({
                                           key_ => [key_, key_ !== "Wider Area Thresholds" ? false : true]
                                         )),
                                         [`Wider Area ${e.currentTarget.textContent}`]: true
-                                      })}}
+                                      }); setWAsliderValues({"kator": "", "values": [0, 0]})
+                                    }}
                                   >
                                       {key_}
                                   </Dropdown.Item>
@@ -583,7 +587,10 @@ let ShMap = ({
                     <Range
                       style={{ width: "80%" }} min={defaultWThreshVals[displayedWAT][0]} max={defaultWThreshVals[displayedWAT][1]}
                       tipFormatter={value => `${value}${defaultWThreshVals[displayedWAT][3]}`} step={defaultWThreshVals[displayedWAT][2]}
-                      defaultValue={[slWThVals[displayedWAT][0], slWThVals[displayedWAT][1]]} onAfterChange={values_ => { setSlWThVals({ ...slWThVals, [displayedWAT]: [values_[0], values_[1]] }); console.log(values_, displayedWAT) /*filterThFields(values_, displayedWAT)*/}}
+                      defaultValue={[slWThVals[displayedWAT][0], slWThVals[displayedWAT][1]]} onAfterChange={values_ => {
+                        setSlWThVals({ ...slWThVals, [displayedWAT]: [values_[0], values_[1]] });
+                        setWAsliderValues({"kator": displayedWAT, "values": values_});
+                      }}
                     />
                   </Control> : null }
                 </div>
@@ -692,7 +699,7 @@ let ShMap = ({
       {Object.keys(localState).filter(
             key_ => key_.includes("Wider Area") && localState[key_] ? key_ : ""
         ).join("") !== "" ? CustomWMSLayer(
-          localState, myMap, widerAreaLayer, setWiderAreaLayer
+          localState, myMap, widerAreaLayer, setWiderAreaLayer, wAsliderValues, setWAsliderValues
         ) : null}
       <LayersControl position="bottomright">
         <BaseLayer checked name="Google Satellite">
