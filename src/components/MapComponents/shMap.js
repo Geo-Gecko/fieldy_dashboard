@@ -493,7 +493,10 @@ let ShMap = ({
                 <div id="fields-button" style={{"alignSelf": "center"}}>
                   <button
                     className="current-view field-side-btns" onClick={
-                      e => { setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1"); _showCards(e) }
+                      e => {
+                        setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1");
+                        _showCards(e); (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)()
+                      }
                     }
                   >
                     Wider Area Insights
@@ -539,7 +542,10 @@ let ShMap = ({
                   <hr></hr>
                   <button
                     className="current-view field-side-btns" onClick={
-                      e => { setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5"); _showCards(e) }
+                      e => {
+                        _showCards(e); setDisplayedWAT("Landcover");
+                        setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5");
+                      }
                     }
                   >
                     Wider Area Thresholds
@@ -702,7 +708,7 @@ let ShMap = ({
           localState, myMap, widerAreaLayer, setWiderAreaLayer, wAsliderValues, setWAsliderValues
         ) : null}
       <LayersControl position="bottomright">
-        <BaseLayer checked name="Google Satellite">
+        <BaseLayer name="Google Satellite">
           <TileLayer
             url="https://mt0.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
             attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
