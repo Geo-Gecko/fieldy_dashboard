@@ -5,7 +5,7 @@ import Control from 'react-leaflet-control';
 import { Button } from 'react-bootstrap';
 
 
-import 'rc-slider/assets/index.css'
+import 'rc-slider/assets/index.css';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';

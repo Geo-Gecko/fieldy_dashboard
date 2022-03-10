@@ -33,7 +33,9 @@ import * as WMS from "leaflet.wms";
 
 let prevSelectedWiderArea;
 
-function CustomWMSLayer(localState, map, widerAreaLayer, setWiderAreaLayer) {
+function CustomWMSLayer(
+    localState, map, widerAreaLayer, setWiderAreaLayer, wAsliderValues, setWAsliderValues
+) {
 
     // let url = process.env.GEOSERVER_URL;
     let url = "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms"
@@ -46,6 +48,12 @@ function CustomWMSLayer(localState, map, widerAreaLayer, setWiderAreaLayer) {
         localState["Wider Area Elevation"] ? "fieldy_elevation" :
         localState["Wider Area Slope"] ? "fieldy_slope" :
         localState["Wider Area Fertility"] ? "fieldy_fcc" : ""
+    }
+    if (wAsliderValues["kator"]) {
+        options["cql_filter"] = `
+        ${"Elevation" ? "elevation" : "Landcover" ? "lc" :
+        "Slope" ? "slope" : "Fertility" ? "fcc" : ""}
+        between ${wAsliderValues["values"][0]} and ${wAsliderValues["values"][1]}`
     }
     // Add WMS source/layers
     const source = WMS.source(
@@ -69,12 +77,13 @@ function CustomWMSLayer(localState, map, widerAreaLayer, setWiderAreaLayer) {
             let newSelectedWiderArea = Object.keys(localState).filter(
                 key_ => key_.includes("Wider Area") && localState[key_] ? key_ : ""
             )[0]
-            if (newSelectedWiderArea !== prevSelectedWiderArea) {
+            if (newSelectedWiderArea !== prevSelectedWiderArea || wAsliderValues["kator"]) {
 
                 prevSelectedWiderArea = newSelectedWiderArea
                 map.current.leafletElement.removeLayer(widerAreaLayer)
                 layer_ = source.getLayer(name)
                 setWiderAreaLayer(layer_)
+                setWAsliderValues({"kator": "", "values": [0, 0]})
             } else {
                 layer_ = widerAreaLayer
             }
