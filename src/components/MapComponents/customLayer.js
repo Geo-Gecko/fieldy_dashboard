@@ -38,7 +38,7 @@ function CustomWMSLayer(
 ) {
 
     // let url = process.env.GEOSERVER_URL;
-    let url = "http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms"
+    let url = "https://geogecko.gis-cdn.net/geoserver/fieldy_data/wms"
     // console.log(process.env.GEOSERVER_URL, process.env.REACT_APP_SH_BACKEND_URL)
     let layers = ["fieldy_data:kenya_HT_grid"];
     let options = {
