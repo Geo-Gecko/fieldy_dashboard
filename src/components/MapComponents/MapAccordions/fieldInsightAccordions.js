@@ -86,7 +86,7 @@ let FieldInsightAccordions = ({
           <Accordion.Collapse eventKey="7">
             <>
               <hr></hr>
-              <div id="fields-choice-button" style={{"alignSelf": "center"}}>
+              <div style={{"alignSelf": "center"}}>
                 <DropdownButton
                   size="sm"
                   variant="outline-dropdown"
