@@ -279,10 +279,6 @@ let ShMap = ({
   }
 
   const [wlegendVisible, setwlegendVisible] = React.useState(false);
-  const [eleVisible, seteleVisible] = React.useState(false);
-  const [landVisible, setlandVisible] = React.useState(false);
-  const [slopeVisible, setslopeVisible] = React.useState(false);
-  const [fccVisible, setfccVisible] = React.useState(false);
 
   return (
     <React.Fragment>
@@ -514,28 +510,28 @@ let ShMap = ({
                         <hr></hr>
                           <div style={{"position": "relative", "left": "1.5rem"}}>
                             <input type="radio" value="Landcover" name="insight" checked={wAreaRadioBtns === 'Landcover'} onChange={handleChange}
-                              onClick={e => { setlandVisible(true); setslopeVisible(false); seteleVisible(false); setfccVisible(false); setwlegendVisible(true); setLocalState({
+                              onClick={() => { setwlegendVisible(true); setLocalState({
                                 ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Landcover": true
                                   })
                                 }}
                             /> Landcover<br/>
                             <input type="radio" value="Slope" name="insight" checked={wAreaRadioBtns === 'Slope'} onChange={handleChange}
-                            onClick={e => { setslopeVisible(true); setlandVisible(false); seteleVisible(false); setfccVisible(false); setwlegendVisible(true); setLocalState({
+                            onClick={() => { setwlegendVisible(true); setLocalState({
                               ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Slope": true
                                   })
                                 }}
                               /> Slope<br/>
                             <input type="radio" value="Elevation" name="insight" checked={wAreaRadioBtns === 'Elevation'} onChange={handleChange}
-                              onClick={e => { seteleVisible(true); setslopeVisible(false); setlandVisible(false); setfccVisible(false); setwlegendVisible(true); setLocalState({
+                              onClick={() => { setwlegendVisible(true); setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Elevation": true
                                   })
                                 }}
                               /> Elevation<br/>
                             <input type="radio" value="Fertility Classification" name="insight" checked={wAreaRadioBtns === 'Fertility Classification'} onChange={handleChange}
-                              onClick={e => { setfccVisible(true); setslopeVisible(false); seteleVisible(false); setlandVisible(false); setwlegendVisible(true); setLocalState({
+                              onClick={() => { setwlegendVisible(true); setLocalState({
                                 ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Fertility": true
                                   })
@@ -719,10 +715,10 @@ let ShMap = ({
               `}
         </style>
       {wlegendVisible && <div id='wideArea_lgds'>
-        {landVisible && <div style={{"background": "white", "paddingTop": "5px"}}><p>Landcover Legend</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_lc"/></div>}
-        {slopeVisible && <div style={{"background": "white", "paddingTop": "5px"}}><p>Slope Legend (Degrees)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_slope"/></div>}
-        {eleVisible && <div style={{"background": "white", "paddingTop": "5px"}}><p>Elevation Legend (m.a.s.l)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_elevation"/></div>}
-        {fccVisible && <div style={{"background": "white", "paddingTop": "5px"}}><p>Fertility Classification Legend</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_fcc"/></div>}
+        {localState["Wider Area Landcover"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Landcover</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_lc"/></div>}
+        {localState["Wider Area Slope"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Slope (Degrees)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_slope"/></div>}
+        {localState["Wider Area Elevation"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Elevation (m.a.s.l)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_elevation"/></div>}
+        {localState["Wider Area Fertility"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Fertility Classification</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_fcc"/></div>}
       </div>}
       </Control>
       <Legend map={myMap} gridCellArea={gridCellArea} />
