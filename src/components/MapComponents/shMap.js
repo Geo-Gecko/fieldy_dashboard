@@ -278,6 +278,8 @@ let ShMap = ({
     setWAreaRadioBtns(event.target.value)
   }
 
+  const [wlegendVisible, setwlegendVisible] = React.useState(false);
+
   return (
     <React.Fragment>
     <ToastContainer />
@@ -354,7 +356,7 @@ let ShMap = ({
                 onClick={e => {
                   setActiveFieldKey("0"); setActiveWiderAreaKey("-1"); _showCards(e);
                   (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
-                  setWAreaRadioBtns('');
+                  setWAreaRadioBtns(''); setwlegendVisible(false);
                 }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
@@ -508,32 +510,32 @@ let ShMap = ({
                         <hr></hr>
                           <div style={{"position": "relative", "left": "1.5rem"}}>
                             <input type="radio" value="Landcover" name="insight" checked={wAreaRadioBtns === 'Landcover'} onChange={handleChange}
-                              onClick={() => setLocalState({
-                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                              onClick={() => { setwlegendVisible(true); setLocalState({
+                                ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Landcover": true
                                   })
-                                }
+                                }}
                             /> Landcover<br/>
                             <input type="radio" value="Slope" name="insight" checked={wAreaRadioBtns === 'Slope'} onChange={handleChange}
-                              onClick={() => setLocalState({
-                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                            onClick={() => { setwlegendVisible(true); setLocalState({
+                              ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Slope": true
                                   })
-                                }
+                                }}
                               /> Slope<br/>
                             <input type="radio" value="Elevation" name="insight" checked={wAreaRadioBtns === 'Elevation'} onChange={handleChange}
-                              onClick={() => setLocalState({
+                              onClick={() => { setwlegendVisible(true); setLocalState({
                                     ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Elevation": true
                                   })
-                                }
+                                }}
                               /> Elevation<br/>
                             <input type="radio" value="Fertility Classification" name="insight" checked={wAreaRadioBtns === 'Fertility Classification'} onChange={handleChange}
-                              onClick={() => setLocalState({
-                                    ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                              onClick={() => { setwlegendVisible(true); setLocalState({
+                                ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                                     "Wider Area Fertility": true
                                   })
-                                }
+                                }}
                               /> Fertility Classification
                           </div>
                       </>
@@ -700,6 +702,25 @@ let ShMap = ({
           </button>
         </h6>
       </Control> : null }
+      <Control 
+        position="bottomleft"
+        >
+        <style type="text/css">
+          {`
+           #wideArea_lgds {
+                    position: absolute;
+                    left: 12rem;
+                    bottom: 0%;
+                  }
+              `}
+        </style>
+      {wlegendVisible && <div id='wideArea_lgds'>
+        {localState["Wider Area Landcover"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Landcover</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_lc"/></div>}
+        {localState["Wider Area Slope"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Slope (Degrees)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_slope"/></div>}
+        {localState["Wider Area Elevation"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Elevation (m.a.s.l)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_elevation"/></div>}
+        {localState["Wider Area Fertility"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Fertility Classification</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_fcc"/></div>}
+      </div>}
+      </Control>
       <Legend map={myMap} gridCellArea={gridCellArea} />
       {/* filter for events with "Wider Area" and call CustomWMSLayer if one of them is set to true */}
       {Object.keys(localState).filter(
