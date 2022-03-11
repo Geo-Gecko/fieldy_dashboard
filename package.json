@@ -13,6 +13,7 @@
     "jsonwebtoken": "^8.5.1",
     "leaflet": "^1.5.1",
     "leaflet-draw": "^1.0.4",
+    "leaflet.control.opacity": "^1.6.0",
     "leaflet.wms": "^0.2.0",
     "rc-slider": "^9.7.5",
     "react": "^16.14.0",

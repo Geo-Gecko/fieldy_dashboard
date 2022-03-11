@@ -278,8 +278,10 @@ let ShMap = ({
     setWAreaRadioBtns(event.target.value)
   }
 
+  const [opacityVisible, setopacityVisible] = React.useState(false);
+  
   const [wlegendVisible, setwlegendVisible] = React.useState(false);
-
+  
   return (
     <React.Fragment>
     <ToastContainer />
@@ -356,7 +358,7 @@ let ShMap = ({
                 onClick={e => {
                   setActiveFieldKey("0"); setActiveWiderAreaKey("-1"); _showCards(e);
                   (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
-                  setWAreaRadioBtns(''); setwlegendVisible(false);
+                  setWAreaRadioBtns(''); setwlegendVisible(false); setopacityVisible(false);
                 }}
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
@@ -366,7 +368,7 @@ let ShMap = ({
                   onClick={e => {
                     _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");
                     setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1");
-                    setWAreaRadioBtns('');
+                    setWAreaRadioBtns(''); setopacityVisible(true); 
                     setLocalState({
                       ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                       "Wider Area Landcover": false
@@ -790,7 +792,13 @@ let ShMap = ({
               }
               `}
         </style>
-        <div id="grid-info">Click on grid or field for info</div>
+        <div id="grid-info">Click on grid or field for info</div><br/>
+        {opacityVisible && <div style= {{"padding": "5px", "box-shadow": "0 1px 5px rgba(0,0,0,0.65)", "background": "#ecebeb"}}>
+          <label>
+              Layer opacity
+              <br/><input id="opacity-input" type="range" min="0" max="1" step="0.01" />
+          </label>
+        </div>}
       </Control>
       <Control
         position="bottomleft"
