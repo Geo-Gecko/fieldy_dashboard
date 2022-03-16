@@ -86,22 +86,26 @@ export const colorGrid = (grid, gridIndicator) => {
   grid.eachLayer(layer => {
     //grid style per gridcell depending on factors, for now just visibility of a cell.
     let colorArg;
-    if (gridIndicator !== "count") {
-      colorArg = layer.feature.properties.field_attributes.grid_summary[gridIndicator][0]
-      colorArg = colorArg < 1 ? colorArg * 100 : colorArg
+    if (layer.feature.properties.field_attributes) {
+      if (gridIndicator !== "count") {
+        // NOTICE: BUG!!! If "show fields" is clicked, error will occur hear because fields are part of
+        // the grid layers. So going to check if there is field_attributes.
+        // which if you recall, was supposed to change to grid_attributes. smh. -- 16/03/2022
+        colorArg = layer.feature.properties.field_attributes.grid_summary[gridIndicator][0]
+        colorArg = colorArg < 1 ? colorArg * 100 : colorArg
+      }
+      layer.setStyle({
+        // the fillColor is adapted from a property which can be changed by the user (segment)
+        fillColor: color(
+          gridIndicator === "count" ?
+            layer.feature.properties[gridIndicator] : colorArg
+        ),
+        weight: 0.3,
+        //stroke-width: to have a constant width on the screen need to adapt with scale
+        opacity: layer.feature.properties.count > 0 ? 1 : 0,
+        fillOpacity: layer.feature.properties.count > 0 ? 0.4 : 0
+      })
     }
-    layer.setStyle({
-      // the fillColor is adapted from a property which can be changed by the user (segment)
-      fillColor: color(
-        gridIndicator === "count" ?
-          layer.feature.properties[gridIndicator] : colorArg
-      ),
-      weight: 0.3,
-      //stroke-width: to have a constant width on the screen need to adapt with scale
-      opacity: layer.feature.properties.count > 0 ? 1 : 0,
-      fillOpacity: layer.feature.properties.count > 0 ? 0.4 : 0
-    })
-
   })
 }
 
