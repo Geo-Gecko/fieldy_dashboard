@@ -45,6 +45,7 @@ function CustomWMSLayer(
     // console.log(process.env.GEOSERVER_URL, process.env.REACT_APP_SH_BACKEND_URL)
     let layers = ["fieldy_data:kenya_HT_grid"];
     let options = {
+        identify: false,
         "transparent" : "true", "format": "image/png",
         "attribution": "GeoGecko", "styles":
         localState["Wider Area Landcover"] ? "fieldy_lc" :
