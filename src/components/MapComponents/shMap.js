@@ -595,7 +595,7 @@ let ShMap = ({
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Wider Area Thresholds</h6>
                     <hr />
                     <Range
-                      style={{ width: "80%" }} min={defaultWThreshVals[displayedWAT][0]} max={defaultWThreshVals[displayedWAT][1]}
+                      style={{ width: "80%" }} min={defaultWThreshVals[displayedWAT][0]} max={defaultWThreshVals[displayedWAT][1]} tipProps={{visible:true}}
                       tipFormatter={value => `${value}${defaultWThreshVals[displayedWAT][3]}`} step={defaultWThreshVals[displayedWAT][2]}
                       defaultValue={[slWThVals[displayedWAT][0], slWThVals[displayedWAT][1]]} onAfterChange={values_ => {
                         setSlWThVals({ ...slWThVals, [displayedWAT]: [values_[0], values_[1]] });
