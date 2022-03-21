@@ -8,7 +8,7 @@ import { Button } from 'react-bootstrap';
 import 'rc-slider/assets/index.css';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
-import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
+import NdviPerformanceLineGraph from '../ChartComponents/ndviPerformanceLineGraph';
 import TopBottomPerformanceLineGraph from '../ChartComponents/topbtmPerformanceLineGraph';
 import { localGroupBy } from '../../utilities/simpleUtilities';
 
@@ -89,7 +89,7 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
             <Button className='close-btn' onClick={_showCards}>
             X
             </Button>
-            <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Bio Mass graph</h6>
+            <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Bio Mass Graph</h6>
             <NdviPerformanceLineGraph SidePanelCollapsed={false} />
           </Control> : null }
           { localState['Top/Bottom Performance'] ?

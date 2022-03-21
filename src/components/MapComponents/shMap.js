@@ -30,11 +30,8 @@ import '../popupMod.css'
 
 // local components
 import IndicatorsLineGraph from '../indicatorsLineGraph';
-import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
 import { IndicatorInformation } from '../indicatorInformation';
-import { OverViewTable } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
-import { colorGrid } from '../../utilities/gridFns';
 
 
 import CustomWMSLayer from './customLayer';
