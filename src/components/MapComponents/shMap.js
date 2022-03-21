@@ -29,7 +29,7 @@ import '../popupMod.css'
 
 
 // local components
-import IndicatorsLineGraph from '../indicatorsLineGraph';
+import IndicatorsLineGraph from '../ChartComponents/indicatorsLineGraph';
 import { IndicatorInformation } from '../indicatorInformation';
 import { CookiesPolicy } from '../cookiesPolicy';
 
