@@ -9,23 +9,14 @@ import 'rc-slider/assets/index.css';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
+import TopBottomPerformanceLineGraph from '../topbtmPerformanceLineGraph';
+import { localGroupBy } from '../../utilities/simpleUtilities';
 
 
 let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, selectedIndicator }) => {
 
   const Range = createSliderWithTooltip(Slider.Range);
   const SliderWithTooltip = createSliderWithTooltip(Slider);
-
-  // https://gist.github.com/RonKbS/de2fc33bcbb591aef1024b92b9610de4
-  let localGroupBy = function(data, key) { 
-    return data.reduce(function(storage, item) {
-      let group = item[key];
-      storage[group] = storage[group] || [];
-      storage[group].push(item);
-      return storage;
-    }, {});
-  };
-
   const [slTpVals, setSlTpVals] = useState(5);
 
   const [slThVals, setSlThVals] = useState({
@@ -135,11 +126,12 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
             }
           >
             <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Top/Bottom Performance</h6>
-            <SliderWithTooltip
+            <TopBottomPerformanceLineGraph weeklyData={weeklyData} selectedIndicator={selectedIndicator}/>
+            {/* <SliderWithTooltip
               style={{ width: "80%" }} min={1}
               tipFormatter={value => `${value}%`}
               defaultValue={slTpVals} onAfterChange={value_ => {console.log(value_); setSlTpVals(value_); filterTPFields(value_)}}
-            />
+            /> */}
           </Control> : null }
           { localState['Thresholds'] ? 
           <Control
