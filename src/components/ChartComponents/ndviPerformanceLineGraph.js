@@ -7,7 +7,7 @@ import { Bar } from 'react-chartjs-2';
 import { CSVLink } from "react-csv";
 import { Button } from 'react-bootstrap';
 
-import { getNdviChange } from '../actions/graphActions';
+import { getNdviChange } from '../../actions/graphActions';
 
 function NdviPerformanceLineGraph (props) {
 
@@ -94,9 +94,6 @@ function NdviPerformanceLineGraph (props) {
       }
       `}
       </style>
-      <div style={{"padding": "10px"}}>
-        <h6>Vegetation Health Difference</h6>
-      </div>
       {' '}
       <Button id="indicator_download_button" size="sm" variant="outline-primary">
         <CSVLink

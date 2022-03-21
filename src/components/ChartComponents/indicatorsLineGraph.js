@@ -1,14 +1,12 @@
-import React, {
-  useState, useEffect, useRef
-} from 'react';
+import React, { useEffect, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { Line } from 'react-chartjs-2';
 
 import { CSVLink } from "react-csv";
-import {Dropdown, DropdownButton, ButtonGroup, Button} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-import { months_ } from '../actions/graphActions';
-import { GET_ALL_FIELD_DATA } from '../actions/types';
+import { months_ } from '../../actions/graphActions';
+import { GET_ALL_FIELD_DATA } from '../../actions/types';
 
 function IndicatorsLineGraph (props) {
 
