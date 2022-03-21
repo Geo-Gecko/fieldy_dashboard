@@ -9,24 +9,15 @@ import 'rc-slider/assets/index.css';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
+import TopBottomPerformanceLineGraph from '../topbtmPerformanceLineGraph';
+import { localGroupBy } from '../../utilities/simpleUtilities';
 
 
 let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, selectedIndicator }) => {
 
   const Range = createSliderWithTooltip(Slider.Range);
   const SliderWithTooltip = createSliderWithTooltip(Slider);
-
-  // https://gist.github.com/RonKbS/de2fc33bcbb591aef1024b92b9610de4
-  let localGroupBy = function(data, key) { 
-    return data.reduce(function(storage, item) {
-      let group = item[key];
-      storage[group] = storage[group] || [];
-      storage[group].push(item);
-      return storage;
-    }, {});
-  };
-
-  const [slTpVals, setSlTpVals] = useState(5);
+  const [slTpVals, setSlTpVals] = useState([15, 85]);
 
   const [slThVals, setSlThVals] = useState({
     // values follow formart ---> [min, max, title, slider-step]
@@ -45,31 +36,6 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
   let weeks_ = Object.keys(recentWeeklyData); weeks_.sort().reverse();
   recentWeeklyData = recentWeeklyData[weeks_[0]]
 
-  // filter Top/Bottom
-  let filterTPFields = (value_) => {
-    _editableFG.leafletElement.eachLayer(layer_ => layer_.setStyle({ weight: 4, color: "#3388ff" }))
-    let orderedWeeklyData = recentWeeklyData.sort((row1_, row2_) => {
-      if (row1_[selectedIndicator] < row2_[selectedIndicator]) {
-        return -1
-      } else if (row1_[selectedIndicator] > row2_[selectedIndicator]) {
-        return 1
-      }
-      return 0
-    })
-
-    if (orderedWeeklyData.length) {
-      let tpPerformingFieldIds = orderedWeeklyData.map(row_ => row_["field_id"])
-      // Top for now
-      tpPerformingFieldIds = tpPerformingFieldIds.slice(Math.round(tpPerformingFieldIds.length * (value_/100)))
-      _editableFG.leafletElement.eachLayer(
-        layer_ => tpPerformingFieldIds.includes(layer_.feature.properties.field_id) ?
-          layer_.setStyle({
-            weight: 4, color: selectedIndicator === "field_temperature" ? "#e15b26" : "#006d32"
-          }) : layer_.setStyle({ weight: 4, color: "#3388ff" })
-      )
-    }
-    
-  }
 
   // fitler Thresholds
   let filterThFields = (values_, key_) => {
@@ -135,10 +101,13 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
             }
           >
             <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Top/Bottom Performance</h6>
-            <SliderWithTooltip
-              style={{ width: "80%" }} min={1}
-              tipFormatter={value => `${value}%`}
-              defaultValue={slTpVals} onAfterChange={value_ => {console.log(value_); setSlTpVals(value_); filterTPFields(value_)}}
+            <TopBottomPerformanceLineGraph weeklyData={weeklyData} selectedIndicator={selectedIndicator} slTpVals={slTpVals}/>
+            <hr />
+            <Range
+              style={{ width: "80%" }} min={1} max={100}
+              railStyle={{ backgroundColor: '#28a745' }}
+              tipFormatter={value => `${value}%`} defaultValue={slTpVals}
+              onAfterChange={values_ => { setSlTpVals([values_[0], values_[1]]);}}
             />
           </Control> : null }
           { localState['Thresholds'] ? 
@@ -158,7 +127,7 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
                   <div style={{"padding": "10px"}}>{defaultThreshVals[key_][2]}</div>
                   <Range
                     style={{ width: "80%" }} min={defaultThreshVals[key_][0]} max={defaultThreshVals[key_][1]}
-                    tipFormatter={value => `${value}${defaultThreshVals[key_][4]}`}step={defaultThreshVals[key_][3]}
+                    tipFormatter={value => `${value}${defaultThreshVals[key_][4]}`} step={defaultThreshVals[key_][3]}
                     defaultValue={[val_[0], val_[1]]} onAfterChange={values_ => { setSlThVals({ ...slThVals, [key_]: [values_[0], values_[1]] }); filterThFields(values_, key_)}}
                   />
                 </React.Fragment>
