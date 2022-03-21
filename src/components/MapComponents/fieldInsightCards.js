@@ -9,7 +9,7 @@ import 'rc-slider/assets/index.css';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
-import TopBottomPerformanceLineGraph from '../topbtmPerformanceLineGraph';
+import TopBottomPerformanceLineGraph from '../ChartComponents/topbtmPerformanceLineGraph';
 import { localGroupBy } from '../../utilities/simpleUtilities';
 
 

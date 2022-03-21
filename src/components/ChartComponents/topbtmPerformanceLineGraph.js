@@ -4,7 +4,7 @@ import { Line } from 'react-chartjs-2';
 import { CSVLink } from "react-csv";
 import { Button } from 'react-bootstrap';
 
-import { localGroupBy } from '../utilities/simpleUtilities';
+import { localGroupBy } from '../../utilities/simpleUtilities';
 
 
 function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator, slTpVals}) {
