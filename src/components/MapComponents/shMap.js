@@ -444,7 +444,7 @@ let ShMap = ({
                     className="current-view field-side-btns" onClick={
                       (e) => {
                         _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2");
-                        return props.weeklyData ? props.dispatch(getWeeklyIndicators('')) : null;
+                        return !props.weeklyData.length ? props.dispatch(getWeeklyIndicators('')) : null;
                       }
                     }
                   >

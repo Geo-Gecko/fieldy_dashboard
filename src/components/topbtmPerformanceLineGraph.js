@@ -7,10 +7,9 @@ import { Button } from 'react-bootstrap';
 import { localGroupBy } from '../utilities/simpleUtilities';
 
 
-function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator}) {
+function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator, slTpVals}) {
 
 
-  
   let recentWeeklyData = localGroupBy(weeklyData, "date_observed");
   let localSelectedIndicator =
    selectedIndicator === "field_rainfall" ? "field_precipitation" : selectedIndicator;
@@ -26,7 +25,7 @@ function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator}) {
         }
         return 0
       }).reverse();
-      return [key_, dateData.slice(0, parseInt(0.20 * dateData.length))]
+      return [key_, dateData.slice(0, parseInt((slTpVals[0]/100) * dateData.length))]
     })
   );
   let btmFields = Object.fromEntries(
@@ -40,8 +39,7 @@ function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator}) {
         }
         return 0
       });
-      console.log(JSON.parse(JSON.stringify(dateData)))
-      return [key_, dateData.slice(0, parseInt(0.20 * dateData.length))]
+      return [key_, dateData.slice(0, parseInt((1 - (slTpVals[1]/100)) * dateData.length))]
     })
   )
 
@@ -81,9 +79,6 @@ function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator}) {
   let [ btmchartLabels, btmchartValues ] = chartData(btmFields)
   let [ topchartLabels, topchartValues ] = chartData(topFields)
 
-  console.log(btmchartLabels, btmchartValues)
-  console.log(topchartLabels, topchartValues)
-
   return (
     <React.Fragment>
       <style type="text/css">
@@ -122,66 +117,53 @@ function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator}) {
       }
       `}
       </style>
-      <div style={{"padding": "10px"}}>
-        <h6>Top And Bottom Performance Chart</h6>
-      </div>
       {' '}
       <Button id="indicator_download_button" size="sm" variant="outline-primary">
         <CSVLink
-        // if indicatorsArray is undefined will return an error,
-        // so need to check for it
-          data={weeklyData}
-          target="_blank"
-          id="indicator_download_button_words"
-          style={{"textDecoration": "none"}}
-          filename="top_bottom_performance_data.csv"
+          data={weeklyData} target="_blank" id="indicator_download_button_words"
+          style={{"textDecoration": "none"}} filename="top_bottom_performance_data.csv"
         >
         Download Data
         </CSVLink>
       </Button>
       <br/><br/>
       <Line
-        data={
+        data={{
+          "labels": topchartLabels,
+          "datasets": [
             {
-                "labels": topchartLabels,
-                "datasets": [
-                  {
-                    "label": "Top Performing Fields", "data": topchartValues, "fill": false,
-                    "borderColor": "#28a745", "lineTension": 0.1 
-                  },
-                  {
-                    "label": "Bottom Performing Fields", "data": btmchartValues, "fill": false,
-                    "borderColor": "#a1cfaa", "lineTension": 0.1 
-                  }
-                ]
-
-
-
+              "label": "Top Performing Fields", "data": topchartValues, "fill": false,
+              "borderColor": "#28a745", "lineTension": 0.1 
+            },
+            {
+              "label": "Bottom Performing Fields", "data": btmchartValues, "fill": false,
+              "borderColor": "#a1cfaa", "lineTension": 0.1 
             }
-        }
+          ]
+        }}
         options={{
           title: {
-              display: true,
-              position: "top",
-              fontSize: 18,
-              fontStyle: "normal",
-              text: `All fields`
+            display: true,
+            position: "top",
+            fontSize: 18,
+            fontStyle: "normal",
+            text: `Top And Bottom Performance Chart`
           },
-            legend: {
-                display: true,
-                position: "bottom",
-            },
-            scales: {
-                xAxes: [{
-                  type: 'time',
-                  time: {
-                      unit: 'week',
-                      displayFormats: {
-                          week: 'DD-MM'
-                      }
-                  },
-                }],
-              }
+          legend: {
+            display: true,
+            position: "bottom",
+          },
+          scales: {
+            xAxes: [{
+              type: 'time',
+              time: {
+                unit: 'week',
+                displayFormats: {
+                    week: 'DD-MM'
+                }
+              },
+            }],
+          }
         }}
       />
     </React.Fragment>
