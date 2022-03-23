@@ -29,18 +29,16 @@ import '../popupMod.css'
 
 
 // local components
-import IndicatorsLineGraph from '../indicatorsLineGraph';
-import NdviPerformanceLineGraph from '../ndviPerformanceLineGraph';
+import IndicatorsLineGraph from '../ChartComponents/indicatorsLineGraph';
 import { IndicatorInformation } from '../indicatorInformation';
-import { OverViewTable } from '../overView';
 import { CookiesPolicy } from '../cookiesPolicy';
-import { colorGrid } from '../../utilities/gridFns';
 
 
 import CustomWMSLayer from './customLayer';
 import FieldInsightCards from './fieldInsightCards';
 import FieldInsightAccordions from './MapAccordions/fieldInsightAccordions';
 import { getWeeklyIndicators } from '../../actions/graphActions';
+import { colorGrid } from '../../utilities/gridFns';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -269,7 +267,8 @@ let ShMap = ({
             : field_data[lineGraphState.indicatorObj[e.currentTarget.text][0]][selectedCropType],
           selectedIndicator: lineGraphState.indicatorObj[e.currentTarget.text][0],
           displayedIndicator: e.currentTarget.text
-        })
+        });
+        colorGrid(grid, lineGraphState.indicatorObj[e.currentTarget.text][0])
       }
     }
   }
@@ -444,7 +443,7 @@ let ShMap = ({
                     className="current-view field-side-btns" onClick={
                       (e) => {
                         _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2");
-                        return props.weeklyData ? props.dispatch(getWeeklyIndicators('')) : null;
+                        return !props.weeklyData.length ? props.dispatch(getWeeklyIndicators('')) : null;
                       }
                     }
                   >
@@ -470,25 +469,6 @@ let ShMap = ({
           </div>
         </Accordion>
 
-        {/* Grid indicators drop down */}
-        {/* <DropdownButton
-          size="sm"
-          disabled={disablegridKator}
-          variant="outline-dropdown"
-          className="mr-1 grid-color-view btn-md"
-          iconCss='ddb-icons e-message'
-          id="dropdown-basic-button"
-          title={"Grid Indicator"}
-          as={ButtonGroup}
-        >
-          {
-            Object.keys(localindicatorObj).map(key_ => 
-              <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
-                  {key_}
-              </Dropdown.Item>
-            )
-          }
-        </DropdownButton> */}
 
         <Accordion activeKey={activeWiderAreaKey}>
           <div className='d-flex justify-content-center'>
@@ -595,7 +575,7 @@ let ShMap = ({
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Wider Area Thresholds</h6>
                     <hr />
                     <Range
-                      style={{ width: "80%" }} min={defaultWThreshVals[displayedWAT][0]} max={defaultWThreshVals[displayedWAT][1]}
+                      style={{ width: "80%" }} min={defaultWThreshVals[displayedWAT][0]} max={defaultWThreshVals[displayedWAT][1]} tipProps={{visible:true}}
                       tipFormatter={value => `${value}${defaultWThreshVals[displayedWAT][3]}`} step={defaultWThreshVals[displayedWAT][2]}
                       defaultValue={[slWThVals[displayedWAT][0], slWThVals[displayedWAT][1]]} onAfterChange={values_ => {
                         setSlWThVals({ ...slWThVals, [displayedWAT]: [values_[0], values_[1]] });

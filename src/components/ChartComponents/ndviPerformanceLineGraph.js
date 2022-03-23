@@ -5,10 +5,9 @@ import { connect, useDispatch } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 
 import { CSVLink } from "react-csv";
-import {Dropdown, DropdownButton, ButtonGroup, Button} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-import { getNdviChange, months_ } from '../actions/graphActions';
-import { GET_ALL_FIELD_DATA } from '../actions/types';
+import { getNdviChange } from '../../actions/graphActions';
 
 function NdviPerformanceLineGraph (props) {
 
@@ -22,8 +21,6 @@ function NdviPerformanceLineGraph (props) {
     return ref.current;
   }
   const prevfieldId = usePrevious(props.fieldId);
-  const prevSidePanelCollapsed = usePrevious(props.SidePanelCollapsed);
-  const prevNDVIChange = usePrevious(props.NDVIChange);
 
   useEffect(() => {
     dispatch(getNdviChange("november"))
@@ -97,9 +94,6 @@ function NdviPerformanceLineGraph (props) {
       }
       `}
       </style>
-      <div style={{"padding": "10px"}}>
-        <h6>Vegetation Health Difference</h6>
-      </div>
       {' '}
       <Button id="indicator_download_button" size="sm" variant="outline-primary">
         <CSVLink
