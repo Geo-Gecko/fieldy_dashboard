@@ -4,7 +4,7 @@ import { Line } from 'react-chartjs-2';
 import { CSVLink } from "react-csv";
 import { Button } from 'react-bootstrap';
 
-import { localGroupBy } from '../../utilities/simpleUtilities';
+import { localGroupBy, perfChartLabelsValues } from '../../utilities/simpleUtilities';
 
 
 function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator, slTpVals}) {
@@ -13,7 +13,6 @@ function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator, slTpVals
   let recentWeeklyData = localGroupBy(weeklyData, "date_observed");
   let localSelectedIndicator =
    selectedIndicator === "field_rainfall" ? "field_precipitation" : selectedIndicator;
-  // console.log(recentWeeklyData)
   let topFields = Object.fromEntries(
     Object.keys(recentWeeklyData).map(key_ => {
       let dateData = recentWeeklyData[key_];
@@ -43,41 +42,8 @@ function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator, slTpVals
     })
   )
 
-  let chartData = fields_ => {
-    let totalFields = [...new Set(Object.values(fields_)[0].map(row_ => row_.field_id))]
-    let avgWeeklyData = {};
-    [
-      "field_evapotranspiration", "field_ndvi", "field_ndwi",
-      "field_precipitation", "field_temperature"
-    ].forEach(kator => {
-
-      // sum for each date for each indicator
-      Object.keys(fields_).forEach(date_ => {
-        fields_[date_].reduce((storage_, item) => {
-          storage_[date_] = storage_[date_] ? storage_[date_] : {};
-          storage_[date_][kator] = storage_[date_][kator] ?
-            storage_[date_][kator] + item[kator] : item[kator];
-          return storage_;
-        }, avgWeeklyData)
-      })
-
-      // average each date for each indicator
-      Object.keys(avgWeeklyData).forEach(date_ => {
-        avgWeeklyData[date_][kator] = (
-          avgWeeklyData[date_][kator] / totalFields.length
-        ).toFixed(4)
-      })
-    })
-
-    let chartValues = Object.keys(avgWeeklyData).map(
-      key_ => avgWeeklyData[key_][localSelectedIndicator]
-    );
-    let chartLabels = Object.keys(avgWeeklyData);
-    return [chartLabels, chartValues]
-  }
-
-  let [ btmchartLabels, btmchartValues ] = chartData(btmFields)
-  let [ topchartLabels, topchartValues ] = chartData(topFields)
+  let [ btmchartLabels, btmchartValues ] = perfChartLabelsValues(btmFields, localSelectedIndicator)
+  let [ topchartLabels, topchartValues ] = perfChartLabelsValues(topFields, localSelectedIndicator)
 
   return (
     <React.Fragment>
