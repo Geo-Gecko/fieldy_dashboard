@@ -116,6 +116,30 @@ let FieldInsightAccordions = ({
             }
           }
         >Thresholds</button>
+        <Accordion activeKey={clickedActiveKey.ThresholdsKey}>
+          <Accordion.Collapse eventKey="8">
+            <>
+              <hr></hr>
+              <div style={{"alignSelf": "center"}}>
+                <DropdownButton
+                  size="sm"
+                  variant="outline-dropdown"
+                  className="mr-1"
+                  id="dropdown-basic-button"
+                  title={lineGraphState.displayedIndicator}
+                  as={ButtonGroup}
+                  >
+                    {Object.keys(lineGraphState.indicatorObj).map(obj_ => 
+                        obj_ !== "Evapotranspiration" ?
+                          <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
+                            {obj_}
+                        </Dropdown.Item> : null
+                    )}
+                </DropdownButton>
+              </div>
+            </>
+          </Accordion.Collapse>
+        </Accordion>
       </React.Fragment>
   )
 }
