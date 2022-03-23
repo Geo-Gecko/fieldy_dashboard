@@ -22,14 +22,14 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
 
   const [slThVals, setSlThVals] = useState({
     // values follow formart ---> [min, max, title, slider-step]
-    "field_ndvi": [-1, 1], "field_rainfall": [0, 500],
+    "field_ndvi": [-1, 1], "field_rainfall": [0, 20],
     "field_ndwi": [-1, 1], "field_temperature": [15, 35]
   })
 
   // this is because min, max stay connected to slThVals otherwise, preventing slider mov't
     // values follow formart ---> [min, max, title, slider-step, units]
   const defaultThreshVals = {
-    "field_ndvi": [-1, 1, "Crop Health", 0.1, "(-1, 1)"], "field_rainfall": [0, 500, "Precipitation", 1, "mm"],
+    "field_ndvi": [-1, 1, "Crop Health", 0.1, "(-1, 1)"], "field_rainfall": [0, 20, "Precipitation", 1, "mm"],
     "field_ndwi": [-1, 1, "Soil Moisture", 0.01, "(-1, 1)"], "field_temperature": [15, 35, "Temperature", 1, "°C"]
   }
 
@@ -105,10 +105,10 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
             <TopBottomPerformanceLineGraph weeklyData={weeklyData} selectedIndicator={selectedIndicator} slTpVals={slTpVals}/>
             <hr />
             <Range
-              style={{ width: "80%" }} min={1} max={100}
+              style={{ width: "80%" }} min={1} max={100} tipProps={{visible:true}}
               railStyle={{ backgroundColor: '#28a745' }}
-              tipFormatter={value => `${value}%`} defaultValue={slTpVals}
-              onAfterChange={values_ => { setSlTpVals([values_[0], values_[1]]);}}
+              tipFormatter={value => `${100 - value <= 50 ? `Bottom ${100 - value}` : `Top ${value}`}%`} defaultValue={slTpVals}
+              onAfterChange={values_ => { setSlTpVals([values_[0], values_[1]]); console.log(values_)}}
             />
           </Control> : null }
           { localState['Thresholds'] ? 
@@ -128,7 +128,7 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
                 <hr />
                 <Range
                   style={{ width: "80%" }} min={defaultThreshVals[selectedIndicator][0]} max={defaultThreshVals[selectedIndicator][1]}
-                  tipFormatter={value => `${value}${defaultThreshVals[selectedIndicator][4]}`} step={defaultThreshVals[selectedIndicator][3]}
+                  tipFormatter={value => `${value}${defaultThreshVals[selectedIndicator][4]}`} step={defaultThreshVals[selectedIndicator][3]} tipProps={{visible:true}}
                   defaultValue={[slThVals[selectedIndicator][0], slThVals[selectedIndicator][1]]} onAfterChange={values_ => { setSlThVals({ ...slThVals, [selectedIndicator]: [values_[0], values_[1]] }); filterThFields(values_, selectedIndicator)}}
                 />
           </Control> : null }
