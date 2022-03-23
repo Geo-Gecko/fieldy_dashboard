@@ -12,7 +12,7 @@ function IndicatorsLineGraph (props) {
 
   let {
     lineGraphState, setLineGraphState,
-    groupFieldIndicatorArray, allFieldsIndicatorArray, indicatorObj
+    groupFieldIndicatorArray, allFieldsIndicatorArray
   } = props;
 
   const dispatch = useDispatch();
@@ -47,11 +47,9 @@ function IndicatorsLineGraph (props) {
       // block to display one field's data by uncollapsing sidepanel
       setLineGraphState({
         ...lineGraphState,
-        dataset: props.field_data["field_rainfall"][props.cropType],
+        dataset: props.field_data[lineGraphState.selectedIndicator][props.cropType],
         FieldindicatorArray: props.FieldindicatorArray,
         selectedCropType: props.cropType,
-        selectedIndicator: "field_rainfall",
-        displayedIndicator: "Rainfall"
       })
     } else if (
       (props.fieldId === "" && !Object.keys(props.groupFieldData).length ) &&
@@ -62,11 +60,9 @@ function IndicatorsLineGraph (props) {
       setLineGraphState({
         ...lineGraphState,
         cropTypes,
-        dataset: allFieldData["field_rainfall"] ?
-         allFieldData["field_rainfall"][cropTypes[0]] : [],
+        dataset: allFieldData[lineGraphState.selectedIndicator] ?
+         allFieldData[lineGraphState.selectedIndicator][cropTypes[0]] : [],
         selectedCropType: cropTypes[0],
-        selectedIndicator: "field_rainfall",
-        displayedIndicator: "Rainfall"
       })
     } else if (
       props.grid_id !== "" && prevgrid_id !== props.grid_id
@@ -76,12 +72,10 @@ function IndicatorsLineGraph (props) {
       let groupCrops = Object.keys(groupFieldData.field_rainfall)
       setLineGraphState({
         ...lineGraphState,
-        dataset: props.groupFieldData["field_rainfall"] ?
-         props.groupFieldData["field_rainfall"][groupCrops[0]] : [],
+        dataset: props.groupFieldData[lineGraphState.selectedIndicator] ?
+         props.groupFieldData[lineGraphState.selectedIndicator][groupCrops[0]] : [],
          FieldindicatorArray: props.FieldindicatorArray,
         selectedCropType: groupCrops[0],
-        selectedIndicator: "field_rainfall",
-        displayedIndicator: "Rainfall"
       })
     } else if (
       (prevfieldId !== props.fieldId && props.fieldId === "") ||
@@ -93,11 +87,9 @@ function IndicatorsLineGraph (props) {
       setLineGraphState({
         ...lineGraphState,
         cropTypes,
-        dataset: allFieldData["field_rainfall"] ?
-         allFieldData["field_rainfall"][cropTypes[0]] : [],
+        dataset: allFieldData[lineGraphState.selectedIndicator] ?
+         allFieldData[lineGraphState.selectedIndicator][cropTypes[0]] : [],
         selectedCropType: cropTypes[0],
-        selectedIndicator: "field_rainfall",
-        displayedIndicator: "Rainfall"
       })
     }
   }, [
@@ -147,30 +139,6 @@ function IndicatorsLineGraph (props) {
       }
       `}
       </style>
-      {/* 
-      <DropdownButton
-      size="sm"
-      variant="outline-dropdown"
-      id="dropdown-basic-button"
-      title={props.fieldId === "" ? selectedCropType : props.cropType}
-      as={ButtonGroup}
-      >
-        {
-          props.fieldId === "" &&
-          Object.keys(props.groupFieldData).length ?
-          Object.keys(props.groupFieldData.field_rainfall).map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
-                  {type_}
-              </Dropdown.Item>
-          ) :
-            props.fieldId === "" &&
-            !Object.keys(props.groupFieldData).length ? cropTypes.map(type_ => 
-              <Dropdown.Item key={type_} eventKey={type_} onClick={getEvent}>
-                  {type_}
-              </Dropdown.Item>
-          ) : ""
-        }
-      </DropdownButton> */}
       {' '}
       <Button id="indicator_download_button" size="sm" variant="outline-primary">
         <CSVLink

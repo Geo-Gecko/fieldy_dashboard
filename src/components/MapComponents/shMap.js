@@ -38,6 +38,7 @@ import CustomWMSLayer from './customLayer';
 import FieldInsightCards from './fieldInsightCards';
 import FieldInsightAccordions from './MapAccordions/fieldInsightAccordions';
 import { getWeeklyIndicators } from '../../actions/graphActions';
+import { colorGrid } from '../../utilities/gridFns';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -266,7 +267,8 @@ let ShMap = ({
             : field_data[lineGraphState.indicatorObj[e.currentTarget.text][0]][selectedCropType],
           selectedIndicator: lineGraphState.indicatorObj[e.currentTarget.text][0],
           displayedIndicator: e.currentTarget.text
-        })
+        });
+        colorGrid(grid, lineGraphState.indicatorObj[e.currentTarget.text][0])
       }
     }
   }
@@ -467,25 +469,6 @@ let ShMap = ({
           </div>
         </Accordion>
 
-        {/* Grid indicators drop down */}
-        {/* <DropdownButton
-          size="sm"
-          disabled={disablegridKator}
-          variant="outline-dropdown"
-          className="mr-1 grid-color-view btn-md"
-          iconCss='ddb-icons e-message'
-          id="dropdown-basic-button"
-          title={"Grid Indicator"}
-          as={ButtonGroup}
-        >
-          {
-            Object.keys(localindicatorObj).map(key_ => 
-              <Dropdown.Item key={key_} eventKey={key_} onClick={getEvent}>
-                  {key_}
-              </Dropdown.Item>
-            )
-          }
-        </DropdownButton> */}
 
         <Accordion activeKey={activeWiderAreaKey}>
           <div className='d-flex justify-content-center'>
