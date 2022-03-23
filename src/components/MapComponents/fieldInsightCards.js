@@ -108,7 +108,7 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
               style={{ width: "80%" }} min={1} max={100} tipProps={{visible:true}}
               railStyle={{ backgroundColor: '#28a745' }}
               tipFormatter={value => `${100 - value <= 50 ? `Bottom ${100 - value}` : `Top ${value}`}%`} defaultValue={slTpVals}
-              onAfterChange={values_ => { setSlTpVals([values_[0], values_[1]]); console.log(values_)}}
+              onAfterChange={values_ => { setSlTpVals([values_[0], values_[1]]); }}
             />
           </Control> : null }
           { localState['Thresholds'] ? 
@@ -129,7 +129,8 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
                 <Range
                   style={{ width: "80%" }} min={defaultThreshVals[selectedIndicator][0]} max={defaultThreshVals[selectedIndicator][1]}
                   tipFormatter={value => `${value}${defaultThreshVals[selectedIndicator][4]}`} step={defaultThreshVals[selectedIndicator][3]} tipProps={{visible:true}}
-                  defaultValue={[slThVals[selectedIndicator][0], slThVals[selectedIndicator][1]]} onAfterChange={values_ => { setSlThVals({ ...slThVals, [selectedIndicator]: [values_[0], values_[1]] }); filterThFields(values_, selectedIndicator)}}
+                  defaultValue={[slThVals[selectedIndicator][0], slThVals[selectedIndicator][1]]}
+                  onAfterChange={values_ => { setSlThVals({ ...slThVals, [selectedIndicator]: [values_[0], values_[1]] }); filterThFields(values_, selectedIndicator)}}
                 />
           </Control> : null }
       </React.Fragment>

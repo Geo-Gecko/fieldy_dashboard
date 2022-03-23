@@ -16,6 +16,7 @@ function ThresholdsLineGraph({ weeklyData, selectedIndicator, defaultThreshVals,
 
 
   let recentWeeklyData = localGroupBy(weeklyData, "date_observed");
+  // weekly data uses field_precipitation, different from monthly data, hence the switch in the next line
   let localSelectedIndicator =
     selectedIndicator === "field_rainfall" ? "field_precipitation" : selectedIndicator;
 
@@ -84,7 +85,6 @@ function ThresholdsLineGraph({ weeklyData, selectedIndicator, defaultThreshVals,
         </CSVLink>
       </Button>
       <br /><br />
-      {console.log(slThVals[selectedIndicator][1], defaultThreshVals[selectedIndicator][0])}
       <Line
         data={{
           "labels": chartLabels,
