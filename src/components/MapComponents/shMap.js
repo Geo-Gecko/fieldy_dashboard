@@ -868,6 +868,7 @@ let ShMap = ({
       <FeatureGroup
         ref={(reactFGref) => { _onFeatureGroupReady(reactFGref, props); }}
         onClick={handleRightClick}
+        onContextmenu={() => console.log("dummy context menu for popupMod.js 'mapLayer._events.contextmenu'")}
       >
         {userType === "EDITOR" ? <EditControl
           position='topright'
