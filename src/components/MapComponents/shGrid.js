@@ -8,14 +8,14 @@ import { inside, colorGrid, bindGridPopup } from '../../utilities/gridFns';
 let maxCount = 0;
 
 let createGrid = mapViewInst => {
-  let { _editableFG, myMap } = mapViewInst
+  let { _editableFG } = mapViewInst
   let { LayersPayload, allFieldsIndicatorArray, cropTypes } = mapViewInst.props
   let savedGrid = mapViewInst.props.gridLayer
 
   if (savedGrid.length) {
 
     savedGrid.forEach(gridLayer => {
-      gridLayer.properties.grid_id = uuidv4();
+      gridLayer.properties.grid_id = gridLayer.properties.field_id;
       try{
         gridLayer.properties.field_attributes.grid_summary =
           JSON.parse(
@@ -39,7 +39,7 @@ let createGrid = mapViewInst => {
         bindGridPopup(
           layer, fieldCount,
           layer.feature.properties.field_attributes.grid_summary,
-          cropTypes, mapViewInst.state.userType, LayersPayload
+          cropTypes, mapViewInst.state.userType, savedGrid.length
         )
       }
     })

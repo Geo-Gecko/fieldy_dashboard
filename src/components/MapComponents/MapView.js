@@ -16,7 +16,9 @@ import {
 } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData, { getWeeklyIndicators } from '../../actions/graphActions';
-import { getGridData, getIndicatorData } from '../../actions/gridActions';
+import {
+  getGridData, getIndicatorData, getFieldsInCell, getKatorsInGridCellAction
+} from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
 import { getKatorsInCell, newkatorArr } from '../../utilities/IndicatorArr';
@@ -75,9 +77,9 @@ class MapView extends Component {
 
     // ON 2020-dec-11-friday solved the data-flow through the code. yipeee!!
     // this is being called twice and needs to be changed.
-    this.props.dispatch(getGridData());
+    await this.props.dispatch(getGridData());
     this.props.dispatch(getFCastData())
-    await this.props.dispatch(getPolygonLayers());
+    if (!this.props.gridLayer.length) await this.props.dispatch(getPolygonLayers());
     await this.props.dispatch(getIndicatorData());
     await this.props.dispatch(getcreateputGraphData(
       {}, 'GET', "", "", this.props.cropTypes,
@@ -205,11 +207,9 @@ class MapView extends Component {
           leafletFG.addLayer(layer);
         });
       }
-
-      // store the ref for future access to content
-
-      this._editableFG = reactFGref;
     }
+    // store the ref for future access to content
+    this._editableFG = reactFGref;
 
     //here if the feature group is loaded, then we split the area into gridcells
     // that can then be put into a geojson variable that i can load into leaflet --- Zeus
@@ -217,18 +217,22 @@ class MapView extends Component {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
           let { grid, gridCellArea } = createGrid(this)
-          grid.on("click", e => {
-            let indicatorsInCell = getKatorsInCell(
+          grid.on("click", async e => {
+            let gridCellFields = await getFieldsInCell(e.layer.feature.properties.grid_id)
+            localStorage.setItem("gridCellFields", JSON.stringify(gridCellFields))
+
+            let indicatorsInCell =  await getKatorsInGridCellAction(e.layer.feature.properties.grid_id)
+            indicatorsInCell = indicatorsInCell.length ? indicatorsInCell : getKatorsInCell(
               e.layer, this.props.allFieldsIndicatorArray,
-              new L.GeoJSON(this.props.LayersPayload)
+              gridCellFields.length ? new L.GeoJSON(gridCellFields) : new L.GeoJSON(this.props.LayersPayload)
             )
             // grid context is stil caught when cell is removed, hence the check
             // this is for accunts with more than 1000 fields
             if (indicatorsInCell.length) {
               this.props.dispatch(newkatorArr(
                 indicatorsInCell, this.props.cropTypes,
-                this.props.LayersPayload, GET_GROUP_FIELD_DATA,
-                e.layer.feature.properties.grid_id
+                gridCellFields.length ? gridCellFields : this.props.LayersPayload,
+                GET_GROUP_FIELD_DATA, e.layer.feature.properties.grid_id
               ))
             }
           })

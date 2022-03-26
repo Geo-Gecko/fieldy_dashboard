@@ -23,6 +23,27 @@ import {
 };
 
 
+export const getFieldsInCell = grid_id => {
+  return axiosInstance.get(`/layers/field-in-grid-cell/${grid_id}`)
+    .then(async response => {
+      return response.data
+    })
+    .catch(error => {
+      console.log(error)
+    });
+};
+
+
+export const getKatorsInGridCellAction = grid_id => {
+  return axiosInstance.get(`/layers/kators-in-grid-cell/${grid_id}`)
+    .then(async response => {
+      return response.data
+    })
+    .catch(error => {
+      console.log(error)
+    });
+};
+
 export const getIndicatorData = () => dispatch => {
   return axiosInstance.get('/layers/indicator-calculations/')
     .then(async response => {
