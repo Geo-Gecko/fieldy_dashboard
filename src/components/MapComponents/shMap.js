@@ -179,7 +179,7 @@ let ShMap = ({
   }
 
 
-  let results = [];
+  let overViewSummary = [];
   if (props.LayersPayload.length) {
     let areas = {}, counts = {}, cropType, colours = {};
     props.LayersPayload.forEach(feature_ => {
@@ -204,7 +204,7 @@ let ShMap = ({
        }
     });
     for (cropType in areas) {
-      results.push({
+      overViewSummary.push({
         cropType: cropType, area: areas[cropType].toFixed(2),
         count: counts[cropType], colours: colours[cropType]
       });
@@ -591,7 +591,7 @@ let ShMap = ({
         </div>
       </Control>
       {
-      localState['Field Data'] && results.length ?
+      localState['Field Data'] ?
         <React.Fragment>
           <style type="text/css">
                 {`
@@ -625,7 +625,7 @@ let ShMap = ({
             X
             </Button>
             {/* <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
-            <OverViewTable graphData={results} /> */}
+            <OverViewTable graphData={overViewSummary} /> */}
             <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Monthly Field Indicators</h6>
             <IndicatorsLineGraph
               SidePanelCollapsed={false} cropTypes={props.cropTypes} 

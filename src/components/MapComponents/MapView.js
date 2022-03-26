@@ -9,7 +9,7 @@ import ReactGA from 'react-ga';
 // our components
 import {
   postPointLayer, postPolygonLayer, getPolygonLayers,
-  deletePolygonLayer, updatePolygonLayer
+  deletePolygonLayer, updatePolygonLayer, getCropTypes
 } from '../../actions/layerActions';
 import {
   GET_ALL_FIELD_DATA_INITIATED, GET_GROUP_FIELD_DATA, FORECAST_FIELD_ID
@@ -79,6 +79,7 @@ class MapView extends Component {
     // this is being called twice and needs to be changed.
     await this.props.dispatch(getGridData());
     this.props.dispatch(getFCastData())
+    await this.props.dispatch(getCropTypes())
     if (!this.props.gridLayer.length) await this.props.dispatch(getPolygonLayers());
     await this.props.dispatch(getIndicatorData());
     await this.props.dispatch(getcreateputGraphData(
