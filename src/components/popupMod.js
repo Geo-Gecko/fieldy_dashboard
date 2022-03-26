@@ -2,7 +2,6 @@ import L from 'leaflet';
 import axiosInstance from '../actions/axiosInstance';
 import { toast } from 'react-toastify';
 
-import { inside } from '../utilities/gridFns';
 import { attrCreator } from '../utilities/attrCreator';
 
 // Adding nametag labels to all popup-able leaflet layers
