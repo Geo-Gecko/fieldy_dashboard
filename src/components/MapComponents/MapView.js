@@ -17,7 +17,7 @@ import {
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData, { getWeeklyIndicators } from '../../actions/graphActions';
 import {
-  getGridData, getIndicatorData, getFieldsInCell, getKatorsInGridCellAction
+  getGridData, getSummarizedIndicatorData, getFieldsInCell, getKatorsInGridCellAction
 } from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
@@ -81,7 +81,7 @@ class MapView extends Component {
     this.props.dispatch(getFCastData())
     await this.props.dispatch(getCropTypes())
     if (!this.props.gridLayer.length) await this.props.dispatch(getPolygonLayers());
-    await this.props.dispatch(getIndicatorData());
+    await this.props.dispatch(getSummarizedIndicatorData());
     await this.props.dispatch(getcreateputGraphData(
       {}, 'GET', "", "", this.props.cropTypes,
       this.props.LayersPayload, this.props.katorPayload
@@ -273,21 +273,6 @@ class MapView extends Component {
     this.props.getcreateputUserDetail(current_centre, 'PUT')
   }
 
-  handleRightClick = async e => {
-    await this.props.dispatch({
-        type: GET_ALL_FIELD_DATA_INITIATED,
-        payload: true
-    });
-    this.props.dispatch(getcreateputGraphData(
-      {}, 'GET', e.layer.feature.properties.field_id,
-      e.layer.feature.properties.CropType,
-      this.props.cropTypes, this.props.LayersPayload
-    ));
-    this.props.dispatch({
-      type: FORECAST_FIELD_ID,
-      payload: e.layer.feature.properties.field_id
-  })
-  }
 
   toggleGridLayers = () => {
     if (this.state.grid._map) {
@@ -338,7 +323,7 @@ const mapStateToProps = state => ({
 });
 
 const matchDispatchToProps = dispatch => ({
-  postPointLayer, postPolygonLayer, getIndicatorData, getcreateputGraphData,
+  postPointLayer, postPolygonLayer, getSummarizedIndicatorData, getcreateputGraphData,
   deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail, getWeeklyIndicators,
   dispatch
 });

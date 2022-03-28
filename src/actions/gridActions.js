@@ -44,7 +44,7 @@ export const getKatorsInGridCellAction = grid_id => {
     });
 };
 
-export const getIndicatorData = () => dispatch => {
+export const getSummarizedIndicatorData = () => dispatch => {
   return axiosInstance.get('/layers/indicator-calculations/')
     .then(async response => {
       dispatch({
