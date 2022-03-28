@@ -313,6 +313,7 @@ const mapStateToProps = state => ({
   forecastFieldId: state.graphs.forecastFieldId,
   weeklyData: state.graphs.weeklyData,
   NDVIChange: state.graphs.NDVIChange,
+  initiateGetWeeklyData: state.graphs.initiateGetWeeklyData,
 
   // passed for indicatorslinegraph
   cropType: state.graphs.cropType,
