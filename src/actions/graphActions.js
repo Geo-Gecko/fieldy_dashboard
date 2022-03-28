@@ -165,7 +165,6 @@ export const getWeeklyIndicators = earliest_month => async dispatch =>  {
         type: INITIATE_GET_WEEKLY_DATA,
         payload: true
     })
-    console.log("How many times are you called")
     return axiosInstance
         .get(`/indicator-analytics/weekly-indicators/${earliest_month ? `earliest_month=${earliest_month}` : ''}`)
         .then(async response => {

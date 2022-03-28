@@ -285,7 +285,7 @@ let ShMap = ({
     <React.Fragment>
     <ToastContainer />
     {
-      initiateGetData ?
+      initiateGetData || props.initiateGetWeeklyData ?
         <div className="map-loading">
           <Spinner animation="border" variant="danger" />
         </div> : null
@@ -457,7 +457,7 @@ let ShMap = ({
                           <hr></hr>
                           <FieldInsightAccordions
                             clickedActiveKey={clickedActiveKey} setClickedActiveKey={setClickedActiveKey}
-                            _showCards={_showCards} lineGraphState={lineGraphState} getEvent={getEvent}
+                            _showCards={_showCards} lineGraphState={lineGraphState} getEvent={getEvent} props={props}
                           />
                         </>
                       </Accordion.Collapse>
@@ -644,6 +644,7 @@ let ShMap = ({
          _showCards={_showCards}
          _editableFG={_editableFG}
          weeklyData={props.weeklyData}
+         props={props}
         /> : <React.Fragment />
       }
       <CookiesPolicy mapInstance={mapInstance} state={state} />

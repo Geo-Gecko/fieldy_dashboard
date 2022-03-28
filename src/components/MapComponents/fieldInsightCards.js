@@ -3,6 +3,7 @@ import L from 'leaflet';
 import Control from 'react-leaflet-control';
 
 import { Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 
 import 'rc-slider/assets/index.css';
@@ -14,8 +15,11 @@ import TopBottomPerformanceLineGraph from '../ChartComponents/topbtmPerformanceL
 import { localGroupBy } from '../../utilities/simpleUtilities';
 
 
-let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, selectedIndicator }) => {
+let FieldInsightCards = (
+  { localState, _showCards, weeklyData, _editableFG, selectedIndicator, props }
+) => {
 
+  let { katorPayload, fieldId } = props;
   const Range = createSliderWithTooltip(Slider.Range);
   const SliderWithTooltip = createSliderWithTooltip(Slider);
   const [slTpVals, setSlTpVals] = useState([15, 85]);
@@ -79,20 +83,42 @@ let FieldInsightCards = ({ localState, _showCards, weeklyData, _editableFG, sele
         {/* NOTE: Have to separate each statement using a ternary operator rather than chaining them together */}
         {/* Otherwise the amazing react-leaflet duo won't switch out the three divs ma-propsi */}
         {
+          
           localState['Biomass Change'] ?
-          <Control
-            position="topleft"
-            className={
-              localState['Biomass Change'] ? "current-view insight-card slide-in" :
-              "current-view insight-card slide-out"
-            }
-          >
-            <Button className='close-btn' onClick={_showCards}>
-            X
-            </Button>
-            <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Bio Mass Graph</h6>
-            <NdviPerformanceLineGraph SidePanelCollapsed={false} />
-          </Control> : null }
+            !Object.keys(katorPayload).length ?
+              <Control
+                position="topleft"
+                className={
+                  localState['Biomass Change'] ? "current-view insight-card slide-in" :
+                  "current-view insight-card slide-out"
+                }
+              >
+                <Button className='close-btn' onClick={_showCards}>
+                X
+                </Button>
+                <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Bio Mass Graph</h6>
+                <NdviPerformanceLineGraph SidePanelCollapsed={false} />
+                {console.log(fieldId)}
+              </Control> : Object.keys(katorPayload).length && fieldId ? 
+                <Control
+                  position="topleft"
+                  className={
+                    localState['Biomass Change'] ? "current-view insight-card slide-in" :
+                    "current-view insight-card slide-out"
+                  }
+                >
+                  <Button className='close-btn' onClick={_showCards}>
+                  X
+                  </Button>
+                  <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Bio Mass Graph</h6>
+                  <NdviPerformanceLineGraph SidePanelCollapsed={false} />
+                </Control> : toast("Click on a field to show this chart", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                }) : null }
           { localState['Top/Bottom Performance'] ?
           <Control
             position="topleft"
