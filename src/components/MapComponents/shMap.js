@@ -703,7 +703,7 @@ let ShMap = ({
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Summary</h6>
                     <hr />
                     <div style={{"alignSelf": "center"}}>
-                        <OverViewTable graphData={results} />
+                        {/* <OverViewTable graphData={results} /> */}
                         </div>
                   </Control> : null }
                   { localState['OAF Last Visit'] ? 
@@ -717,7 +717,7 @@ let ShMap = ({
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Last Visit</h6>
                     <hr />
                     <div style={{"alignSelf": "center"}}>
-                        <OverViewTable graphData={results} />
+                        {/* <OverViewTable graphData={results} /> */}
                         </div>
                   </Control> : null }
         </Accordion>
