@@ -40,6 +40,8 @@ import FieldInsightAccordions from './MapAccordions/fieldInsightAccordions';
 import { getWeeklyIndicators } from '../../actions/graphActions';
 import { colorGrid } from '../../utilities/gridFns';
 
+import { OverViewTable } from '../overView';
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -126,6 +128,8 @@ let ShMap = ({
     "Field Insight": false,
     "Wider Area Insight": false,
     "Wider Area Thresholds": false,
+    "OAF Summary": false,
+    "OAF Last Visit": false,
   });
 
   const [lineGraphState, setLineGraphState] = useState({
@@ -154,6 +158,10 @@ let ShMap = ({
   const [activeWiderAreaKey, setActiveWiderAreaKey] = useState("-1");
   const [activeWiderAreaInsightKey, setActiveWiderAreaInsightKey] = useState("-1");
   const [activeWiderAreaFiltersKey, setActiveWiderAreaFiltersKey] = useState("-1");
+
+  const [activeOAFKey, setActiveOAFKey] = useState(undefined);
+  const [activeOAFDataKey, setActiveOAFDataKey] = useState("-1");
+  const [activeOAFInsightsKey, setactiveOAFInsightsKey] = useState("-1");
 
   const [clickedActiveKey, setClickedActiveKey] = useState({
     BioMassKey: "-1",
@@ -355,7 +363,7 @@ let ShMap = ({
               <button type="reset"
                 className="side-btns"
                 onClick={e => {
-                  setActiveFieldKey("0"); setActiveWiderAreaKey("-1"); _showCards(e);
+                  setActiveFieldKey("0"); setActiveWiderAreaKey("-1"); setActiveOAFKey("-1"); _showCards(e);
                   (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
                   setWAreaRadioBtns(''); setwlegendVisible(false); setopacityVisible(false);
                 }}
@@ -365,8 +373,8 @@ let ShMap = ({
               </button>&nbsp;&nbsp;&nbsp;
               <button type="reset" className="side-btns"
                   onClick={e => {
-                    _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");
-                    setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1");
+                    _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");  setActiveOAFKey("-1");
+                    setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1"); setActiveOAFDataKey("-1"); setactiveOAFInsightsKey("-1");
                     setWAreaRadioBtns(''); setopacityVisible(true); 
                     setLocalState({
                       ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
@@ -375,6 +383,20 @@ let ShMap = ({
                   }}
                   >
                 Wider Area
+              </button>&nbsp;&nbsp;&nbsp;
+        </div>
+        <hr></hr>
+        <div style={{"alignSelf": "center", "display": "flex"}}>
+              <button type="reset"
+                className="side-btns"
+                onClick={e => {
+                  setActiveOAFKey("0"); setActiveFieldKey("-1"); setActiveWiderAreaKey("-1"); setactiveOAFInsightsKey("-1"); _showCards(e);
+                  (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)();
+                  setWAreaRadioBtns(''); setwlegendVisible(false); setopacityVisible(false);
+                }}
+                // setActiveWideAreaKey to -1. the other button will be vice-versa
+              >
+                  OAF
               </button>&nbsp;&nbsp;&nbsp;
         </div>
         <hr></hr>
@@ -588,6 +610,118 @@ let ShMap = ({
             </Accordion.Collapse>
           </div>
         </Accordion>
+
+        <Accordion activeKey={activeOAFKey}>
+          <div className='d-flex justify-content-center'>
+            <Accordion.Collapse eventKey="0">
+              <>
+                <div id="oaf-button" style={{"alignSelf": "center"}}>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      e => { _showCards(e); setActiveOAFDataKey("1"); setactiveOAFInsightsKey("-1");
+                      setLocalState({
+                        ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                            "OAF Summary": true
+                          });
+                        }
+                    }
+                  >
+                    OAF Fields
+                  </button>
+                  <Accordion activeKey={activeOAFDataKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <Accordion.Collapse eventKey="1">
+                          <>
+                          <hr></hr>
+                      <DropdownButton
+                            size="sm"
+                            variant="outline-dropdown"
+                            className="mr-1"
+                            id="dropdown-basic-button"
+                            title={"Now"}
+                            as={ButtonGroup}
+                            >
+                              {Object.keys({"Now" : 1 , "Before" : 1 , "Never" : 1}).map(obj_ => 
+                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
+                                      {obj_}
+                                  </Dropdown.Item>
+                              )}
+                          </DropdownButton>
+                          </>
+                    </Accordion.Collapse>
+                  </Accordion>
+                  <hr></hr>
+                  <button
+                    className="current-view field-side-btns" onClick={
+                      (e) => {
+                        _showCards(e); setActiveOAFDataKey("-1"); setactiveOAFInsightsKey("2");
+                        setLocalState({
+                          ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                              "OAF Last Visit": true
+                            });
+                      }
+                    }
+                  >
+                    OAF Now
+                  </button>
+                  <Accordion activeKey={activeOAFInsightsKey}>
+                    {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
+                    <div className='d-flex justify-content-center'>
+                      <Accordion.Collapse eventKey="2">
+                        <>
+                          <hr></hr>
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-dropdown"
+                            className="mr-1"
+                            id="dropdown-basic-button"
+                            title={"1 Month since last visit"}
+                            as={ButtonGroup}
+                            >
+                              {Object.keys({"1 Month since last visit" : 1 , "3 Months since last visit" : 1 , "6 Months since last visit" : 1}).map(obj_ => 
+                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
+                                      {obj_}
+                                  </Dropdown.Item>
+                              )}
+                          </DropdownButton>
+                        </>
+                      </Accordion.Collapse>
+                    </div>
+                  </Accordion>
+                </div>
+              </>
+            </Accordion.Collapse>
+          </div>
+          { localState['OAF Summary'] ? 
+                  <Control
+                    position="topleft"
+                    className={
+                      localState['OAF Summary'] ? "click-propn current-view insight-card slide-in" :
+                      "click-propn current-view insight-card slide-out"
+                    }
+                  >
+                    <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Summary</h6>
+                    <hr />
+                    <div style={{"alignSelf": "center"}}>
+                        {/* <OverViewTable graphData={results} /> */}
+                        </div>
+                  </Control> : null }
+                  { localState['OAF Last Visit'] ? 
+                  <Control
+                    position="topleft"
+                    className={
+                      localState['OAF Last Visit'] ? "click-propn current-view insight-card slide-in" :
+                      "click-propn current-view insight-card slide-out"
+                    }
+                  >
+                    <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Last Visit</h6>
+                    <hr />
+                    <div style={{"alignSelf": "center"}}>
+                        {/* <OverViewTable graphData={results} /> */}
+                        </div>
+                  </Control> : null }
+        </Accordion>
+
         </div>
       </Control>
       {
