@@ -39,6 +39,16 @@ export let attrCreator = (layer, cropTypes, userType) => {
       <strong>Date Collected:</strong> ${
         feature_.properties.DataCollected ?
          feature_.properties.DataCollected : ""
+      }<br/>`
+      attr_list += `
+      <strong>Date of Last Visit:</strong> ${
+        feature_.properties.LastVisit ?
+         feature_.properties.LastVisit : ""
+      }<br/>`
+      attr_list += `
+      <strong>OAF Status:</strong> ${
+        feature_.properties.OAFStatus ?
+         feature_.properties.OAFStatus : ""
       }`
   }
   
