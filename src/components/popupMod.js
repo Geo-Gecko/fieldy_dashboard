@@ -1,9 +1,12 @@
 import L from 'leaflet';
-import axiosInstance from '../actions/axiosInstance';
 import { toast } from 'react-toastify';
 
-import { inside } from '../utilities/gridFns';
+import axiosInstance from '../actions/axiosInstance';
 import { attrCreator } from '../utilities/attrCreator';
+import {
+  GET_ALL_FIELD_DATA_INITIATED
+} from '../actions/types';
+import getcreateputGraphData from '../actions/graphActions';
 
 // Adding nametag labels to all popup-able leaflet layers
 const sourceTypes = ['Layer','Circle','CircleMarker','Marker','Polyline','Polygon','ImageOverlay','VideoOverlay','SVGOverlay','Rectangle','LayerGroup','FeatureGroup','GeoJSON']
@@ -21,11 +24,12 @@ L.Popup.mergeOptions({
    // wanted to add these but won't work
    userType: undefined,
    cropTypes: [],
-   LayersPayload: {}
+   LayersPayload: {},
+   dispatch: undefined
 })
 
 let shownFields = [];
-let removedGridCell;
+let removedGridCell, clickedLayer;
 
 // Modifying the popup mechanics
 L.Popup.include({
@@ -111,16 +115,11 @@ L.Popup.include({
       }
    },
 
-   _onRemoveButtonClick: function (e) {
+   _onRemoveButtonClick: async function (e) {
       let deleted_layer = this._source
       if (deleted_layer.feature.properties.count) {
-         let poly = [
-            [deleted_layer.getLatLngs()[0][0].lat, deleted_layer.getLatLngs()[0][0].lng],
-            [deleted_layer.getLatLngs()[0][1].lat, deleted_layer.getLatLngs()[0][1].lng],
-            [deleted_layer.getLatLngs()[0][2].lat, deleted_layer.getLatLngs()[0][2].lng],
-            [deleted_layer.getLatLngs()[0][3].lat, deleted_layer.getLatLngs()[0][3].lng]
-         ]
-         let leafletGeoJSON = this.options.LayersPayload
+
+         let leafletGeoJSON = JSON.parse(localStorage.getItem("gridCellFields"))
          leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
 
          if (removedGridCell) {
@@ -130,23 +129,40 @@ L.Popup.include({
             deleted_layer._map.removeLayer(fieldInstance)
          })
          leafletGeoJSON.eachLayer(fieldLayer => {
-            let layerLatLng = fieldLayer.getBounds().getCenter()
-            if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
-               // this should be added to the FeatureGroup. -- bb_ron
-               deleted_layer._map.eachLayer(mapLayer => {
-                  // get featuregroup instance below
-                  if (mapLayer._events && mapLayer._events.contextmenu) {
-                     let attr_list = attrCreator(fieldLayer, this.options.cropTypes, this.options.userType)
-                     fieldLayer.bindPopup(
-                       attr_list,
-                       this.options.userType === "EDITOR" ?
-                       {editable: true, removable: true} : {}
-                     );
-                     mapLayer.addLayer(fieldLayer)
-                     shownFields.push(fieldLayer)
-                  }
-               })
+            fieldLayer.on("click", () => {
+
+               this.options.dispatch({
+                  type: GET_ALL_FIELD_DATA_INITIATED,
+                  payload: true
+               });
+               this.options.dispatch(getcreateputGraphData(
+                  {}, 'GET', fieldLayer.feature.properties.field_id,
+                  fieldLayer.feature.properties.CropType,
+                  this.options.cropTypes, leafletGeoJSON.toGeoJSON()
+               ));
+               let attr_list = attrCreator(fieldLayer, this.options.cropTypes, this.options.userType)
+
+               if (clickedLayer) {
+                  clickedLayer.setStyle({ weight: 4, color: "#3388ff" });
+                }
+                document.getElementById("grid-info").innerHTML = attr_list;
+                fieldLayer.setStyle({ weight: 4, color: "#e15b26" });
+                clickedLayer = fieldLayer
+
+            });
+            if (this.options.userType === "EDITOR") {
+               fieldLayer.bindPopup(
+                 null, {editable: true, removable: true}
+               );
             }
+            // this should be added to the FeatureGroup. -- bb_ron
+            deleted_layer._map.eachLayer(mapLayer => {
+               // get featuregroup instance below
+               if (mapLayer._events && mapLayer._events.contextmenu) {
+                  mapLayer._map.addLayer(fieldLayer)
+                  shownFields.push(fieldLayer)
+               }
+            })
          })
          deleted_layer.remove();
          removedGridCell = deleted_layer

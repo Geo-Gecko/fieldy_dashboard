@@ -9,14 +9,16 @@ import ReactGA from 'react-ga';
 // our components
 import {
   postPointLayer, postPolygonLayer, getPolygonLayers,
-  deletePolygonLayer, updatePolygonLayer
+  deletePolygonLayer, updatePolygonLayer, getCropTypes
 } from '../../actions/layerActions';
 import {
   GET_ALL_FIELD_DATA_INITIATED, GET_GROUP_FIELD_DATA, FORECAST_FIELD_ID
 } from '../../actions/types';
 import { getcreateputUserDetail } from '../../actions/userActions';
 import getcreateputGraphData, { getWeeklyIndicators } from '../../actions/graphActions';
-import { getGridData, getIndicatorData } from '../../actions/gridActions';
+import {
+  getGridData, getSummarizedIndicatorData, getFieldsInCell, getKatorsInGridCellAction
+} from '../../actions/gridActions';
 import { getFCastData } from '../../actions/foreCastActions';
 import { attrCreator } from '../../utilities/attrCreator';
 import { getKatorsInCell, newkatorArr } from '../../utilities/IndicatorArr';
@@ -75,10 +77,11 @@ class MapView extends Component {
 
     // ON 2020-dec-11-friday solved the data-flow through the code. yipeee!!
     // this is being called twice and needs to be changed.
-    this.props.dispatch(getGridData());
+    await this.props.dispatch(getGridData());
     this.props.dispatch(getFCastData())
-    await this.props.dispatch(getPolygonLayers());
-    await this.props.dispatch(getIndicatorData());
+    await this.props.dispatch(getCropTypes())
+    if (!this.props.gridLayer.length) await this.props.dispatch(getPolygonLayers());
+    await this.props.dispatch(getSummarizedIndicatorData());
     await this.props.dispatch(getcreateputGraphData(
       {}, 'GET', "", "", this.props.cropTypes,
       this.props.LayersPayload, this.props.katorPayload
@@ -205,11 +208,9 @@ class MapView extends Component {
           leafletFG.addLayer(layer);
         });
       }
-
-      // store the ref for future access to content
-
-      this._editableFG = reactFGref;
     }
+    // store the ref for future access to content
+    this._editableFG = reactFGref;
 
     //here if the feature group is loaded, then we split the area into gridcells
     // that can then be put into a geojson variable that i can load into leaflet --- Zeus
@@ -217,18 +218,22 @@ class MapView extends Component {
       if (this.props.allFieldsIndicatorArray && this.props.allFieldsIndicatorArray.length > 0) {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
           let { grid, gridCellArea } = createGrid(this)
-          grid.on("click", e => {
-            let indicatorsInCell = getKatorsInCell(
+          grid.on("click", async e => {
+            let gridCellFields = await getFieldsInCell(e.layer.feature.properties.grid_id)
+            localStorage.setItem("gridCellFields", JSON.stringify(gridCellFields))
+
+            let indicatorsInCell =  await getKatorsInGridCellAction(e.layer.feature.properties.grid_id)
+            indicatorsInCell = indicatorsInCell.length ? indicatorsInCell : getKatorsInCell(
               e.layer, this.props.allFieldsIndicatorArray,
-              new L.GeoJSON(this.props.LayersPayload)
+              gridCellFields.length ? new L.GeoJSON(gridCellFields) : new L.GeoJSON(this.props.LayersPayload)
             )
             // grid context is stil caught when cell is removed, hence the check
             // this is for accunts with more than 1000 fields
             if (indicatorsInCell.length) {
               this.props.dispatch(newkatorArr(
                 indicatorsInCell, this.props.cropTypes,
-                this.props.LayersPayload, GET_GROUP_FIELD_DATA,
-                e.layer.feature.properties.grid_id
+                gridCellFields.length ? gridCellFields : this.props.LayersPayload,
+                GET_GROUP_FIELD_DATA, e.layer.feature.properties.grid_id
               ))
             }
           })
@@ -268,21 +273,6 @@ class MapView extends Component {
     this.props.getcreateputUserDetail(current_centre, 'PUT')
   }
 
-  handleRightClick = async e => {
-    await this.props.dispatch({
-        type: GET_ALL_FIELD_DATA_INITIATED,
-        payload: true
-    });
-    this.props.dispatch(getcreateputGraphData(
-      {}, 'GET', e.layer.feature.properties.field_id,
-      e.layer.feature.properties.CropType,
-      this.props.cropTypes, this.props.LayersPayload
-    ));
-    this.props.dispatch({
-      type: FORECAST_FIELD_ID,
-      payload: e.layer.feature.properties.field_id
-  })
-  }
 
   toggleGridLayers = () => {
     if (this.state.grid._map) {
@@ -323,6 +313,7 @@ const mapStateToProps = state => ({
   forecastFieldId: state.graphs.forecastFieldId,
   weeklyData: state.graphs.weeklyData,
   NDVIChange: state.graphs.NDVIChange,
+  initiateGetWeeklyData: state.graphs.initiateGetWeeklyData,
 
   // passed for indicatorslinegraph
   cropType: state.graphs.cropType,
@@ -333,7 +324,7 @@ const mapStateToProps = state => ({
 });
 
 const matchDispatchToProps = dispatch => ({
-  postPointLayer, postPolygonLayer, getIndicatorData, getcreateputGraphData,
+  postPointLayer, postPolygonLayer, getSummarizedIndicatorData, getcreateputGraphData,
   deletePolygonLayer, updatePolygonLayer, getcreateputUserDetail, getWeeklyIndicators,
   dispatch
 });

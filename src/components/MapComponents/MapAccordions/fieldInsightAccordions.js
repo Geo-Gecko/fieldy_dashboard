@@ -15,7 +15,8 @@ import '../../popupMod.css'
 
 
 let FieldInsightAccordions = ({
-  _showCards, getEvent, lineGraphState, clickedActiveKey, setClickedActiveKey
+  _showCards, getEvent, lineGraphState,
+  clickedActiveKey, setClickedActiveKey, props
 }) => {
 
   return (
@@ -57,6 +58,7 @@ let FieldInsightAccordions = ({
         `}
         </style>
         <button
+          disabled={props.initiateGetWeeklyData ? true : false}
           className="current-view field-insight-btns" onClick={
             e => {
               _showCards(e); setClickedActiveKey({
@@ -72,6 +74,7 @@ let FieldInsightAccordions = ({
         </button>
         <hr></hr>
         <button
+          disabled={props.initiateGetWeeklyData ? true : false}
           className="current-view field-insight-btns" onClick={
             (e) => {
               _showCards(e); setClickedActiveKey({
@@ -107,6 +110,7 @@ let FieldInsightAccordions = ({
         </Accordion>
         <hr></hr>
         <button
+          disabled={props.initiateGetWeeklyData ? true : false}
           className="current-view field-insight-btns" onClick={
             (e) => {
               _showCards(e); setClickedActiveKey({

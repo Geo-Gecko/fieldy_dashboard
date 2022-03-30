@@ -179,7 +179,7 @@ let ShMap = ({
   }
 
 
-  let results = [];
+  let overViewSummary = [];
   if (props.LayersPayload.length) {
     let areas = {}, counts = {}, cropType, colours = {};
     props.LayersPayload.forEach(feature_ => {
@@ -204,7 +204,7 @@ let ShMap = ({
        }
     });
     for (cropType in areas) {
-      results.push({
+      overViewSummary.push({
         cropType: cropType, area: areas[cropType].toFixed(2),
         count: counts[cropType], colours: colours[cropType]
       });
@@ -285,7 +285,7 @@ let ShMap = ({
     <React.Fragment>
     <ToastContainer />
     {
-      initiateGetData ?
+      initiateGetData || props.initiateGetWeeklyData ?
         <div className="map-loading">
           <Spinner animation="border" variant="danger" />
         </div> : null
@@ -457,7 +457,7 @@ let ShMap = ({
                           <hr></hr>
                           <FieldInsightAccordions
                             clickedActiveKey={clickedActiveKey} setClickedActiveKey={setClickedActiveKey}
-                            _showCards={_showCards} lineGraphState={lineGraphState} getEvent={getEvent}
+                            _showCards={_showCards} lineGraphState={lineGraphState} getEvent={getEvent} props={props}
                           />
                         </>
                       </Accordion.Collapse>
@@ -591,7 +591,7 @@ let ShMap = ({
         </div>
       </Control>
       {
-      localState['Field Data'] && results.length ?
+      localState['Field Data'] ?
         <React.Fragment>
           <style type="text/css">
                 {`
@@ -625,7 +625,7 @@ let ShMap = ({
             X
             </Button>
             {/* <h6 style={{"padding": "10px", "font-weight": "bold"}}>Field Overview</h6>
-            <OverViewTable graphData={results} /> */}
+            <OverViewTable graphData={overViewSummary} /> */}
             <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Monthly Field Indicators</h6>
             <IndicatorsLineGraph
               SidePanelCollapsed={false} cropTypes={props.cropTypes} 
@@ -644,6 +644,8 @@ let ShMap = ({
          _showCards={_showCards}
          _editableFG={_editableFG}
          weeklyData={props.weeklyData}
+         setLocalState={setLocalState}
+         props={props}
         /> : <React.Fragment />
       }
       <CookiesPolicy mapInstance={mapInstance} state={state} />
@@ -734,6 +736,7 @@ let ShMap = ({
       <FeatureGroup
         ref={(reactFGref) => { _onFeatureGroupReady(reactFGref, props); }}
         onClick={handleRightClick}
+        onContextmenu={() => console.log("dummy context menu for popupMod.js 'mapLayer._events.contextmenu'")}
       >
         {userType === "EDITOR" ? <EditControl
           position='topright'
