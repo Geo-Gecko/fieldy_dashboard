@@ -199,7 +199,8 @@ function IndicatorsLineGraph (props) {
             }
         }
         options={{
-          title: {
+          plugins: {
+            title: {
               display: true,
               position: "top",
               fontSize: 18,
@@ -212,25 +213,26 @@ function IndicatorsLineGraph (props) {
                   (props.groupFieldIndicatorArray.length - 1) / 4
                   } fields` : "All fields"
               }`
-          },
+            },
             legend: {
                 display: true,
                 position: "bottom",
             },
-            scales: {
-                yAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: lineGraphState.indicatorObj[displayedIndicator][1]
-                  }
-                }],
-                xAxes: [{
-                  scaleLabel: {
-                    display: false,
-                    labelString: "months"
-                  }
-                }],
-              }
+          },
+          scales: {
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: lineGraphState.indicatorObj[displayedIndicator][1]
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: false,
+                  labelString: "months"
+                }
+              }],
+            }
         }}
       />
     </React.Fragment>

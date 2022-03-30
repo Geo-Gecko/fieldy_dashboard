@@ -110,7 +110,7 @@ export const colorGrid = (grid, gridIndicator) => {
 }
 
 export const bindGridPopup = (
-  layer, fieldCount, grid_summary, cropTypes=[], userType="", savedGridLength=0
+  layer, fieldCount, dispatch=undefined, grid_summary, cropTypes=[], userType="", savedGridLength=0
 ) => {
   let gridInfo =
     `
@@ -146,7 +146,7 @@ export const bindGridPopup = (
   if (savedGridLength) {
     layer.bindPopup(
       "",
-      {removable: true, cropTypes, userType}
+      {removable: true, cropTypes, userType, dispatch}
     )
   }
 }

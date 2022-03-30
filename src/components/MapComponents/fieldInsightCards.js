@@ -16,7 +16,7 @@ import { localGroupBy } from '../../utilities/simpleUtilities';
 
 
 let FieldInsightCards = (
-  { localState, _showCards, weeklyData, _editableFG, selectedIndicator, props }
+  { localState, _showCards, weeklyData, _editableFG, selectedIndicator, props, setLocalState }
 ) => {
 
   let { katorPayload, fieldId } = props;
@@ -112,13 +112,16 @@ let FieldInsightCards = (
                   </Button>
                   <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Bio Mass Graph</h6>
                   <NdviPerformanceLineGraph SidePanelCollapsed={false} />
-                </Control> : toast("Click on a field to show this chart", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                }) : null }
+                </Control> : (() => {
+                  toast("Click on a field to show this chart", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    });
+                  setLocalState({...localState, "Biomass Change": false})
+                })() : null }
           { localState['Top/Bottom Performance'] ?
           <Control
             position="topleft"
