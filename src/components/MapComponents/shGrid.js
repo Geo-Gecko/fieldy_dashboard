@@ -8,14 +8,14 @@ import { inside, colorGrid, bindGridPopup } from '../../utilities/gridFns';
 let maxCount = 0;
 
 let createGrid = mapViewInst => {
-  let { _editableFG, myMap } = mapViewInst
-  let { LayersPayload, allFieldsIndicatorArray, cropTypes } = mapViewInst.props
+  let { _editableFG } = mapViewInst
+  let { LayersPayload, allFieldsIndicatorArray, cropTypes, dispatch } = mapViewInst.props
   let savedGrid = mapViewInst.props.gridLayer
 
   if (savedGrid.length) {
 
     savedGrid.forEach(gridLayer => {
-      gridLayer.properties.grid_id = uuidv4();
+      gridLayer.properties.grid_id = gridLayer.properties.field_id;
       try{
         gridLayer.properties.field_attributes.grid_summary =
           JSON.parse(
@@ -37,9 +37,9 @@ let createGrid = mapViewInst => {
       let fieldCount = layer.feature.properties.count
       if (fieldCount > 0) {
         bindGridPopup(
-          layer, fieldCount,
+          layer, fieldCount, dispatch,
           layer.feature.properties.field_attributes.grid_summary,
-          cropTypes, mapViewInst.state.userType, LayersPayload
+          cropTypes, mapViewInst.state.userType, savedGrid.length
         )
       }
     })
@@ -172,7 +172,7 @@ let createGrid = mapViewInst => {
     layer.feature.properties.field_attributes = {grid_summary}
     //bind a popup for now just showing the count of the features per grid cell
     if (fieldCount > 0) {
-      bindGridPopup(layer, fieldCount, grid_summary)
+      bindGridPopup(layer, fieldCount, undefined, grid_summary)
     }
 
     maxCount = fieldCount > maxCount ? fieldCount : maxCount;

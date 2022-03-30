@@ -1,7 +1,7 @@
 // import { toast } from 'react-toastify';
 import axiosInstance from './axiosInstance';
 import {
-  GET_LAYERS_SUCCESS
+  GET_LAYERS_SUCCESS, GET_GROP_TYPES
 } from './types';
 
 export const postPointLayer = postData => {
@@ -25,6 +25,26 @@ return axiosInstance
     console.log(error)
     });
 };
+
+
+export const getCropTypes = () => dispatch => {
+  return axiosInstance
+      .get('/layers/croptypes/')
+      .then(response => {
+          let CropTypes = response.data.map(row_ => row_.CropType)
+          dispatch({
+            type: GET_GROP_TYPES,
+            payload: {
+              cropTypes: CropTypes
+            }
+          })
+          return response.data
+      })
+      .catch(error => {
+      console.log(error)
+      });
+  };
+
 
 export const getPolygonLayers = () => dispatch => {
   return axiosInstance
