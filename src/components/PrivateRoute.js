@@ -6,7 +6,7 @@ const PrivateRoute = ({ children, ...props }) => {
 
     // call from auth-service
     // const urlParams = new URLSearchParams(window.location.search)
-    const x_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MTE2NDMxOGVhZWY5MTAwMGFkY2ZlYWMiLCJ1c2VyVHlwZSI6IlZJRVdFUiIsIm1lbWJlck9mIjoiNjExNjQyMDdlYWVmOTEwMDBhZGNmZWFiIiwiYXBpVXNlciI6ZmFsc2UsInBheW1lbnRMZXZlbHMiOiJTRUNPTkQgTEVWRUwiLCJpYXQiOjE2NDgwMzg3MTJ9.Q3-8YIiR69u7FoZ4q40EBb8F5mdYoHNlICyOuyHIYTA"
+    const x_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MTE2NDMxOGVhZWY5MTAwMGFkY2ZlYWMiLCJ1c2VyVHlwZSI6IlZJRVdFUiIsIm1lbWJlck9mIjoiNjExNjQyMDdlYWVmOTEwMDBhZGNmZWFiIiwiYXBpVXNlciI6ZmFsc2UsInBheW1lbnRMZXZlbHMiOiJTRUNPTkQgTEVWRUwiLCJpYXQiOjE2NDg2Mjg4NTd9.7Gsn91veziaMSx-OMepr1ePNthK1N23IhaXq0YgxRK4"
     localStorage.setItem("x-token", x_token);
     if (x_token) {
         localStorage.setItem("x-token", x_token);
