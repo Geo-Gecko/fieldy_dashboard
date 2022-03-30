@@ -644,6 +644,7 @@ let ShMap = ({
          _showCards={_showCards}
          _editableFG={_editableFG}
          weeklyData={props.weeklyData}
+         setLocalState={setLocalState}
          props={props}
         /> : <React.Fragment />
       }
