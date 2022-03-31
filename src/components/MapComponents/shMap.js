@@ -670,6 +670,16 @@ let ShMap = ({
                           ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                               "OAF Last Visit": true
                             }); await props.dispatch(getLastVisits(1));
+
+                            const currentMth = new Date(Date.now()).getMonth()
+                            _editableFG.leafletElement.eachLayer(l_ => {
+                              let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
+                              if (Math.abs(currentMth - visitMth) <= 1) {
+                                l_.setStyle({ weight: 4, color: "#e15b26" })
+                              } else {
+                                l_.setStyle({ weight: 4, color: "#3388ff" });
+                              }
+                            });
                       }
                     }
                   >
@@ -691,9 +701,19 @@ let ShMap = ({
                             >
                               {Object.keys(oALastVIsits).map(obj_ => 
                                   <Dropdown.Item key={obj_} eventKey={obj_} onClick={async e => {
-                                    setOALastVisit(e.currentTarget.textContent);
-                                    await props.dispatch(getLastVisits(oALastVIsits[e.currentTarget.textContent]));
-                                    console.log(JSON.parse(JSON.stringify(props.visitsPerDate)), "nyehehehe")
+                                    let selectedText = e.currentTarget.textContent
+                                    setOALastVisit(selectedText);
+                                    await props.dispatch(getLastVisits(oALastVIsits[selectedText]));
+
+                                    const currentMth = new Date(Date.now()).getMonth()
+                                    _editableFG.leafletElement.eachLayer(l_ => {
+                                      let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
+                                      if (Math.abs(currentMth - visitMth) <= oALastVIsits[selectedText]) {
+                                        l_.setStyle({ weight: 4, color: "#e15b26" })
+                                      } else {
+                                        l_.setStyle({ weight: 4, color: "#3388ff" });
+                                      }
+                                    })
                                   }}>
                                       {obj_}
                                   </Dropdown.Item>
