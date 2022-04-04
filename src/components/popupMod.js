@@ -159,7 +159,7 @@ L.Popup.include({
             deleted_layer._map.eachLayer(mapLayer => {
                // get featuregroup instance below
                if (mapLayer._events && mapLayer._events.contextmenu) {
-                  mapLayer._map.addLayer(fieldLayer)
+                  mapLayer.addLayer(fieldLayer)
                   shownFields.push(fieldLayer)
                }
             })

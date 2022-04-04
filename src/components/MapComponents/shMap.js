@@ -38,9 +38,10 @@ import CustomWMSLayer from './customLayer';
 import FieldInsightCards from './fieldInsightCards';
 import FieldInsightAccordions from './MapAccordions/fieldInsightAccordions';
 import { getWeeklyIndicators } from '../../actions/graphActions';
+import { getLastVisits } from '../../actions/oaActions';
 import { colorGrid } from '../../utilities/gridFns';
 
-import { OverViewTable } from '../overView';
+import { OAVisitsTable } from '../overView';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -184,6 +185,12 @@ let ShMap = ({
   const defaultWThreshVals = {
     "Elevation": [0, 999, 1, ""], "Landcover": [10, 95, 1, ""],
     "Slope": [0, 10, 1, ""], "Fertility": [15, 9644, 1, ""]
+  }
+
+  const [oALastVIsit, setOALastVisit] = useState("1 Month since last visit")
+  let oALastVIsits = {
+    "1 Month since last visit" : 1 ,
+    "3 Months since last visit" : 3 , "6 Months since last visit" : 6
   }
 
 
@@ -386,7 +393,11 @@ let ShMap = ({
               </button>&nbsp;&nbsp;&nbsp;
         </div>
         <hr></hr>
-        <div style={{"alignSelf": "center", "display": "flex"}}>
+        {
+          localStorage.getItem("user") !== "undefined" ?
+          JSON.parse(localStorage.getItem("user"))["memberOf"] === "623731215344c1000aae2459" || 
+          JSON.parse(localStorage.getItem("user"))["uid"] === "623731215344c1000aae2459" ? 
+          <div style={{"alignSelf": "center", "display": "flex"}}>
               <button type="reset"
                 className="side-btns"
                 onClick={e => {
@@ -398,7 +409,7 @@ let ShMap = ({
               >
                   OAF
               </button>&nbsp;&nbsp;&nbsp;
-        </div>
+        </div> : null : null}
         <hr></hr>
         <Accordion activeKey={activeFieldKey}>
           <div className='d-flex justify-content-center'>
@@ -653,11 +664,21 @@ let ShMap = ({
                   <hr></hr>
                   <button
                     className="current-view field-side-btns" onClick={
-                      (e) => {
+                      async e => {
                         _showCards(e); setActiveOAFDataKey("-1"); setactiveOAFInsightsKey("2");
                         setLocalState({
                           ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                               "OAF Last Visit": true
+                            }); await props.dispatch(getLastVisits(1));
+
+                            const currentMth = new Date(Date.now()).getMonth()
+                            _editableFG.leafletElement.eachLayer(l_ => {
+                              let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
+                              if (Math.abs(currentMth - visitMth) <= 1) {
+                                l_.setStyle({ weight: 4, color: "#e15b26" })
+                              } else {
+                                l_.setStyle({ weight: 4, color: "#3388ff" });
+                              }
                             });
                       }
                     }
@@ -675,11 +696,25 @@ let ShMap = ({
                             variant="outline-dropdown"
                             className="mr-1"
                             id="dropdown-basic-button"
-                            title={"1 Month since last visit"}
+                            title={oALastVIsit}
                             as={ButtonGroup}
                             >
-                              {Object.keys({"1 Month since last visit" : 1 , "3 Months since last visit" : 1 , "6 Months since last visit" : 1}).map(obj_ => 
-                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
+                              {Object.keys(oALastVIsits).map(obj_ => 
+                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={async e => {
+                                    let selectedText = e.currentTarget.textContent
+                                    setOALastVisit(selectedText);
+                                    await props.dispatch(getLastVisits(oALastVIsits[selectedText]));
+
+                                    const currentMth = new Date(Date.now()).getMonth()
+                                    _editableFG.leafletElement.eachLayer(l_ => {
+                                      let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
+                                      if (Math.abs(currentMth - visitMth) <= oALastVIsits[selectedText]) {
+                                        l_.setStyle({ weight: 4, color: "#e15b26" })
+                                      } else {
+                                        l_.setStyle({ weight: 4, color: "#3388ff" });
+                                      }
+                                    })
+                                  }}>
                                       {obj_}
                                   </Dropdown.Item>
                               )}
@@ -717,7 +752,7 @@ let ShMap = ({
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Last Visit</h6>
                     <hr />
                     <div style={{"alignSelf": "center"}}>
-                        {/* <OverViewTable graphData={results} /> */}
+                        <OAVisitsTable visitsPerDate={props.visitsPerDate} monthPeriod={oALastVIsit} />
                         </div>
                   </Control> : null }
         </Accordion>

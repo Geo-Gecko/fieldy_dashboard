@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 import BootstrapTable from 'react-bootstrap-table-next';
 
 
@@ -14,6 +15,25 @@ let commafy = (value) => {
       x1 = x1.replace(rgx, '$1' + ',' + '$2');
   }
   return `${x1 + x2}`;
+}
+
+export const OAVisitsTable = ({ visitsPerDate, monthPeriod }) => {
+
+  let totalVisits = 0;
+  totalVisits = visitsPerDate.reduce(
+      (summn, row_) => summn + row_.fieldCount, totalVisits
+  )
+
+  return (
+    <div className='row'>
+      <div className='col-md-6'>
+        <strong>{`Fields visited in last ${monthPeriod.split(" ").slice(0, 2)}`}</strong>
+      </div>
+      <div className='col-md-6'>
+        <strong>{totalVisits}</strong>
+      </div>
+    </div> 
+  );
 }
 
 export const OverViewTable = ({ graphData }) => {
