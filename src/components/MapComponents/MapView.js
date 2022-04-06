@@ -315,7 +315,7 @@ const mapStateToProps = state => ({
   NDVIChange: state.graphs.NDVIChange,
   initiateGetWeeklyData: state.graphs.initiateGetWeeklyData,
   visitsPerDate: state.oaData.visitsPerDate,
-  status: state.oaData.status,
+  oafStatus: state.oaData.oafStatus,
 
   // passed for indicatorslinegraph
   cropType: state.graphs.cropType,
