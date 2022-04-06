@@ -20,9 +20,9 @@ export const getLastVisits = month_ => dispatch => {
     });
 };
 
-export const getStatus = status_ => dispatch => {
+export const getStatus = () => dispatch => {
   return axiosInstance
-    .get(`/layers/status-summary/${status_}`)
+    .get('/layers/status-summary/')
     .then(response => {
       dispatch({
         type: GET_STATUS,

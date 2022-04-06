@@ -193,11 +193,7 @@ let ShMap = ({
     "3 Months since last visit" : 3 , "6 Months since last visit" : 6
   }
 
-  const [sTaTuS, setsTaTuS] = useState("Currently")
-  let sTaTuSeS = {
-    "Currently" : "Currently" ,
-    "Not Currently" : "Not Currently" , "Once Was" : "Once Was"
-  }
+  const [oafStatusDisplay, setOafStatusDisplay] = useState("Currently")
 
   let overViewSummary = [];
   if (props.LayersPayload.length) {
@@ -638,11 +634,12 @@ let ShMap = ({
                       setLocalState({
                         ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                             "OAF Summary": true
-                          }); await props.dispatch(getStatus("Currently"));
+                          });
+                          if (!props.oafStatus.length) await props.dispatch(getStatus())
 
                           _editableFG.leafletElement.eachLayer(l_ => {
                             let status = l_.feature.properties.OAFStatus;
-                            if ( status == "Currently") {
+                            if ( status === oafStatusDisplay) {
                               l_.setStyle({ weight: 4, color: "#e15b26" })
                             } else {
                               l_.setStyle({ weight: 4, color: "#3388ff" });
@@ -663,18 +660,18 @@ let ShMap = ({
                             variant="outline-dropdown"
                             className="mr-1"
                             id="dropdown-basic-button"
-                            title={sTaTuS}
+                            title={oafStatusDisplay}
                             as={ButtonGroup}
                             >
-                              {Object.keys(sTaTuSeS).map(obj_ => 
-                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={async e => {
+                              {["Currently", "Not Currently", "Once Was"].map(obj_ => 
+                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={ e => {
                                     let selectedText = e.currentTarget.textContent
-                                    setsTaTuS(selectedText);
-                                    await props.dispatch(getStatus(sTaTuS[selectedText]));
+                                    setOafStatusDisplay(selectedText);
+                                    console.log(e.currentTarget.textContent)
 
                                     _editableFG.leafletElement.eachLayer(l_ => {
                                       let status = l_.feature.properties.OAFStatus;
-                                      if ( status == sTaTuS[selectedText]) {
+                                      if ( status === selectedText) {
                                         l_.setStyle({ weight: 4, color: "#e15b26" })
                                       } else {
                                         l_.setStyle({ weight: 4, color: "#3388ff" });
@@ -702,7 +699,7 @@ let ShMap = ({
                             const currentMth = new Date(Date.now()).getMonth()
                             _editableFG.leafletElement.eachLayer(l_ => {
                               let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
-                              if (Math.abs(currentMth - visitMth) <= 1) {
+                              if (Math.abs(currentMth - visitMth) <= oALastVIsits[oALastVIsit]) {
                                 l_.setStyle({ weight: 4, color: "#e15b26" })
                               } else {
                                 l_.setStyle({ weight: 4, color: "#3388ff" });
@@ -766,7 +763,7 @@ let ShMap = ({
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Summary</h6>
                     <hr />
                     <div style={{"alignSelf": "center"}}>
-                        {<OAStatusTable status={props.status} />}
+                        {<OAStatusTable status={props.oafStatus} />}
                         </div>
                   </Control> : null }
                   { localState['OAF Last Visit'] ? 
