@@ -1,6 +1,6 @@
-import { GET_LAST_VISITS } from '../actions/types';
+import { GET_LAST_VISITS, GET_STATUS } from '../actions/types';
 
-const initialState = { visitsPerDate: [] };
+const initialState = { visitsPerDate: [], status: [] };
 
 export const oaReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -8,7 +8,12 @@ export const oaReducer = (state = initialState, action) => {
       return {
         ...state,
         visitsPerDate: action.payload
-      };
+      }
+    case GET_STATUS:
+      return {
+        ...state,
+        status: action.payload
+      } ; 
     default:
       return state;
   }

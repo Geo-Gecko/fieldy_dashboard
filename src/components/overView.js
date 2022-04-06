@@ -36,6 +36,20 @@ export const OAVisitsTable = ({ visitsPerDate, monthPeriod }) => {
   );
 }
 
+export const OAStatusTable = ({ status }) => {
+  console.log(status)
+  
+  const columns = [
+    { dataField: 'OAFStatus', text: 'Status' },
+    { dataField: 'fieldCount', text: 'Number of Fields' },
+  ];
+  return (
+    <React.Fragment>
+      <BootstrapTable keyField='OAFStatus' data={ status } columns={ columns } />
+    </React.Fragment> 
+    );
+}
+
 export const OverViewTable = ({ graphData }) => {
 
   graphData.sort((row1, row2) => {
