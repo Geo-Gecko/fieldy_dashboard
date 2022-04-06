@@ -38,10 +38,10 @@ import CustomWMSLayer from './customLayer';
 import FieldInsightCards from './fieldInsightCards';
 import FieldInsightAccordions from './MapAccordions/fieldInsightAccordions';
 import { getWeeklyIndicators } from '../../actions/graphActions';
-import { getLastVisits } from '../../actions/oaActions';
+import { getLastVisits, getStatus } from '../../actions/oaActions';
 import { colorGrid } from '../../utilities/gridFns';
 
-import { OAVisitsTable } from '../overView';
+import { OAVisitsTable, OAStatusTable } from '../overView';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -193,6 +193,11 @@ let ShMap = ({
     "3 Months since last visit" : 3 , "6 Months since last visit" : 6
   }
 
+  const [sTaTuS, setsTaTuS] = useState("Currently")
+  let sTaTuSeS = {
+    "Currently" : "Currently" ,
+    "Not Currently" : "Not Currently" , "Once Was" : "Once Was"
+  }
 
   let overViewSummary = [];
   if (props.LayersPayload.length) {
@@ -629,12 +634,21 @@ let ShMap = ({
                 <div id="oaf-button" style={{"alignSelf": "center"}}>
                   <button
                     className="current-view field-side-btns" onClick={
-                      e => { _showCards(e); setActiveOAFDataKey("1"); setactiveOAFInsightsKey("-1");
+                      async e => { _showCards(e); setActiveOAFDataKey("1"); setactiveOAFInsightsKey("-1");
                       setLocalState({
                         ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                             "OAF Summary": true
-                          });
-                        }
+                          }); await props.dispatch(getStatus("Currently"));
+
+                          _editableFG.leafletElement.eachLayer(l_ => {
+                            let status = l_.feature.properties.OAFStatus;
+                            if ( status == "Currently") {
+                              l_.setStyle({ weight: 4, color: "#e15b26" })
+                            } else {
+                              l_.setStyle({ weight: 4, color: "#3388ff" });
+                            }
+                          })
+                        } 
                     }
                   >
                     OAF Fields
@@ -649,15 +663,29 @@ let ShMap = ({
                             variant="outline-dropdown"
                             className="mr-1"
                             id="dropdown-basic-button"
-                            title={"Now"}
+                            title={sTaTuS}
                             as={ButtonGroup}
                             >
-                              {Object.keys({"Now" : 1 , "Before" : 1 , "Never" : 1}).map(obj_ => 
-                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={getEvent}>
+                              {Object.keys(sTaTuSeS).map(obj_ => 
+                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={async e => {
+                                    let selectedText = e.currentTarget.textContent
+                                    setsTaTuS(selectedText);
+                                    await props.dispatch(getStatus(sTaTuS[selectedText]));
+
+                                    _editableFG.leafletElement.eachLayer(l_ => {
+                                      let status = l_.feature.properties.OAFStatus;
+                                      if ( status == sTaTuS[selectedText]) {
+                                        l_.setStyle({ weight: 4, color: "#e15b26" })
+                                      } else {
+                                        l_.setStyle({ weight: 4, color: "#3388ff" });
+                                      }
+                                    })
+                                  }}>
                                       {obj_}
                                   </Dropdown.Item>
                               )}
                           </DropdownButton>
+
                           </>
                     </Accordion.Collapse>
                   </Accordion>
@@ -738,7 +766,7 @@ let ShMap = ({
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Summary</h6>
                     <hr />
                     <div style={{"alignSelf": "center"}}>
-                        {/* <OverViewTable graphData={results} /> */}
+                        {<OAStatusTable status={props.status} />}
                         </div>
                   </Control> : null }
                   { localState['OAF Last Visit'] ? 
