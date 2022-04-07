@@ -378,26 +378,35 @@ let ShMap = ({
                 // setActiveWideAreaKey to -1. the other button will be vice-versa
               >
                   Fields
-              </button>&nbsp;&nbsp;&nbsp;
-              <button type="reset" className="side-btns"
-                  onClick={e => {
-                    _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");  setActiveOAFKey("-1");
-                    setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1"); setActiveOAFDataKey("-1"); setactiveOAFInsightsKey("-1");
-                    setWAreaRadioBtns(''); setopacityVisible(true); 
-                    setLocalState({
-                      ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
-                      "Wider Area Landcover": false
-                    })
-                  }}
-                  >
-                Wider Area
-              </button>&nbsp;&nbsp;&nbsp;
+              </button>
+              {
+                localStorage.getItem("user") ?
+                JSON.parse(localStorage.getItem("user"))["paymentLevels"] === "SECOND LEVEL" ?
+                <React.Fragment>
+                  &nbsp;&nbsp;&nbsp; <button type="reset" className="side-btns"
+                      onClick={e => {
+                        _showCards(e); setActiveFieldKey("-1"); setActiveWiderAreaKey("3");  setActiveOAFKey("-1");
+                        setactiveFieldInsightsKey("-1"); setActiveFieldDataKey("-1"); setActiveOAFDataKey("-1"); setactiveOAFInsightsKey("-1");
+                        setWAreaRadioBtns(''); setopacityVisible(true); 
+                        setLocalState({
+                          ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
+                          "Wider Area Landcover": false
+                        })
+                      }}
+                      >
+                    Wider Area
+                  </button>&nbsp;&nbsp;&nbsp;
+                </React.Fragment> : null : null
+              }
         </div>
         <hr></hr>
+        {/* 61164207eaef91000adcfeab */}
         {
-          localStorage.getItem("user") !== "undefined" ?
-          JSON.parse(localStorage.getItem("user"))["memberOf"] === "623731215344c1000aae2459" || 
-          JSON.parse(localStorage.getItem("user"))["uid"] === "623731215344c1000aae2459" ? 
+          localStorage.getItem("user") ?
+          [
+            JSON.parse(localStorage.getItem("user"))["memberOf"],
+            JSON.parse(localStorage.getItem("user"))["uid"]
+          ].includes("623731215344c1000aae2459") ? 
           <div style={{"alignSelf": "center", "display": "flex"}}>
               <button type="reset"
                 className="side-btns"
@@ -473,16 +482,20 @@ let ShMap = ({
                     </Accordion.Collapse>
                   </Accordion>
                   <hr></hr>
-                  <button
-                    className="current-view field-side-btns" onClick={
-                      (e) => {
-                        _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2");
-                        return !props.weeklyData.length ? props.dispatch(getWeeklyIndicators('')) : null;
+                  {
+                    localStorage.getItem("user") ?
+                    JSON.parse(localStorage.getItem("user"))["paymentLevels"] === "SECOND LEVEL" ?
+                    <button
+                      className="current-view field-side-btns" onClick={
+                        (e) => {
+                          _showCards(e); setActiveFieldDataKey("-1"); setactiveFieldInsightsKey("2");
+                          return !props.weeklyData.length ? props.dispatch(getWeeklyIndicators('')) : null;
+                        }
                       }
-                    }
-                  >
-                    Field Insight
-                  </button>
+                    >
+                      Field Insight
+                    </button> : null : null
+                  }
                   <Accordion activeKey={activeFieldInsightsKey}>
                     {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
                     <div className='d-flex justify-content-center'>
@@ -970,7 +983,7 @@ let ShMap = ({
               `}
         </style>
         <div id="grid-info">Click on grid or field for info</div><br/>
-        {opacityVisible && <div style= {{"padding": "5px", "box-shadow": "0 1px 5px rgba(0,0,0,0.65)", "background": "#ecebeb"}}>
+        {opacityVisible && <div style= {{"padding": "5px", "boxShadow": "0 1px 5px rgba(0,0,0,0.65)", "background": "#ecebeb"}}>
           <label>
               Layer opacity
               <br/><input id="opacity-input" type="range" min="0" max="1" step="0.01" />

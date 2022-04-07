@@ -22,7 +22,7 @@ export const getKatorsInCell = (gridCell, indicatorArr, fields) => {
     });
     originalRespObj.push(RespObjRow);
   })
-  fields.eachLayer(fieldLayer => {
+  Object.keys(fields).length && fields.eachLayer(fieldLayer => {
     let layerLatLng = fieldLayer.getBounds().getCenter()
     if (inside([layerLatLng.lat, layerLatLng.lng], poly)) {
       let fieldId = fieldLayer.feature.properties.field_id
