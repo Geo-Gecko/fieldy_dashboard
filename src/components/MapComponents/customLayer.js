@@ -1,5 +1,3 @@
-import React, { Component } from 'react';
-import { withLeaflet, useLeaflet } from "react-leaflet";
 import * as WMS from "leaflet.wms";
 import "leaflet.control.opacity/dist/L.Control.Opacity.css";
 import 'leaflet.control.opacity';
@@ -40,9 +38,7 @@ function CustomWMSLayer(
     localState, map, widerAreaLayer, setWiderAreaLayer, wAsliderValues, setWAsliderValues
 ) {
 
-    // let url = process.env.GEOSERVER_URL;
-    let url = "https://geogecko.gis-cdn.net/geoserver/fieldy_data/wms"
-    // console.log(process.env.GEOSERVER_URL, process.env.REACT_APP_SH_BACKEND_URL)
+    let url = process.env.REACT_APP_GEOSERVER_URL;
     let layers = ["fieldy_data:kenya_HT_grid"];
     let options = {
         identify: false,

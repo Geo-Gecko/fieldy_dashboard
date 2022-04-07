@@ -223,16 +223,26 @@ class MapView extends Component {
             localStorage.setItem("gridCellFields", JSON.stringify(gridCellFields))
 
             let indicatorsInCell =  await getKatorsInGridCellAction(e.layer.feature.properties.grid_id)
-            indicatorsInCell = indicatorsInCell.length ? indicatorsInCell : getKatorsInCell(
-              e.layer, this.props.allFieldsIndicatorArray,
-              gridCellFields.length ? new L.GeoJSON(gridCellFields) : new L.GeoJSON(this.props.LayersPayload)
-            )
+
+            if (!indicatorsInCell.length) {
+              if (gridCellFields && gridCellFields.length) {
+                indicatorsInCell = getKatorsInCell(
+                  e.layer, this.props.allFieldsIndicatorArray, new L.GeoJSON(gridCellFields)
+                )
+              }
+
+              if (this.props.LayersPayload.length) {
+                indicatorsInCell = getKatorsInCell(
+                  e.layer, this.props.allFieldsIndicatorArray, new L.GeoJSON(this.props.LayersPayload)
+                )
+              }
+            }
             // grid context is stil caught when cell is removed, hence the check
             // this is for accunts with more than 1000 fields
             if (indicatorsInCell.length) {
               this.props.dispatch(newkatorArr(
                 indicatorsInCell, this.props.cropTypes,
-                gridCellFields.length ? gridCellFields : this.props.LayersPayload,
+                gridCellFields && gridCellFields.length ? gridCellFields : this.props.LayersPayload,
                 GET_GROUP_FIELD_DATA, e.layer.feature.properties.grid_id
               ))
             }
