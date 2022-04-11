@@ -19,3 +19,5 @@ node_modules/
 src
 .env
 .env.production.local
+
+package-lock.json
