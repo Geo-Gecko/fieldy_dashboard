@@ -220,6 +220,7 @@ class MapView extends Component {
           let { grid, gridCellArea } = createGrid(this)
           grid.on("click", async e => {
             let gridCellFields = await getFieldsInCell(e.layer.feature.properties.grid_id)
+            localStorage.removeItem("gridCellFields")
             localStorage.setItem("gridCellFields", JSON.stringify(gridCellFields))
 
             let indicatorsInCell =  await getKatorsInGridCellAction(e.layer.feature.properties.grid_id)
