@@ -294,3 +294,16 @@ input[type="range"]::-ms-fill-upper {
 /* https://github.com/Leaflet/Leaflet/issues/4686 */
 .leaflet-fade-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-zoom-animated { will-change:auto !important; }
 /* ##################################################### */
+
+#wideArea_lgds {
+  position: absolute;
+  left: 12rem;
+  bottom: 0%;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+  border-radius: 4px;
+}
+
+.widerarea-lgds{
+  background-color: #f2efe9;
+  padding-top: 5px;
+}

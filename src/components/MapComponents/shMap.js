@@ -896,20 +896,11 @@ let ShMap = ({
       <Control 
         position="bottomleft"
         >
-        <style type="text/css">
-          {`
-           #wideArea_lgds {
-                    position: absolute;
-                    left: 12rem;
-                    bottom: 0%;
-                  }
-              `}
-        </style>
       {wlegendVisible && <div id='wideArea_lgds'>
-        {localState["Wider Area Landcover"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Landcover</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_lc"/></div>}
-        {localState["Wider Area Slope"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Slope (Degrees)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_slope"/></div>}
-        {localState["Wider Area Elevation"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Elevation (m.a.s.l)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_elevation"/></div>}
-        {localState["Wider Area Fertility"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Fertility Classification</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_fcc"/></div>}
+        {localState["Wider Area Landcover"] && <div className="widerarea-lgds"><p>Landcover</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_lc"/></div>}
+        {localState["Wider Area Slope"] && <div className="widerarea-lgds"><p>Slope (Degrees)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_slope"/></div>}
+        {localState["Wider Area Elevation"] && <div className="widerarea-lgds"><p>Elevation (m.a.s.l)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_elevation"/></div>}
+        {localState["Wider Area Fertility"] && <div className="widerarea-lgds"><p>Fertility Classification</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_fcc"/></div>}
       </div>}
       </Control>
       <Legend map={myMap} gridCellArea={gridCellArea} />
