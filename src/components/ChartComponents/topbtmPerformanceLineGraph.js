@@ -5,6 +5,7 @@ import { CSVLink } from "react-csv";
 import { Button } from 'react-bootstrap';
 
 import { localGroupBy, perfChartLabelsValues } from '../../utilities/simpleUtilities';
+import LogosComponent from '../../utilities/sponsorLogos';
 
 
 function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator, slTpVals}) {
@@ -132,6 +133,7 @@ function TopBottomPerformanceLineGraph ({weeklyData, selectedIndicator, slTpVals
           }
         }}
       />
+      <LogosComponent />
     </React.Fragment>
   )
 }

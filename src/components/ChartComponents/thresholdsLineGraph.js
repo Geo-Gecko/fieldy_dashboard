@@ -9,6 +9,7 @@ import { Chart } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
 import { localGroupBy, perfChartLabelsValues } from '../../utilities/simpleUtilities';
+import LogosComponent from '../../utilities/sponsorLogos';
 
 Chart.register(annotationPlugin);
 
@@ -154,6 +155,7 @@ function ThresholdsLineGraph({ weeklyData, selectedIndicator, defaultThreshVals,
           }
         }}
       />
+      <LogosComponent />
     </React.Fragment>
   )
 }
