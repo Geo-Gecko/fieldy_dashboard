@@ -40,6 +40,7 @@ import FieldInsightAccordions from './MapAccordions/fieldInsightAccordions';
 import { getWeeklyIndicators } from '../../actions/graphActions';
 import { getLastVisits, getStatus } from '../../actions/oaActions';
 import { colorGrid } from '../../utilities/gridFns';
+import LogosComponent from '../../utilities/sponsorLogos';
 
 import { OAVisitsTable, OAStatusTable } from '../overView';
 
@@ -296,7 +297,12 @@ let ShMap = ({
   const [opacityVisible, setopacityVisible] = React.useState(false);
   
   const [wlegendVisible, setwlegendVisible] = React.useState(false);
-  
+
+  const [viewlegend, setViewlegend] = useState({
+    "wideArea_lgds": true,
+    "wideArea_lgds2": false
+  });
+
   return (
     <React.Fragment>
     <ToastContainer />
@@ -525,7 +531,7 @@ let ShMap = ({
                   <button
                     className="current-view field-side-btns" onClick={
                       e => {
-                        setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1");
+                        setActiveWiderAreaInsightKey("4"); setActiveWiderAreaFiltersKey("-1"); setViewlegend("wideArea_lgds");
                         _showCards(e); (() => widerAreaLayer ? myMap.current.leafletElement.removeLayer(widerAreaLayer) : null)()
                       }
                     }
@@ -575,6 +581,7 @@ let ShMap = ({
                     className="current-view field-side-btns" onClick={
                       e => {
                         _showCards(e); setDisplayedWAT("Landcover");
+                        setwlegendVisible(true); setViewlegend("wideArea_lgds2");
                         setActiveWiderAreaInsightKey("-1"); setActiveWiderAreaFiltersKey("5");
                       }
                     }
@@ -615,8 +622,8 @@ let ShMap = ({
                   <Control
                     position="topleft"
                     className={
-                      localState['Wider Area Thresholds'] ? "click-propn current-view insight-card slide-in" :
-                      "click-propn current-view insight-card slide-out"
+                      localState['Wider Area Thresholds'] ? "sm-height click-propn current-view insight-card slide-in" :
+                      "sm-height click-propn current-view insight-card slide-out"
                     }
                   >
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>Wider Area Thresholds</h6>
@@ -629,6 +636,7 @@ let ShMap = ({
                         setWAsliderValues({"kator": displayedWAT, "values": values_});
                       }}
                     />
+                    <LogosComponent />
                   </Control> : null }
                 </div>
               </>
@@ -803,7 +811,6 @@ let ShMap = ({
           <style type="text/css">
                 {`
                   .katorline {
-                    min-height: 61vh;
                     z-index: -9;
                   }
                   .close-btn{
@@ -838,6 +845,7 @@ let ShMap = ({
               SidePanelCollapsed={false} cropTypes={props.cropTypes} 
               lineGraphState={lineGraphState} setLineGraphState={setLineGraphState}
             />
+            <LogosComponent />
           </Control>
         </React.Fragment>
         : null
@@ -896,11 +904,11 @@ let ShMap = ({
       <Control 
         position="bottomleft"
         >
-      {wlegendVisible && <div id='wideArea_lgds'>
-        {localState["Wider Area Landcover"] && <div className="widerarea-lgds"><p>Landcover</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_lc"/></div>}
-        {localState["Wider Area Slope"] && <div className="widerarea-lgds"><p>Slope (Degrees)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_slope"/></div>}
-        {localState["Wider Area Elevation"] && <div className="widerarea-lgds"><p>Elevation (m.a.s.l)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_elevation"/></div>}
-        {localState["Wider Area Fertility"] && <div className="widerarea-lgds"><p>Fertility Classification</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_fcc"/></div>}
+      {wlegendVisible && <div className={viewlegend}>
+        {localState["Wider Area Landcover"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Landcover</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_lc"/></div>}
+        {localState["Wider Area Slope"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Slope (Degrees)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_slope"/></div>}
+        {localState["Wider Area Elevation"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Elevation (m.a.s.l)</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_elevation"/></div>}
+        {localState["Wider Area Fertility"] && <div style={{"background": "white", "paddingTop": "5px"}}><p>Fertility Classification</p><img src="http://geogecko.gis-cdn.net/geoserver/fieldy_data/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=fieldy_data:kenya_HT_grid&STYLE=fieldy_fcc"/></div>}
       </div>}
       </Control>
       <Legend map={myMap} gridCellArea={gridCellArea} />

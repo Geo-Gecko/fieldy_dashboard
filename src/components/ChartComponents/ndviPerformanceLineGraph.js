@@ -8,6 +8,7 @@ import { CSVLink } from "react-csv";
 import { Button } from 'react-bootstrap';
 
 import { getNdviChange } from '../../actions/graphActions';
+import LogosComponent from '../../utilities/sponsorLogos';
 
 function NdviPerformanceLineGraph (props) {
 
@@ -162,6 +163,7 @@ function NdviPerformanceLineGraph (props) {
               }
         }}
       />
+      <LogosComponent />
     </React.Fragment>
   )
 }
