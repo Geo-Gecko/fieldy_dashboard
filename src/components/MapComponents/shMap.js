@@ -195,6 +195,11 @@ let ShMap = ({
   }
 
   const [oafStatusDisplay, setOafStatusDisplay] = useState("Currently")
+  let oafStatusDisplays = {
+    "Currently" : "Currently" , 
+    "Not Currently" : "Not Currently" ,
+    "Once Was" : "Once Was"
+  }
 
   let overViewSummary = [];
   if (props.LayersPayload.length) {
@@ -656,16 +661,39 @@ let ShMap = ({
                         ...Object.fromEntries(Object.keys(localState).map(key_ => [key_, false])),
                             "OAF Summary": true
                           });
-                          if (!props.oafStatus.length) await props.dispatch(getStatus())
-
-                          _editableFG.leafletElement.eachLayer(l_ => {
-                            let status = l_.feature.properties.OAFStatus;
-                            if ( status === oafStatusDisplay) {
-                              l_.setStyle({ weight: 4, color: "#e15b26" })
-                            } else {
-                              l_.setStyle({ weight: 4, color: "#3388ff" });
+                          if (!props.oafStatus.length) await props.dispatch(getStatus("Currently"));
+                          if (props.oafStatus.length) {
+                            function getOAFColor(value) {
+                              return value >= 900 ? "#004529":
+                              value >= 800 ? "#006837":
+                              value >= 700 ? "#238443" :
+                              value >= 600 ? "#41ab5d" :
+                              value >= 500 ? "#78c679" :
+                              value >= 400 ? "#addd8e" :
+                              value >= 300 ? "#d9f0a3" :
+                              value >= 200 ? "#f7fcb9" :
+                              value >= 100 ? "#ffffe5" :
+                              '#ffffff00';
                             }
-                          })
+                            grid.eachLayer(element => {
+                              let id = element.feature.properties.grid_id
+                              element.setStyle({
+                                fillColor: getOAFColor([props.oafStatus[1][id]]),
+                                weight: 0.3,
+                                opacity: props.oafStatus[1][id] > 0 ? 1 : 0,
+                                fillOpacity: props.oafStatus[1][id] > 0 ? 0.4 : 0 
+                              });
+                            });
+  
+                            _editableFG.leafletElement.eachLayer(l_ => {
+                              let status = l_.feature.properties.OAFStatus;
+                              if ( status === oafStatusDisplay) {
+                                l_.setStyle({ weight: 4, color: "#e15b26" })
+                              } else {
+                                l_.setStyle({ weight: 4, color: "#3388ff" });
+                              }
+                            })
+                          }
                         } 
                     }
                   >
@@ -685,10 +713,11 @@ let ShMap = ({
                             as={ButtonGroup}
                             >
                               {["Currently", "Not Currently", "Once Was"].map(obj_ => 
-                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={ e => {
+                                  <Dropdown.Item key={obj_} eventKey={obj_} onClick={async e => {
                                     let selectedText = e.currentTarget.textContent
-                                    setOafStatusDisplay(selectedText);
-                                    console.log(e.currentTarget.textContent)
+
+                                    setOafStatusDisplay(selectedText)
+                                    await props.dispatch(getStatus(oafStatusDisplays[selectedText]));
 
                                     _editableFG.leafletElement.eachLayer(l_ => {
                                       let status = l_.feature.properties.OAFStatus;
@@ -777,29 +806,31 @@ let ShMap = ({
                   <Control
                     position="topleft"
                     className={
-                      localState['OAF Summary'] ? "click-propn current-view insight-card slide-in" :
-                      "click-propn current-view insight-card slide-out"
+                      localState['OAF Summary'] ? "click-propn sm-height current-view insight-card slide-in" :
+                      "click-propn sm-height current-view insight-card slide-out"
                     }
                   >
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Summary</h6>
                     <hr />
                     <div style={{"alignSelf": "center"}}>
-                        {<OAStatusTable status={props.oafStatus} />}
-                        </div>
+                      {<OAStatusTable status={props.oafStatus.length ? props.oafStatus : []} value={oafStatusDisplay}/>}
+                    </div>
+                    <LogosComponent />
                   </Control> : null }
                   { localState['OAF Last Visit'] ? 
                   <Control
                     position="topleft"
                     className={
-                      localState['OAF Last Visit'] ? "click-propn current-view insight-card slide-in" :
-                      "click-propn current-view insight-card slide-out"
+                      localState['OAF Last Visit'] ? "click-propn sm-height current-view insight-card slide-in" :
+                      "click-propn sm-height current-view insight-card slide-out"
                     }
                   >
                     <h6 style={{"padding": "10px", "fontWeight": "bold"}}>OAF Last Visit</h6>
                     <hr />
                     <div style={{"alignSelf": "center"}}>
-                        <OAVisitsTable visitsPerDate={props.visitsPerDate} monthPeriod={oALastVIsit} />
-                        </div>
+                      <OAVisitsTable visitsPerDate={props.visitsPerDate} monthPeriod={oALastVIsit} />
+                    </div>
+                    <LogosComponent />
                   </Control> : null }
         </Accordion>
 
@@ -982,7 +1013,7 @@ let ShMap = ({
               `}
         </style>
         <div id="grid-info">Click on grid or field for info</div><br/>
-        {opacityVisible && <div style= {{"padding": "5px", "boxShadow": "0 1px 5px rgba(0,0,0,0.65)", "background": "#ecebeb"}}>
+        {opacityVisible && <div style= {{"padding": "5px", "box-shadow": "0 1px 5px rgba(0,0,0,0.65)", "background": "#ecebeb"}}>
           <label>
               Layer opacity
               <br/><input id="opacity-input" type="range" min="0" max="1" step="0.01" />
