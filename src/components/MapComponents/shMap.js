@@ -925,13 +925,13 @@ let ShMap = ({
             attribution={`powered by Google. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
           />
         </BaseLayer>
-        {/* <BaseLayer name="OpenStreetMap.BlackAndWhite">
+        <BaseLayer checked name="Stamen_TonerLite">
           <TileLayer
-            attribution={`&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors | &copy; ${new Date().getFullYear()} GeckosUnited  <br/> Note that this imagery isn't necessarily up to date `}
-            url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
+            url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png"
+            attribution={`Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
           />
-        </BaseLayer> */}
-        <BaseLayer checked name="OpenStreetMap.Mapnik">
+        </BaseLayer>
+        <BaseLayer name="OpenStreetMap.Mapnik">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution={`&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors. | &copy; ${new Date().getFullYear()} GeckosUnited <br/> Note that this imagery isn't necessarily up to date `}
