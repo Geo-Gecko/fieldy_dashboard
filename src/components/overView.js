@@ -36,17 +36,23 @@ export const OAVisitsTable = ({ visitsPerDate, monthPeriod }) => {
   );
 }
 
-export const OAStatusTable = ({ status }) => {
-
-  const columns = [
-    { dataField: 'OAFStatus', text: 'Status' },
-    { dataField: 'fieldCount', text: 'Number of Fields' },
-  ];
-  return (
-    <React.Fragment>
-      <BootstrapTable keyField='OAFStatus' data={ status } columns={ columns } />
-    </React.Fragment> 
-    );
+export const OAStatusTable = ({ status, value }) => {
+  if (status.length > 0){
+    let selected_status = status[0].filter(val => val.OAFStatus == value);
+    selected_status[0].area = status[2].toFixed(2)
+    const columns = [
+      { dataField: 'OAFStatus', text: 'Status' },
+      { dataField: 'area', text: 'Area (sq m)' },
+      { dataField: 'fieldCount', text: 'Number of Fields' },
+    ];
+    return (
+      <React.Fragment>
+        <BootstrapTable keyField='OAFStatus' data={ selected_status } columns={ columns } />
+      </React.Fragment> 
+      );
+  } else {
+    return <React.Fragment />
+  }
 }
 
 export const OverViewTable = ({ graphData }) => {
