@@ -92,4 +92,28 @@
   0% { -webkit-transform: translateX(0%); }
   100% { -webkit-transform: translateX(-100%); }
 }
+
+/* pagination */
+.pagination > li > a
+{
+    background-color: white;
+    color: #e15b26;
+}
+
+.pagination > .active > a
+{
+    color: white;
+    background-color: #e15b26 !Important;
+    border: solid 1px #e15b26 !Important;
+}
+
+.pagination > .active > a:hover
+{
+    background-color: #e15b26 !Important;
+    border: solid 1px #e15b26;
+}
+
+.react-bootstrap-table-pagination-list-hidden {
+  display: none;
+}
 /* ##################################################### */

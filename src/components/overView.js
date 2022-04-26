@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BootstrapTable from 'react-bootstrap-table-next';
-
+import paginationFactory from "react-bootstrap-table2-paginator";
 
 let colours;
 let commafy = (value) => {
@@ -39,9 +39,16 @@ export const OverViewTable = ({ graphData }) => {
     { dataField: 'area', text: 'Crop Area Coverage (sq m)' },
     { dataField: 'count', text: 'Total Number of fields'}
   ];
+
+  const options = {
+    sizePerPage: 10,
+    hideSizePerPage: true,
+    hidePageListOnlyOnePage: true,
+  };
+
   return (
     <React.Fragment>
-      <BootstrapTable keyField='cropType' data={ graphData } columns={ columns } />
+      <BootstrapTable keyField='cropType' data={ graphData } columns={ columns } pagination={paginationFactory(options) }/>
     </React.Fragment> 
   );
 
