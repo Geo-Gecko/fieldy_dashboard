@@ -494,8 +494,10 @@ let ShMap = ({
                   </Accordion>
                   <hr></hr>
                   {
+                    // OAF data is complex hence removing insights --- 623731215344c1000aae2459
                     localStorage.getItem("user") ?
-                    JSON.parse(localStorage.getItem("user"))["paymentLevels"] === "SECOND LEVEL" ?
+                    JSON.parse(localStorage.getItem("user"))["paymentLevels"] === "SECOND LEVEL"
+                    && JSON.parse(localStorage.getItem("user"))["memberOf"] !== "623731215344c1000aae2459" ?
                     <button
                       className="current-view field-side-btns" onClick={
                         (e) => {
@@ -582,6 +584,9 @@ let ShMap = ({
                     </Accordion.Collapse>
                   </Accordion>
                   <hr></hr>
+                  {
+                    // OAF data is complex hence removing thresholds
+                    localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user"))["memberOf"] !== "623731215344c1000aae2459" ?
                   <button
                     className="current-view field-side-btns" onClick={
                       e => {
@@ -592,7 +597,8 @@ let ShMap = ({
                     }
                   >
                     Wider Area Thresholds
-                  </button>
+                  </button> : null : null
+                  }
                   <Accordion activeKey={activeWiderAreaFiltersKey}>
                     {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
                     <Accordion.Collapse eventKey="5">
@@ -688,9 +694,9 @@ let ShMap = ({
                             _editableFG.leafletElement.eachLayer(l_ => {
                               let status = l_.feature.properties.OAFStatus;
                               if ( status === oafStatusDisplay) {
-                                l_.setStyle({ weight: 4, color: "#e15b26" })
+                                l_.setStyle({ weight: 1, color: "#e15b26" })
                               } else {
-                                l_.setStyle({ weight: 4, color: "#3388ff" });
+                                l_.setStyle({ weight: 1, color: "grey" });
                               }
                             })
                           }
@@ -722,9 +728,9 @@ let ShMap = ({
                                     _editableFG.leafletElement.eachLayer(l_ => {
                                       let status = l_.feature.properties.OAFStatus;
                                       if ( status === selectedText) {
-                                        l_.setStyle({ weight: 4, color: "#e15b26" })
+                                        l_.setStyle({ weight: 1, color: "#e15b26" })
                                       } else {
-                                        l_.setStyle({ weight: 4, color: "#3388ff" });
+                                        l_.setStyle({ weight: 1, color: "grey" });
                                       }
                                     })
                                   }}>
@@ -750,9 +756,9 @@ let ShMap = ({
                             _editableFG.leafletElement.eachLayer(l_ => {
                               let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
                               if (Math.abs(currentMth - visitMth) <= oALastVIsits[oALastVIsit]) {
-                                l_.setStyle({ weight: 4, color: "#e15b26" })
+                                l_.setStyle({ weight: 1, color: "#e15b26" })
                               } else {
-                                l_.setStyle({ weight: 4, color: "#3388ff" });
+                                l_.setStyle({ weight: 1, color: "grey" });
                               }
                             });
                       }
@@ -784,9 +790,9 @@ let ShMap = ({
                                     _editableFG.leafletElement.eachLayer(l_ => {
                                       let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
                                       if (Math.abs(currentMth - visitMth) <= oALastVIsits[selectedText]) {
-                                        l_.setStyle({ weight: 4, color: "#e15b26" })
+                                        l_.setStyle({ weight: 1, color: "#e15b26" })
                                       } else {
-                                        l_.setStyle({ weight: 4, color: "#3388ff" });
+                                        l_.setStyle({ weight: 1, color: "grey" });
                                       }
                                     })
                                   }}>

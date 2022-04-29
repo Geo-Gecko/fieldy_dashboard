@@ -44,7 +44,7 @@ let FieldInsightCards = (
 
   // fitler Thresholds
   let filterThFields = (values_, key_) => {
-    _editableFG.leafletElement.eachLayer(layer_ => layer_.setStyle({ weight: 4, color: "#3388ff" }))
+    _editableFG.leafletElement.eachLayer(layer_ => layer_.setStyle({ weight: 1, color: "grey" }))
     let filteredExceededWeeklyData = recentWeeklyData.filter(row_ => {
       if (row_[key_] < values_[0] || row_[key_] > values_[1]) {
         return true
@@ -55,7 +55,7 @@ let FieldInsightCards = (
       let exceedingFieldIds = filteredExceededWeeklyData.map(row_ => row_["field_id"])
       _editableFG.leafletElement.eachLayer(
         layer_ => exceedingFieldIds.includes(layer_.feature.properties.field_id) ?
-          layer_.setStyle({ weight: 4, color: "#e15b26" }) : layer_.setStyle({ weight: 4, color: "#3388ff" })
+          layer_.setStyle({ weight: 1, color: "#e15b26" }) : layer_.setStyle({ weight: 1, color: "grey" })
       )
     }
     
