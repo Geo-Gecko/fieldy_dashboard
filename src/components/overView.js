@@ -39,7 +39,8 @@ export const OAVisitsTable = ({ visitsPerDate, monthPeriod }) => {
 export const OAStatusTable = ({ status, value }) => {
   if (status.length > 0){
     let selected_status = status[0].filter(val => val.OAFStatus == value);
-    selected_status[0].area = status[2].toFixed(2)
+    selected_status[0].area = commafy(status[2].toFixed(2).toString());
+    selected_status[0].fieldCount = commafy(selected_status[0].fieldCount.toString());
     const columns = [
       { dataField: 'OAFStatus', text: 'Status' },
       { dataField: 'area', text: 'Area (sq m)' },

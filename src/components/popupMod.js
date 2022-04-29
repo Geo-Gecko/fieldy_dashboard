@@ -129,6 +129,7 @@ L.Popup.include({
             deleted_layer._map.removeLayer(fieldInstance)
          })
          leafletGeoJSON.eachLayer(fieldLayer => {
+            fieldLayer.setStyle({ weight: 1, color: "grey" });
             fieldLayer.on("click", () => {
 
                this.options.dispatch({
@@ -143,10 +144,10 @@ L.Popup.include({
                let attr_list = attrCreator(fieldLayer, this.options.cropTypes, this.options.userType)
 
                if (clickedLayer) {
-                  clickedLayer.setStyle({ weight: 4, color: "#3388ff" });
+                  clickedLayer.setStyle({ weight: 1, color: "grey" });
                 }
                 document.getElementById("grid-info").innerHTML = attr_list;
-                fieldLayer.setStyle({ weight: 4, color: "#e15b26" });
+                fieldLayer.setStyle({ weight: 1, color: "#e15b26" });
                 clickedLayer = fieldLayer
 
             });

@@ -128,14 +128,15 @@ class MapView extends Component {
     }
     let attributed_layer = new L.GeoJSON(geoLayerClln)
     attributed_layer.eachLayer( layer_ => {
-      let attr_list = attrCreator(layer_, this.props.cropTypes, this.state.userType)
+      let attr_list = attrCreator(layer_, this.props.cropTypes, this.state.userType);
+      layer_.setStyle({ weight: 1, color: "grey" });
       layer_.on('click', function (e) {
         if (clickedLayer) {
-          clickedLayer.setStyle({ weight: 0.5, color: "#3388ff" });
+          clickedLayer.setStyle({ weight: 1, color: "grey" });
         }
     
         document.getElementById("grid-info").innerHTML = attr_list;
-        layer_.setStyle({ weight: 4, color: "#e15b26" });
+        layer_.setStyle({ weight: 1, color: "#e15b26" });
         clickedLayer = layer_
       });
       if (this.state.userType === "EDITOR") {
@@ -180,10 +181,11 @@ class MapView extends Component {
       leafletGeoJSON = new L.GeoJSON(leafletGeoJSON)
       if (!this._editableFG && !this.props.gridLayer.length) {
         leafletGeoJSON.eachLayer( layer => {
+          layer.setStyle({ weight: 1, color: "grey" });
           let attr_list = attrCreator(layer, this.props.cropTypes, this.state.userType)
           layer.on('click', function (e) {
             if (clickedLayer) {
-              clickedLayer.setStyle({ weight: 4, color: "#3388ff" });
+              clickedLayer.setStyle({ weight: 1, color: "grey" });
             }
             props.dispatch({
               type: GET_ALL_FIELD_DATA_INITIATED,
@@ -196,7 +198,7 @@ class MapView extends Component {
             ));
         
             document.getElementById("grid-info").innerHTML = attr_list;
-            layer.setStyle({ weight: 4, color: "#e15b26" });
+            layer.setStyle({ weight: 1, color: "#e15b26" });
             clickedLayer = layer
           });
           if (this.state.userType === "EDITOR") {

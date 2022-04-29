@@ -688,9 +688,9 @@ let ShMap = ({
                             _editableFG.leafletElement.eachLayer(l_ => {
                               let status = l_.feature.properties.OAFStatus;
                               if ( status === oafStatusDisplay) {
-                                l_.setStyle({ weight: 4, color: "#e15b26" })
+                                l_.setStyle({ weight: 1, color: "#e15b26" })
                               } else {
-                                l_.setStyle({ weight: 4, color: "#3388ff" });
+                                l_.setStyle({ weight: 1, color: "grey" });
                               }
                             })
                           }
@@ -722,9 +722,9 @@ let ShMap = ({
                                     _editableFG.leafletElement.eachLayer(l_ => {
                                       let status = l_.feature.properties.OAFStatus;
                                       if ( status === selectedText) {
-                                        l_.setStyle({ weight: 4, color: "#e15b26" })
+                                        l_.setStyle({ weight: 1, color: "#e15b26" })
                                       } else {
-                                        l_.setStyle({ weight: 4, color: "#3388ff" });
+                                        l_.setStyle({ weight: 1, color: "grey" });
                                       }
                                     })
                                   }}>
@@ -750,9 +750,9 @@ let ShMap = ({
                             _editableFG.leafletElement.eachLayer(l_ => {
                               let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
                               if (Math.abs(currentMth - visitMth) <= oALastVIsits[oALastVIsit]) {
-                                l_.setStyle({ weight: 4, color: "#e15b26" })
+                                l_.setStyle({ weight: 1, color: "#e15b26" })
                               } else {
-                                l_.setStyle({ weight: 4, color: "#3388ff" });
+                                l_.setStyle({ weight: 1, color: "grey" });
                               }
                             });
                       }
@@ -784,9 +784,9 @@ let ShMap = ({
                                     _editableFG.leafletElement.eachLayer(l_ => {
                                       let visitMth = new Date(l_.feature.properties.LastVisit).getMonth();
                                       if (Math.abs(currentMth - visitMth) <= oALastVIsits[selectedText]) {
-                                        l_.setStyle({ weight: 4, color: "#e15b26" })
+                                        l_.setStyle({ weight: 1, color: "#e15b26" })
                                       } else {
-                                        l_.setStyle({ weight: 4, color: "#3388ff" });
+                                        l_.setStyle({ weight: 1, color: "grey" });
                                       }
                                     })
                                   }}>
