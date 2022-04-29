@@ -494,8 +494,10 @@ let ShMap = ({
                   </Accordion>
                   <hr></hr>
                   {
+                    // OAF data is complex hence removing insights --- 623731215344c1000aae2459
                     localStorage.getItem("user") ?
-                    JSON.parse(localStorage.getItem("user"))["paymentLevels"] === "SECOND LEVEL" ?
+                    JSON.parse(localStorage.getItem("user"))["paymentLevels"] === "SECOND LEVEL"
+                    && JSON.parse(localStorage.getItem("user"))["memberOf"] !== "623731215344c1000aae2459" ?
                     <button
                       className="current-view field-side-btns" onClick={
                         (e) => {
@@ -582,6 +584,9 @@ let ShMap = ({
                     </Accordion.Collapse>
                   </Accordion>
                   <hr></hr>
+                  {
+                    // OAF data is complex hence removing thresholds
+                    localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user"))["memberOf"] !== "623731215344c1000aae2459" ?
                   <button
                     className="current-view field-side-btns" onClick={
                       e => {
@@ -592,7 +597,8 @@ let ShMap = ({
                     }
                   >
                     Wider Area Thresholds
-                  </button>
+                  </button> : null : null
+                  }
                   <Accordion activeKey={activeWiderAreaFiltersKey}>
                     {/* NOTE: eventKey(s) probably have to be globally different for accordions?? */}
                     <Accordion.Collapse eventKey="5">
