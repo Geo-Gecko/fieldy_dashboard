@@ -221,9 +221,11 @@ class MapView extends Component {
         if (!this.myMap.current.leafletElement.hasLayer(this.state.grid)) {
           let { grid, gridCellArea } = createGrid(this)
           grid.on("click", async e => {
+            this.setState({...this.state, initiateGetData: true,})
             let gridCellFields = await getFieldsInCell(e.layer.feature.properties.grid_id)
             localStorage.removeItem("gridCellFields")
             localStorage.setItem("gridCellFields", JSON.stringify(gridCellFields))
+            this.setState({...this.state, initiateGetData: false,})
 
             let indicatorsInCell =  await getKatorsInGridCellAction(e.layer.feature.properties.grid_id)
 
